@@ -1,6 +1,5 @@
 ### ✅ RemoteLogger Frontend - `README.md`
 
-````md
 # RemoteLogger Frontend
 
 **RemoteLogger** is a full-stack, AI-enhanced logging and alerting platform for developers. This repository contains the **frontend application**, built with **Next.js** and **TailwindCSS**, that enables users to view logs, configure alerts, and review AI-generated insights.
@@ -19,7 +18,7 @@ Coming soon...
 git clone https://github.com/Stanwukong/remote-logger-frontend.git
 cd remote-logger-frontend
 npm install
-````
+```
 
 Create `.env.local`:
 
@@ -36,7 +35,7 @@ npm run dev
 ## 📁 Folder Structure
 
 ```
-/pages         → App routes
+/app         → App routes
 /components    → Reusable UI
 /store         → Global state (Zustand)
 /utils         → API clients, helpers
@@ -54,7 +53,4 @@ npm run dev
 
 * [RemoteLogger Backend](https://github.com/Stanwukong/logger-backend)
 
-````
-
----
 
