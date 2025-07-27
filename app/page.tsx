@@ -1,7 +1,11 @@
 import { Header } from "@/components/landing/Header"
 import { Hero } from "@/components/landing/Hero"
+import { SocialProof } from "@/components/landing/SocialProof"
 import { Features } from "@/components/landing/Features"
-import { SDKSection } from "@/components/landing/SDKSection"
+import { Integrations } from "@/components/landing/Integrations"
+import { Pricing } from "@/components/landing/Pricing"
+import { FAQ } from "@/components/landing/FAQ"
+import { Newsletter } from "@/components/landing/Newsletter"
 import { Footer } from "@/components/landing/Footer"
 
 export default function LandingPage() {
@@ -9,8 +13,12 @@ export default function LandingPage() {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       <Header />
       <Hero />
+      <SocialProof />
       <Features />
-      <SDKSection />
+      <Integrations />
+      <Pricing />
+      <FAQ />
+      <Newsletter />
       <Footer />
     </div>
   )

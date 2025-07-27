@@ -1,31 +1,46 @@
-// components/landing/Hero.tsx
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { ArrowRight, Code, Star } from "lucide-react"
+import { ArrowRight, Code, Play, Sparkles } from "lucide-react"
 import Link from "next/link"
-import { FeaturePreview } from "./FeaturePreview"
+import { TrustIndicators } from "./TrustIndicators"
+import { DashboardPreview } from "./DashboardPreview"
 
 export function Hero() {
   return (
-    <section className="container mx-auto px-4 py-24 text-center">
-      <Badge variant="secondary" className="p-2 mb-6">
-        <Star className="w-3 h-3 mr-1" />
-        The Developer's Logging Companion
+    <section className="container mx-auto px-4 py-24 text-center relative">
+      <div className="absolute inset-0 bg-grid-pattern opacity-5" />
+      
+      <Badge variant="secondary" className="mb-6 animate-pulse">
+        <Sparkles className="w-3 h-3 mr-1" />
+        Trusted by 10,000+ developers worldwide
       </Badge>
-      <h1 className="text-5xl md:text-6xl font-bold leading-relaxed tracking-tight mb-6 bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent">
-        RemoteLogger
+      
+      <h1 className="text-6xl md:text-7xl font-bold tracking-tight mb-6 bg-gradient-to-r from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
+        The Developer's
+        <br />
+        <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+          Logging Companion
+        </span>
       </h1>
-      <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
+      
+      <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
         Visualize real-time logs, track error insights, and configure intelligent alert rules. Built for developers
-        who demand clarity and control.
+        who demand <span className="text-primary font-semibold">clarity and control</span>.
       </p>
-      <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-        <Button size="lg" className="text-base" asChild>
+
+      <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+        <Button size="lg" className="text-base px-8 py-6 hover:bg-amber-50" asChild>
           <Link href="/dashboard">
-            Get Started <ArrowRight className="ml-2 w-4 h-4" />
+            Start Free Trial <ArrowRight className="ml-2 w-4 h-4" />
           </Link>
         </Button>
-        <Button size="lg" variant="outline" className="text-base bg-transparent" asChild>
+        <Button size="lg" variant="outline" className="text-base px-8 py-6 bg-transparent" asChild>
+          <Link href="#demo">
+            <Play className="mr-2 w-4 h-4" />
+            Watch Demo
+          </Link>
+        </Button>
+        <Button size="lg" variant="ghost" className="text-base px-8 py-6" asChild>
           <Link href="/sdk">
             <Code className="mr-2 w-4 h-4" />
             View SDK
@@ -33,7 +48,8 @@ export function Hero() {
         </Button>
       </div>
 
-      <FeaturePreview />
+      <TrustIndicators />
+      <DashboardPreview />
     </section>
   )
 }
