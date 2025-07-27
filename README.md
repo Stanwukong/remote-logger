@@ -51,6 +51,6 @@ npm run dev
 
 ## 👀 See Also
 
-* [RemoteLogger Backend](https://github.com/Stanwukong/logger-backend)
+* [RemoteLogger Backend](https://github.com/Stanwukong/logger_backend)
 
 
