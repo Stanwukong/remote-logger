@@ -13,9 +13,8 @@ import {
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { SidebarTrigger } from "./ui/sidebar";
 
-type Props = {};
 
-const TopBar = (props: Props) => {
+const TopBar = () => {
   return (
     <header className="border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-16 items-center px-6 gap-4">

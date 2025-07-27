@@ -1,4 +1,3 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Activity, BarChart3, Shield, Check } from "lucide-react"
 import { FeatureCard } from "./FeatureCard"

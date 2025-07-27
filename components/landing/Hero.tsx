@@ -16,7 +16,7 @@ export function Hero() {
       </Badge>
       
       <h1 className="text-6xl md:text-7xl font-bold tracking-tight mb-6 bg-gradient-to-r from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
-        The Developer's
+        The Developer&apos;s
         <br />
         <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
           Logging Companion

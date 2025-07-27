@@ -49,7 +49,7 @@ export function Footer() {
               <span className="font-semibold text-lg">RemoteLogger</span>
             </div>
             <p className="text-muted-foreground text-sm">
-              The developer's logging companion. Built for modern applications that demand clarity and control.
+              The developer&apos;s logging companion. Built for modern applications that demand clarity and control.
             </p>
             <div className="flex space-x-4">
               <Button variant="ghost" size="icon">
