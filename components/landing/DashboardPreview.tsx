@@ -15,7 +15,7 @@ export function DashboardPreview() {
             <div className="w-3 h-3 bg-green-500 rounded-full" />
           </div>
           <div className="flex-1 bg-muted rounded-md h-6 flex items-center px-3">
-            <span className="text-xs text-muted-foreground">app.remotelogger.dev/dashboard</span>
+            <span className="text-xs text-muted-foreground">app.loghive.dev/dashboard</span>
           </div>
         </div>
 

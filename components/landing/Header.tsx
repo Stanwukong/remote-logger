@@ -1,14 +1,14 @@
-import { Button } from "@/components/ui/button"
-import { Activity } from "lucide-react"
-import Link from "next/link"
-import { ThemeToggle } from "@/components/theme-toggle"
+import { Button } from "@/components/ui/button";
+import { Activity } from "lucide-react";
+import Link from "next/link";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const navItems = [
   { href: "#features", label: "Features" },
   { href: "#pricing", label: "Pricing" },
   { href: "#docs", label: "Docs" },
   { href: "#company", label: "Company" },
-]
+];
 
 export function Header() {
   return (
@@ -18,9 +18,9 @@ export function Header() {
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
             <Activity className="w-5 h-5 text-primary-foreground" />
           </div>
-          <span className="text-xl font-semibold">RemoteLogger</span>
+          <span className="text-xl md:text-xl font-semibold">LogHive</span>
         </div>
-        
+
         <nav className="hidden md:flex items-center space-x-8">
           {navItems.map((item) => (
             <a
@@ -32,17 +32,19 @@ export function Header() {
             </a>
           ))}
         </nav>
-        
+
         <div className="flex items-center space-x-4">
           <ThemeToggle />
-          <Button variant="ghost" asChild>
-            <Link href="/dashboard">Sign In</Link>
-          </Button>
-          <Button asChild>
-            <Link href="/dashboard">Get Started</Link>
-          </Button>
+          <div className="hidden md:flex items-center space-x-4">
+            <Button variant="ghost" asChild>
+              <Link href="/dashboard">Sign In</Link>
+            </Button>
+            <Button asChild>
+              <Link href="/dashboard">Get Started</Link>
+            </Button>
+          </div>
         </div>
       </div>
     </header>
-  )
+  );
 }

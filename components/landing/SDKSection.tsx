@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Code } from "lucide-react"
 
-const codeExample = `import { RemoteLogger } from '@remotelogger-sdk'
+const codeExample = `import { LogHive } from '@LogHive-sdk'
 
-const logger = new RemoteLogger({
+const logger = new LogHive({
   apiKey: 'your-api-key',
   project: 'my-app'
 })
@@ -24,7 +24,7 @@ export function SDKSection() {
           <CardHeader>
             <div className="flex items-center space-x-2">
               <Code className="w-5 h-5" />
-              <span className="font-mono text-sm">npm install @remotelogger-sdk</span>
+              <span className="font-mono text-sm">npm install @LogHive-sdk</span>
             </div>
           </CardHeader>
           <CardContent>

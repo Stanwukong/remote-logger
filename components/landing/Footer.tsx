@@ -46,10 +46,10 @@ export function Footer() {
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <Activity className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="font-semibold text-lg">RemoteLogger</span>
+              <span className="font-semibold text-lg">LogHive</span>
             </div>
             <p className="text-muted-foreground text-sm">
-              The developer&apos;s logging companion. Built for modern applications that demand clarity and control.
+              Where your logs swarm into <span className="font-semibold hover:text-white hover:cursor-pointer">Insight</span>.
             </p>
             <div className="flex space-x-4">
               <Button variant="ghost" size="icon">
@@ -84,11 +84,11 @@ export function Footer() {
         <Separator className="mb-8" />
 
         <div className="flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">
-          <p>© 2024 RemoteLogger. All rights reserved.</p>
+          <p>© 2025 LogHive. All rights reserved.</p>
           <div className="flex items-center space-x-4 mt-4 md:mt-0">
             <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full" />
-              <span>All systems operational</span>
+              <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
+              <span>Under construction</span>
             </div>
             <span>•</span>
             <span>Built with ❤️ for developers</span>
