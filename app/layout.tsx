@@ -16,7 +16,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "RemoteLogger - The Developer's Logging Companion.",
+  title: "LogHive - Where logs swarm into insight.",
   description:
     "Visualize real-time logs, track error insights, and configure alert rules for your projects.",
 };

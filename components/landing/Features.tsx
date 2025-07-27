@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge"
-import { Activity, BarChart3, Shield, Check } from "lucide-react"
+import { Activity, BarChart3, Shield } from "lucide-react"
 import { FeatureCard } from "./FeatureCard"
 import { AdditionalFeatures } from "./AdditionalFeatures"
 
