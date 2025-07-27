@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Code, Play, Sparkles } from "lucide-react";
+import { ArrowRight, Code, Construction, Play, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { TrustIndicators } from "./TrustIndicators";
 import { DashboardPreview } from "./DashboardPreview";
@@ -12,10 +12,11 @@ export function Hero() {
         <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]"></div>
       </div>
 
-      <Badge variant="secondary" className="mb-6 animate-pulse">
-        <Sparkles className="w-3 h-3 mr-1" />
-        Trusted by 10,000+ developers worldwide
+      <Badge variant="secondary" className="px-3 border-amber-500 mb-6 animate-pulse">
+        <Construction className="w-3 h-3 mr-1" />
+        <p>Under construction</p>
       </Badge>
+
 
       <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 bg-gradient-to-r from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
         The Developer&apos;s
