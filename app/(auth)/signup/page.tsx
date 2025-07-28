@@ -15,9 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
-  AlertCircle,
   ArrowRight,
   Building,
   Check,
@@ -41,7 +39,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
-import { signupUser } from "@/services/auth.service";
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -82,7 +79,7 @@ export default function SignUpPage() {
       toast.success("Account created successfully!");
       // router.push("/dashboard");
     } catch (error) {
-      toast.error("Something went wrong. Please try again.");
+      toast.error(`Something went wrong. Please try again. ${error}`);
     }
 
     console.log(values);

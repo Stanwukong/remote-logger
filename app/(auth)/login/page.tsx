@@ -15,12 +15,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
-  AlertCircle,
   ArrowRight,
-  Building,
-  Check,
   Eye,
   EyeOff,
   Github,
@@ -39,7 +35,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -75,7 +70,7 @@ export default function LoginPage() {
       toast.success("You've been successfuly logged in.");
       // router.push("/dashboard");
     } catch (error) {
-      toast.error("Something went wrong. Please try again.");
+      toast.error(`Something went wrong. Please try again. ${error}`);
     }
 
     console.log(values);

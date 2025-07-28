@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { forgotPasswordSchema } from "@/lib/schemas/auth";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
@@ -17,17 +16,10 @@ import {
 } from "@/components/ui/card";
 import {
   ArrowLeft,
-  ArrowRight,
   CheckCircle2,
-  Eye,
-  EyeOff,
-  Github,
   Mail,
-  Shield,
-  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import {
   Form,
   FormControl,
@@ -38,13 +30,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { passwordResetRequest } from "@/services/auth.service";
 
 export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const router = useRouter();
   const form = useForm<z.infer<typeof forgotPasswordSchema>>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
@@ -62,7 +52,7 @@ export default function ForgotPasswordPage() {
       toast("Reset link sent!");
       // router.push("/dashboard");
     } catch (error) {
-      toast.error("Something went wrong. Please try again.");
+      toast.error(`Something went wrong. Please try again. ${error}`);
     }
 
     console.log(values);
@@ -81,7 +71,7 @@ export default function ForgotPasswordPage() {
             Check your email
           </h1>
           <p className="text-muted-foreground">
-            We've sent password reset instructions to{" "}
+            We&apos;ve sent password reset instructions to{" "}
             <strong>{form.getValues("email")}</strong>
           </p>
         </div>
@@ -99,7 +89,7 @@ export default function ForgotPasswordPage() {
                   will expire in 1 hour.
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Didn't receive the email? Check your spam folder or{" "}
+                  Didn&apos;t receive the email? Check your spam folder or{" "}
                   <button
                     onClick={() => setIsSubmitted(false)}
                     className="text-primary hover:underline"
@@ -136,7 +126,7 @@ export default function ForgotPasswordPage() {
           Forgot your password?
         </h1>
         <p className="text-muted-foreground">
-          No worries! Enter your email and we'll send you reset instructions.
+          No worries! Enter your email and we&apos;ll send you reset instructions.
         </p>
       </div>
 
@@ -144,7 +134,7 @@ export default function ForgotPasswordPage() {
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl text-center">Reset Password</CardTitle>
           <CardDescription className="text-center">
-            Enter your email address and we'll send you a link to reset your
+            Enter your email address and we&apos;ll send you a link to reset your
             password
           </CardDescription>
         </CardHeader>
@@ -199,7 +189,7 @@ export default function ForgotPasswordPage() {
         </Link>
 
         <div className="text-sm text-muted-foreground">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link
             href="/signup"
             className="text-primary hover:underline font-medium"

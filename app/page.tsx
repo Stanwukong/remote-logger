@@ -1,4 +1,3 @@
-import { Header } from "@/components/landing/Header"
 import { Hero } from "@/components/landing/Hero"
 import { SocialProof } from "@/components/landing/SocialProof"
 import { Features } from "@/components/landing/Features"
