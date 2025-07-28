@@ -8,7 +8,6 @@ import { DashboardPreview } from "./DashboardPreview";
 export function Hero() {
   return (
     <section className="container mx-auto px-4 py-24 text-center relative">
-
       <Badge
         variant="secondary"
         className="px-3 border-amber-500 mb-6 animate-pulse"
@@ -65,7 +64,14 @@ export function Hero() {
       </div>
 
       <TrustIndicators />
-      <DashboardPreview />
+
+      {/* Dashboard Preview */}
+      <div className="relative max-w-7xl mx-auto">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 rounded-3xl blur-3xl" />
+        <div className="relative">
+          <DashboardPreview />
+        </div>
+      </div>
     </section>
   );
 }

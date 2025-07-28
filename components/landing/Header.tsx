@@ -6,7 +6,8 @@ import { ThemeToggle } from "@/components/theme-toggle";
 const navItems = [
   { href: "#features", label: "Features" },
   { href: "#pricing", label: "Pricing" },
-  { href: "#docs", label: "Docs" },
+  { href: "#faq", label: "FAQs"},
+  { href: "/docs", label: "Docs" },
   { href: "#company", label: "Company" },
 ];
 
@@ -40,7 +41,7 @@ export function Header() {
               <Link href="/login">Sign In</Link>
             </Button>
             <Button asChild>
-              <Link href="/dashboard">Get Started</Link>
+              <Link href="/docs">Get Started</Link>
             </Button>
           </div>
         </div>

@@ -116,7 +116,7 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="w-full max-w-md mx-auto my-24 space-y-8">
+    <div className="w-full max-w-md mx-auto my-12 space-y-8">
       <div className="text-center space-y-2">
         <Badge variant={"secondary"} className="mb-4">
           <Mail className="w-3 h-3 mr-1" />

@@ -77,7 +77,7 @@ export default function SignUpPage() {
       // await signupUser(values);
 
       toast.success("Account created successfully!");
-      // router.push("/dashboard");
+      router.push("/dashboard");
     } catch (error) {
       toast.error(`Something went wrong. Please try again. ${error}`);
     }
@@ -117,7 +117,7 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto my-24 space-y-8">
+    <div className="w-full max-w-md mx-auto my-12 space-y-8">
       {/* Welcome Message */}
       <div className="text-center space-y-2">
         <Badge variant={"secondary"} className="mb-4">
@@ -390,7 +390,7 @@ export default function SignUpPage() {
       <div className="grid grid-cols-1 gap-4 text-center">
         <div className="space-y-2">
           <h3 className="font-medium text-sm">
-            What you get with RemoteLogger:
+            What you get with LogHive:
           </h3>
           <div className="pl-10 grid grid-cols-2 gap-4 text-xs text-muted-foreground">
             <div className="flex items-center space-x-2">

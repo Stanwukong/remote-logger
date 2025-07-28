@@ -78,7 +78,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto my-24 space-y-8">
+    <div className="w-full max-w-md mx-auto my-12 space-y-8">
       {/* Welcome Message */}
       <div className="text-center space-y-2">
         <Badge variant={"secondary"} className="mb-4">
@@ -162,7 +162,7 @@ export default function LoginPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <div>
+                    <div className="flex justify-between">
                       <FormLabel>Password</FormLabel>
                       <Link
                         href={"/forgot-password"}
