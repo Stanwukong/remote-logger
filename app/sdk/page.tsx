@@ -197,7 +197,7 @@ export default function SDKPage() {
               </TabsList>
             </div>
 
-            <TabsContent value="nodejs" className="space-y-8 w-full max-w-2xl">
+            <TabsContent value="nodejs" className="space-y-8 w-full ">
               <div className="grid lg:grid-cols-2 gap-8">
                 <div className="space-y-6">
                   <Card>
