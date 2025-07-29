@@ -1,8 +1,7 @@
 import React from 'react'
 
-type Props = {}
 
-const DocumentationPage = (props: Props) => {
+const DocumentationPage = () => {
   return (
     <div>DocumentationPage</div>
   )

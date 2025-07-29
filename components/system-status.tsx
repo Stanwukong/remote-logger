@@ -1,7 +1,7 @@
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { CheckCircle, AlertTriangle, ExternalLink } from "lucide-react"
+import { ExternalLink } from "lucide-react"
 
 export function SystemStatus() {
   const systemStatus = {
