@@ -1,5 +1,6 @@
 import { SignUpType } from "@/lib/schemas/auth";
 import axios, { AxiosError } from "axios";
+import Cookies from "js-cookie"; 
 import { apiClient } from "./config";
 
 export interface ApiResponse<T = any> {
@@ -21,7 +22,7 @@ export class ApiError extends Error {
   }
 }
 
-const handleApiError = (error: unknown): never => {
+export const handleApiError = (error: unknown): never => {
   if (axios.isAxiosError(error)) {
     const axiosError = error as AxiosError<ApiResponse>;
 
@@ -58,101 +59,101 @@ export const authService = {
 
       if (response.data.status === "error") {
         throw new ApiError(
-            response.data.message || "Sign up failed.",
-            response.status,
-            response.data.errors
+          response.data.message || "Sign up failed.",
+          response.status,
+          response.data.errors
         )
       }
 
       if (response.data.data?.token) {
-        localStorage.setItem('authToken', response.data.data.token)
+        Cookies.set('authToken', response.data.data.token, { expires: 7 }); // expires in 7 days
       }
 
       return response.data.data;
     } catch (error) {
-        handleApiError(error)
+      handleApiError(error)
     }
   },
 
-  /** 
-   * Sign in user
+  /** * Sign in user
   */
- signIn: async (email: string, password: string) => {
+  signIn: async (email: string, password: string) => {
     try {
-        const response = await apiClient.post<ApiResponse>('/signin', { email, password })
+      const response = await apiClient.post<ApiResponse>('/signin', { email, password })
 
-        if (response.data.status === "error") {
-            throw new ApiError(
-                response.data.message || 'Sign in failed',
-                response.status,
-                response.data.errors
-            )
-        }
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || 'Sign in failed',
+          response.status,
+          response.data.errors
+        )
+      }
 
-        if (response.data.data.token) {
-            localStorage.setItem('authToken', response.data.data.token)
-        }
+      if (response.data.data.token) {
+        Cookies.set('authToken', response.data.data.token, { expires: 7 });
+      }
 
-        return response.data.data
+      return response.data.data
     } catch (error) {
-        handleApiError(error)
+      handleApiError(error)
     }
- },
+  },
 
-   /**
-    * Sign out user
-    */
-   signOut: async (): Promise<void> => {
-    try {
-        await apiClient.post('/signout')
-    } catch (error) {
-        console.error('Sign out error:', error)
-    } finally {
-        localStorage.removeItem('authToken')
-    }
-   },
-
-   /**
-    * Request password reset
+  /**
+   * Sign out user
    */
+  signOut: async (): Promise<void> => {
+    try {
+      await apiClient.post('/signout')
+    } catch (error) {
+      console.error('Sign out error:', error)
+    } finally {
+      // Remove the cookie on sign out
+      Cookies.remove('authToken');
+    }
+  },
+
+  /**
+   * Request password reset
+  */
   requestPasswordReset: async (email: string) => {
     try {
-        const response = await apiClient.post<ApiResponse>(
-            '/forgot-password',
-            { email }
-        )
+      const response = await apiClient.post<ApiResponse>(
+        '/forgot-password',
+        { email }
+      )
 
-        if (response.data.status === "error") {
-            throw new ApiError(
-                response.data.message || "Failed to request password reset",
-                response.status
-            )
-        }
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to request password reset",
+          response.status
+        )
+      }
     } catch (error) {
-        handleApiError(error)
+      handleApiError(error)
     }
   },
 
   /**
    * Reset password with token
   */
- resetPassword: async (token: string, newPassword: string) => {
+  resetPassword: async (token: string, newPassword: string) => {
     try {
-        const response = await apiClient.post<ApiResponse>(
-            '/reset-password',
-            { token, password: newPassword}
-        )
+      const response = await apiClient.post<ApiResponse>(
+        '/reset-password',
+        { token, password: newPassword}
+      )
 
-        if (response.data.status === "error") {
-            throw new ApiError(
-                response.data.message || 'Failed to reset password',
-                response.status
-            )
-        }
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || 'Failed to reset password',
+          response.status
+        )
+      }
     } catch (error) {
-        handleApiError(error)
+      handleApiError(error)
     }
- }
+  }
 };
 
 

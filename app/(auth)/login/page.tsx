@@ -101,7 +101,7 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Social Signup Buttons */}
-          <div className="space-y-3">
+          {/* <div className="space-y-3">
             <Button
               variant={"outline"}
               className="w-full bg-transparent"
@@ -131,7 +131,7 @@ export default function LoginPage() {
                 Or continue with email
               </span>
             </div>
-          </div>
+          </div> */}
 
           {/* Login Form */}
           <Form {...form}>

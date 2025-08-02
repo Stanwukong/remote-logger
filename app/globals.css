@@ -124,3 +124,9 @@
 .font-mono {
   font-family: var(--font-mono);
 }
+
+
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
