@@ -16,8 +16,8 @@ export default function LandingPage() {
       <SocialProof />
       <Features />
       <Integrations />
-      <Pricing />
-      <FAQ />
+      {/* <Pricing /> */}
+      {/* <FAQ /> */}
       <Newsletter />
       <Footer />
     </div>

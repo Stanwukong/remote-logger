@@ -49,7 +49,7 @@ export function Footer() {
               <span className="font-semibold text-lg">LogHive</span>
             </div>
             <p className="text-muted-foreground text-sm">
-              Where your logs swarm into <span className="font-semibold hover:text-white hover:cursor-pointer">Insight</span>.
+              Where your logs swarm into <span className="font-semibold hover:text-black dark:hover:text-white hover:cursor-pointer">Insight</span>.
             </p>
             <div className="flex space-x-4">
               <Button variant="ghost" size="icon">

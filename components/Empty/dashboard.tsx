@@ -28,7 +28,7 @@ const EmptyDashboardPage = () => {
 
       <EmptyState
         icon={FolderPlus}
-        title="Welcome to RemoteLogger!"
+        title="Welcome to LogHive!"
         description="Get started by creating your first project. Once you have projects set up, you'll see comprehensive analytics, error tracking, and performance metrics right here."
       >
         <div className="space-y-4">

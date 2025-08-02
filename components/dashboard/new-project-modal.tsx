@@ -429,7 +429,7 @@ export function NewProjectModal() {
                     <p className="font-medium mb-2">Next Steps:</p>
                     <ul className="space-y-1 text-muted-foreground">
                       <li>
-                        • Install the RemoteLogger SDK in your application
+                        • Install the LogHive SDK in your application
                       </li>
                       <li>• Configure it with your Project ID and API Key</li>
                       <li>• Start sending logs to monitor your application</li>
