@@ -1,8 +1,8 @@
-### ✅ RemoteLogger Frontend - `README.md`
+### ✅ LogHive Frontend - `README.md`
 
-# RemoteLogger Frontend
+# LogHive Frontend
 
-**RemoteLogger** is a full-stack, AI-enhanced logging and alerting platform for developers. This repository contains the **frontend application**, built with **Next.js** and **TailwindCSS**, that enables users to view logs, configure alerts, and review AI-generated insights.
+**LogHive** is a full-stack, AI-enhanced logging and alerting platform for developers. This repository contains the **frontend application**, built with **Next.js** and **TailwindCSS**, that enables users to view logs, configure alerts, and review AI-generated insights.
 
 ## 🌐 Live Demo
 Coming soon...
@@ -15,8 +15,8 @@ Coming soon...
 
 ## 📦 Setup
 ```bash
-git clone https://github.com/Stanwukong/remote-logger-frontend.git
-cd remote-logger-frontend
+git clone https://github.com/Stanwukong/loghive.git
+cd loghive
 npm install
 ```
 
@@ -51,6 +51,6 @@ npm run dev
 
 ## 👀 See Also
 
-* [RemoteLogger Backend](https://github.com/Stanwukong/logger_backend)
+* [LogHive Backend](https://github.com/Stanwukong/logger_backend)
 
 

@@ -1,8 +1,14 @@
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Check, Shield, Globe, Clock } from "lucide-react"
-import Link from "next/link"
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Check, Shield, Globe, Clock } from "lucide-react";
+import Link from "next/link";
 
 const plans = [
   {
@@ -10,38 +16,83 @@ const plans = [
     description: "Perfect for personal projects and small teams",
     price: "Free",
     period: "forever",
-    features: ["Up to 10,000 logs/month", "7-day log retention", "Basic alerting", "Email support", "1 project"],
+    features: [
+      "Up to 10,000 logs/month",
+      "7-day log retention",
+      "Basic alerting",
+      "Email support",
+      "1 project",
+    ],
     buttonText: "Get Started",
     buttonVariant: "outline" as const,
-    popular: false
+    popular: false,
   },
   {
     name: "Professional",
     description: "For growing teams and production applications",
     price: "$29",
     period: "/month",
-    features: ["Up to 1M logs/month", "30-day log retention", "Advanced alerting & notifications", "Priority support", "Unlimited projects", "Team collaboration", "API access", "Custom dashboards"],
+    features: [
+      "Up to 1M logs/month",
+      "30-day log retention",
+      "Advanced alerting & notifications",
+      "Priority support",
+      "Unlimited projects",
+      "Team collaboration",
+      "API access",
+      "Custom dashboards",
+    ],
     buttonText: "Start Free Trial",
     buttonVariant: "default" as const,
-    popular: true
+    popular: true,
+  },
+  {
+    name: "Team",
+    description: "For large teams with advanced requirements",
+    price: "$99",
+    period: "/month",
+    features: [
+      "Up to 10M logs/month",
+      "90-day log retention",
+      "Advanced security & compliance",
+      "Priority support",
+      "Team management",
+      "Custom integrations",
+      "Advanced analytics",
+      "Role-based access control",
+    ],
+    buttonText: "Start Free Trial",
+    buttonVariant: "outline" as const,
+    popular: false,
   },
   {
     name: "Enterprise",
     description: "For large organizations with custom needs",
     price: "Custom",
     period: "pricing",
-    features: ["Unlimited logs", "Custom retention periods", "Advanced security & compliance", "24/7 dedicated support", "On-premise deployment", "Custom integrations", "SLA guarantees", "Training & onboarding"],
+    features: [
+      "Unlimited logs",
+      "Custom retention periods",
+      "Enterprise security & compliance",
+      "24/7 dedicated support",
+      "On-premise deployment",
+      "Custom integrations",
+      "SLA guarantees",
+      "Training & onboarding",
+      "Multi-region deployment",
+      "Dedicated customer success manager",
+    ],
     buttonText: "Contact Sales",
     buttonVariant: "outline" as const,
-    popular: false
-  }
-]
+    popular: false,
+  },
+];
 
 const allPlanFeatures = [
   { icon: Shield, label: "SOC 2 Compliance", color: "text-green-500" },
   { icon: Globe, label: "Global CDN", color: "text-blue-500" },
   { icon: Clock, label: "99.9% Uptime SLA", color: "text-purple-500" },
-]
+];
 
 export function Pricing() {
   return (
@@ -56,12 +107,19 @@ export function Pricing() {
         </p>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-[90rem] mx-auto">
         {plans.map((plan) => (
-          <Card key={plan.name} className={`border-border/50 hover:shadow-lg transition-shadow ${plan.popular ? 'border-primary/50 shadow-lg relative' : ''}`}>
+          <Card
+            key={plan.name}
+            className={`border-border/50 hover:shadow-lg transition-shadow ${
+              plan.popular ? "border-primary/50 shadow-lg relative" : ""
+            }`}
+          >
             {plan.popular && (
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                <Badge className="bg-primary text-primary-foreground">Most Popular</Badge>
+                <Badge className="bg-primary text-primary-foreground">
+                  Most Popular
+                </Badge>
               </div>
             )}
             <CardHeader>
@@ -69,7 +127,9 @@ export function Pricing() {
               <CardDescription>{plan.description}</CardDescription>
               <div className="text-3xl font-bold mt-4">
                 {plan.price}
-                <span className="text-base font-normal text-muted-foreground ml-2">{plan.period}</span>
+                <span className="text-base font-normal text-muted-foreground ml-2">
+                  {plan.period}
+                </span>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -81,7 +141,13 @@ export function Pricing() {
                   </li>
                 ))}
               </ul>
-              <Button className={`w-full ${plan.buttonVariant === 'outline' ? 'bg-transparent' : ''}`} variant={plan.buttonVariant} asChild>
+              <Button
+                className={`w-full ${
+                  plan.buttonVariant === "outline" ? "bg-transparent" : ""
+                }`}
+                variant={plan.buttonVariant}
+                asChild
+              >
                 <Link href="/dashboard">{plan.buttonText}</Link>
               </Button>
             </CardContent>
@@ -101,5 +167,5 @@ export function Pricing() {
         </div>
       </div>
     </section>
-  )
+  );
 }

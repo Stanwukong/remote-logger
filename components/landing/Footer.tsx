@@ -49,7 +49,7 @@ export function Footer() {
               <span className="font-semibold text-lg">LogHive</span>
             </div>
             <p className="text-muted-foreground text-sm">
-              Where your logs swarm into <span className="font-semibold hover:text-white hover:cursor-pointer">Insight</span>.
+              Where your logs swarm into <span className="font-semibold hover:text-black dark:hover:text-white hover:cursor-pointer">Insight</span>.
             </p>
             <div className="flex space-x-4">
               <Button variant="ghost" size="icon">
@@ -87,7 +87,7 @@ export function Footer() {
           <p>© 2025 LogHive. All rights reserved.</p>
           <div className="flex items-center space-x-4 mt-4 md:mt-0">
             <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
+              <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
               <span>Under construction</span>
             </div>
             <span>•</span>

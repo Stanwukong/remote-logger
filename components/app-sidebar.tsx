@@ -18,9 +18,11 @@ import {
   Settings,
   Code,
   HelpCircle,
+  Search,
+  AlertTriangle,
 } from "lucide-react";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
+import { Badge  } from "@/components/ui/badge";
 
 const navigationItems = [
   {
@@ -32,7 +34,20 @@ const navigationItems = [
     title: "Projects",
     url: "/projects",
     icon: Folder,
+    badge: "12"
   },
+  {
+    title: "Logs Explorer",
+    url: "/logs",
+    icon: Search
+  },
+  {
+    title: "Alerts",
+    url: "/alerts",
+    icon: AlertTriangle,
+    badge: "3",
+    badgeVariants: "destructive" as const
+  }
 ];
 
 const projectItems = [
@@ -76,14 +91,14 @@ const resourceItems = [
 
 export function AppSidebar() {
   return (
-    <Sidebar className="border-r border-border/40">
+    <Sidebar className="border-r border-border/40 ">
       <SidebarHeader className="border-b border-border/40 p-4">
         <div className="flex items-center space-x-2">
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
             <Activity className="w-5 h-5 text-primary-foreground" />
           </div>
           <div>
-            <h2 className="font-semibold text-lg">RemoteLogger</h2>
+            <h2 className="font-semibold text-lg">LogHive</h2>
             <p className="text-xs text-muted-foreground">Developer Console</p>
           </div>
         </div>
