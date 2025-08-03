@@ -9,7 +9,7 @@ import Link from "next/link";
 interface ProjectCardData {
   name: string;
   status: "healthy" | "warning" | "critical";
-  logs: string;
+  logCount: number;
   errors: number;
   uptime: string;
   lastActivity: string;
@@ -55,8 +55,8 @@ export function ProjectsTabContent({ projects }: ProjectsTabContentProps) {
               <CardContent className="space-y-3">
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div>
-                    <span className="text-muted-foreground">Logs (24h)</span>
-                    <div className="font-semibold">{project.logs}</div>
+                    <span className="text-muted-foreground">Logs</span>
+                    <div className="font-semibold">{project.logCount}</div>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Errors</span>

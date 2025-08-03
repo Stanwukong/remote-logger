@@ -1,47 +1,32 @@
 // src/app/dashboard/page.tsx
 "use client";
 
-// Import existing custom components
 import { SystemStatus } from "@/components/system-status";
 import { RealtimeLogStream } from "@/components/realtime-log-stream";
 import { QuickActions } from "@/components/quick-actions";
 
-// Import the newly created dashboard sub-components
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { KeyMetricsGrid, defaultKeyMetrics } from "@/components/dashboard/key-metrics-grid";
 import { PerformanceMetricsSection, defaultPerformanceMetrics } from "@/components/dashboard/performance-metrics-section";
 import { OverviewTabContent, defaultLogVolumeChartData, defaultErrorDistributionChartData } from "@/components/dashboard/overview-tab-content";
 import { AlertsTabContent, defaultActiveAlerts, defaultAlertSummary, defaultAlertRulesSummary } from "@/components/dashboard/alerts-tab-content";
-import { ProjectsTabContent, defaultProjectsData } from "@/components/dashboard/projects-tab-content";
+import { ProjectsTabContent } from "@/components/dashboard/projects-tab-content";
 import { AnalyticsTabContent, defaultLogLevelsChartData, defaultResponseTimeChartData, defaultTopErrorSources, defaultServicePerformance, defaultUsageStatistics } from "@/components/dashboard/analytics-tab-content";
 import { DashboardTabs } from "@/components/dashboard/dashboard-tabs";
 import { useRouter } from "next/navigation";
 import EmptyProjectsPage from "@/components/Empty/dashboard";
-import { useEffect, useState } from "react";
+import { useProjects } from "@/hooks/project.hooks";
 
 
 export default function DashboardPage() {
-  const [hasProjects, setHasProjects] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
+  const { data: projects, isLoading, isError } = useProjects()
   const router = useRouter()
-  // In a real application, you would fetch data here (e.g., using React Query, SWR, or Next.js data fetching)
-  // and pass it down as props to the respective components.
+  
+  const hasProjects = projects && projects.length > 0;
 
-  // Simulate loading and checking for projects
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      // Simulate checking if user has projects
-      // In real app, this would be an API call
-      setHasProjects(false) // Set to false to show empty state
-      setIsLoading(false)
-    }, 1000)
-
-    return () => clearTimeout(timer)
-  }, [])
 
   const handleRefresh = () => {
     router.refresh()
-    // Implement data re-fetching logic here
   };
 
   const handleExport = () => {
@@ -63,7 +48,7 @@ export default function DashboardPage() {
     )
   }
 
-  if (!hasProjects) {
+  if (isError || !hasProjects) {
     return <EmptyProjectsPage/>
   }
 
@@ -103,7 +88,7 @@ export default function DashboardPage() {
           />
         }
         projectsContent={
-          <ProjectsTabContent projects={defaultProjectsData} />
+          <ProjectsTabContent projects={projects} />
         }
         analyticsContent={
           <AnalyticsTabContent

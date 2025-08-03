@@ -39,6 +39,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
+import { signupUser } from "@/services/auth.service";
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -74,7 +75,9 @@ export default function SignUpPage() {
     setIsLoading(true);
 
     try {
-      // await signupUser(values);
+      const res = await signupUser(values);
+
+      console.log(res)
 
       toast.success("Account created successfully!");
       router.push("/dashboard");

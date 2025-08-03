@@ -21,6 +21,7 @@ export const projectService = {
         }
       });
 
+
       const response = await apiClient.get<ApiResponse<Project[]>>(
         `/projects?${params.toString()}`
       );

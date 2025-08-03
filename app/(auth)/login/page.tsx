@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import { signinUser } from "@/services/auth.service";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -65,10 +66,10 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      // await signinUser(values);
+      await signinUser(values.email, values.password);
 
       toast.success("You've been successfuly logged in.");
-      // router.push("/dashboard");
+      router.push("/dashboard");
     } catch (error) {
       toast.error(`Something went wrong. Please try again. ${error}`);
     }

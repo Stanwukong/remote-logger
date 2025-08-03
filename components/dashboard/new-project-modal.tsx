@@ -16,45 +16,34 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Plus, Copy, Check, Key, Folder, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
-
-interface ProjectCreationResult {
-  projectId: string;
-  apiKey: string;
-  name: string;
-  environment: string;
-  description?: string;
-}
+import { useCreateProject } from "@/hooks/project.hooks";
 
 export function NewProjectModal() {
+  const {
+    mutateAsync: createProject,
+    isPending,
+    isError,
+    data: createdProjectData,
+    reset: resetMutation,
+  } = useCreateProject();
+
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<"form" | "success">("form");
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    environment: "",
+    // environment: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [createdProject, setCreatedProject] =
-    useState<ProjectCreationResult | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
-
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -67,9 +56,9 @@ export function NewProjectModal() {
       newErrors.name = "Project name must be less than 50 characters";
     }
 
-    if (!formData.environment) {
-      newErrors.environment = "Environment is required";
-    }
+    // if (!formData.environment) {
+    //   newErrors.environment = "Environment is required";
+    // }
 
     if (formData.description && formData.description.length > 200) {
       newErrors.description = "Description must be less than 200 characters";
@@ -81,38 +70,13 @@ export function NewProjectModal() {
 
   const handleClose = () => {
     setOpen((prev) => !prev);
-    // Reset form after modal closes
     setTimeout(() => {
       setStep("form");
-      setFormData({ name: "", description: "", environment: "" });
+      setFormData({ name: "", description: "" });
       setErrors({});
-      setCreatedProject(null);
       setCopiedField(null);
+      resetMutation();
     }, 200);
-  };
-
-  const generateProjectId = (name: string) => {
-    return (
-      name
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, "")
-        .replace(/\s+/g, "-")
-        .replace(/-+/g, "-")
-        .trim() +
-      "-" +
-      Math.random().toString(36).substr(2, 6)
-    );
-  };
-
-  const generateApiKey = () => {
-    const prefix = "rl_";
-    const chars =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let result = prefix;
-    for (let i = 0; i < 32; i++) {
-      result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return result;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -122,35 +86,25 @@ export function NewProjectModal() {
       return;
     }
 
-    setLoading(true);
-
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      const projectId = generateProjectId(formData.name);
-      const apiKey = generateApiKey();
-
-      const newProject: ProjectCreationResult = {
-        projectId,
-        apiKey,
-        name: formData.name,
-        environment: formData.environment,
+      const newProject = await createProject({
+        ...formData,
         description: formData.description || undefined,
-      };
-
-      setCreatedProject(newProject);
-      setStep("success");
-
-      toast.success("Project created successfully", {
-        description: `${formData.name} is ready to receive logs.`,
       });
+
+      if (newProject) {
+        toast.success("Project created successfully", {
+          description: `${newProject.name} is ready to receive logs.`,
+        });
+      } else {
+        throw new Error("Project is undefined");
+      }
+
+      setStep("success");
     } catch (error) {
       toast.error("Error creating project", {
-        description: `Error: ${error}`,
+        description: `An error occurred while creating the project.`,
       });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -164,14 +118,13 @@ export function NewProjectModal() {
       });
     } catch (error) {
       toast("Failed to copy", {
-          description: `Error: ${error}`,
+        description: `Error: ${error}`,
       });
     }
   };
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: "" }));
     }
@@ -195,8 +148,8 @@ export function NewProjectModal() {
               </DialogTitle>
               <DialogDescription>
                 Set up a new logging project to start monitoring your
-                application. You&apos;ll receive a unique Project ID and API key to
-                integrate with your app.
+                application. You&apos;ll receive a unique Project ID and API key
+                to integrate with your app.
               </DialogDescription>
             </DialogHeader>
 
@@ -247,61 +200,14 @@ export function NewProjectModal() {
                   {formData.description.length}/200 characters
                 </div>
               </div>
-
-              <div className="grid gap-2">
-                <Label
-                  htmlFor="environment"
-                  className="flex items-center gap-1"
-                >
-                  Environment <span className="text-red-500">*</span>
-                </Label>
-                <Select
-                  value={formData.environment}
-                  onValueChange={(value) =>
-                    handleInputChange("environment", value)
-                  }
-                >
-                  <SelectTrigger
-                    className={errors.environment ? "border-red-500" : ""}
-                  >
-                    <SelectValue placeholder="Select environment" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="development">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                        Development
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="staging">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
-                        Staging
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="production">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                        Production
-                      </div>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.environment && (
-                  <div className="flex items-center gap-1 text-sm text-red-500">
-                    <AlertCircle className="w-3 h-3" />
-                    {errors.environment}
-                  </div>
-                )}
-              </div>
             </div>
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={handleClose}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={loading}>
-                {loading ? (
+              <Button type="submit" disabled={isPending}>
+                {isPending ? (
                   <>
                     <div className="w-4 h-4 mr-2 animate-spin rounded-full border-2 border-current border-t-transparent" />
                     Creating...
@@ -324,8 +230,8 @@ export function NewProjectModal() {
               </DialogTitle>
               <DialogDescription>
                 Your project has been created and is ready to receive logs. Save
-                these credentials securely - you&apos;ll need them to integrate with
-                your application.
+                these credentials securely - you&apos;ll need them to integrate
+                with your application.
               </DialogDescription>
             </DialogHeader>
 
@@ -333,30 +239,13 @@ export function NewProjectModal() {
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg">
-                    {createdProject?.name}
+                    {createdProjectData?.id}
                   </CardTitle>
-                  <div className="flex items-center gap-2">
-                    <Badge
-                      variant={
-                        createdProject?.environment === "production"
-                          ? "default"
-                          : "secondary"
-                      }
-                    >
-                      {createdProject?.environment}
-                    </Badge>
-                    <Badge
-                      variant="outline"
-                      className="text-green-600 border-green-200"
-                    >
-                      Active
-                    </Badge>
-                  </div>
                 </CardHeader>
-                {createdProject?.description && (
+                {createdProjectData?.description && (
                   <CardContent className="pt-0">
                     <CardDescription>
-                      {createdProject.description}
+                      {createdProjectData.description}
                     </CardDescription>
                   </CardContent>
                 )}
@@ -367,7 +256,7 @@ export function NewProjectModal() {
                   <Label className="text-sm font-medium">Project ID</Label>
                   <div className="flex items-center gap-2">
                     <Input
-                      value={createdProject?.projectId || ""}
+                      value={createdProjectData?.id || ""}
                       readOnly
                       className="font-mono text-sm"
                     />
@@ -376,7 +265,7 @@ export function NewProjectModal() {
                       variant="outline"
                       onClick={() =>
                         copyToClipboard(
-                          createdProject?.projectId || "",
+                          createdProjectData?.id || "",
                           "Project ID"
                         )
                       }
@@ -397,7 +286,7 @@ export function NewProjectModal() {
                   </Label>
                   <div className="flex items-center gap-2">
                     <Input
-                      value={createdProject?.apiKey || ""}
+                      value={createdProjectData?.apiKey || ""}
                       readOnly
                       className="font-mono text-sm"
                       type="password"
@@ -406,7 +295,10 @@ export function NewProjectModal() {
                       size="sm"
                       variant="outline"
                       onClick={() =>
-                        copyToClipboard(createdProject?.apiKey || "", "API Key")
+                        copyToClipboard(
+                          createdProjectData?.apiKey || "",
+                          "API Key"
+                        )
                       }
                     >
                       {copiedField === "API Key" ? (
@@ -428,9 +320,7 @@ export function NewProjectModal() {
                   <div className="text-sm">
                     <p className="font-medium mb-2">Next Steps:</p>
                     <ul className="space-y-1 text-muted-foreground">
-                      <li>
-                        • Install the LogHive SDK in your application
-                      </li>
+                      <li>• Install the LogHive SDK in your application</li>
                       <li>• Configure it with your Project ID and API Key</li>
                       <li>• Start sending logs to monitor your application</li>
                     </ul>
