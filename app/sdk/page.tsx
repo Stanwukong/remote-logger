@@ -65,12 +65,12 @@ export default function SDKPage() {
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <Code className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-semibold">LogHive SDK</span>
+              <span className="text-xl font-semibold">Monita</span>
             </Link>
             <div className="flex items-center space-x-2 ml-4">
               <Badge variant="secondary" className="text-xs">
                 <Package className="w-3 h-3 mr-1" />
-                v3.1.0
+                v1.0.1
               </Badge>
               <Badge variant="outline" className="text-xs">
                 <Star className="w-3 h-3 mr-1 text-yellow-500" />
@@ -98,7 +98,7 @@ export default function SDKPage() {
               <Link href="/dashboard">Dashboard</Link>
             </Button>
             <Button asChild>
-              <Link href="/dashboard">Get Started</Link>
+              <Link href="/login">Get Started</Link>
             </Button>
           </div>
         </div>
@@ -112,7 +112,7 @@ export default function SDKPage() {
             Zero-Config Auto-Instrumentation
           </Badge>
           <h1 className="text-5xl font-bold tracking-tight mb-6 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-            LogHive SDK
+            Monita SDK
             <br />
             <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
               Intelligent Logging
@@ -186,7 +186,7 @@ export default function SDKPage() {
               </Link>
             </Button>
             <Button size="lg" variant="ghost" className="text-base" asChild>
-              <Link href="https://github.com/loghive/sdk" target="_blank">
+              <Link href="https://github.com/Stanwukong/loghive-sdk" target="_blank">
                 <Github className="mr-2 w-4 h-4" />
                 View on GitHub
               </Link>
@@ -301,7 +301,7 @@ export default function SDKPage() {
               <Play className="w-3 h-3 mr-1" />
               Interactive Demo
             </Badge>
-            <h2 className="text-3xl font-bold mb-4">Try LogHive SDK Live</h2>
+            <h2 className="text-3xl font-bold mb-4">Try Monita Live</h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               Experience auto-instrumentation in action. Trigger events and see real-time capture.
             </p>
@@ -357,11 +357,11 @@ export default function SDKPage() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <CodeBlock language="bash" code="npm install loghive-sdk" showCopy title="Terminal" />
+                      <CodeBlock language="bash" code="npm install monita" showCopy title="Terminal" />
                       <div className="flex gap-2 mt-3 text-sm text-muted-foreground">
                         <span>Or:</span>
-                        <code className="bg-muted px-1 rounded">yarn add loghive-sdk</code>
-                        <code className="bg-muted px-1 rounded">pnpm add loghive-sdk</code>
+                        <code className="bg-muted px-1 rounded">yarn add monita</code>
+                        <code className="bg-muted px-1 rounded">pnpm add monita</code>
                       </div>
                     </CardContent>
                   </Card>
@@ -378,10 +378,10 @@ export default function SDKPage() {
                     <CardContent>
                       <CodeBlock
                         language="typescript"
-                        code={`import { LogHive } from "loghive-sdk";
+                        code={`import { Monita } from "monita";
 
 // Initialize with auto-instrumentation
-const logger = new LogHive({
+const logger = new Monita({
   apiKey: "your-api-key",
   projectId: "your-project-id",
   environment: "production",
@@ -517,9 +517,9 @@ logger.captureException(new Error("Something broke"), {
                     <CardContent>
                       <CodeBlock
                         language="typescript"
-                        code={`import { LogHive, LogLevel } from "loghive-sdk";
+                        code={`import { Monita, LogLevel } from "monita";
 
-const logger = new LogHive({
+const logger = new Monita({
   apiKey: "your-api-key",
   projectId: "your-project-id",
   
@@ -597,7 +597,7 @@ logger.captureException(new Error("Payment processing failed"), {
                     <CardContent>
                       <CodeBlock
                         language="typescript"
-                        code={`const logger = new LogHive({
+                        code={`const logger = new Monita({
   apiKey: "your-api-key",
   projectId: "your-project-id",
   
@@ -620,7 +620,7 @@ logger.captureException(new Error("Payment processing failed"), {
   
   // Error handling
   onError: (error) => {
-    console.warn('LogHive SDK error:', error);
+    console.warn('Monita SDK error:', error);
   },
 });`}
                         showCopy
@@ -691,11 +691,11 @@ logger.captureException(new Error("Payment processing failed"), {
                     <CardContent>
                       <CodeBlock
                         language="typescript"
-                        code={`import { LogHive } from "loghive-sdk";
+                        code={`import { Monita } from "monita";
 import React from "react";
 
 // Initialize SDK
-const logger = new LogHive({
+const logger = new Monita({
   apiKey: process.env.REACT_APP_MONITA_API_KEY,
   projectId: "my-react-app",
   environment: process.env.NODE_ENV,
@@ -720,7 +720,7 @@ class ErrorBoundary extends React.Component {
 }
 
 // Custom Hook for Context
-function useLogHiveContext(userId: string, userPlan: string) {
+function useMonitaContext(userId: string, userPlan: string) {
   React.useEffect(() => {
     logger.setContext({
       userId,
@@ -749,9 +749,9 @@ function useLogHiveContext(userId: string, userPlan: string) {
                       <CodeBlock
                         language="typescript"
                         code={`import { createApp } from 'vue';
-import { LogHive } from 'loghive-sdk';
+import { Monita } from 'monita';
 
-const logger = new LogHive({
+const logger = new Monita({
   apiKey: process.env.VUE_APP_MONITA_API_KEY,
   projectId: 'my-vue-app',
   environment: process.env.NODE_ENV,
@@ -771,7 +771,7 @@ app.config.errorHandler = (error, instance, info) => {
 // Composition API helper
 import { onMounted } from 'vue';
 
-export function useLogHive() {
+export function useMonita() {
   onMounted(() => {
     logger.addBreadcrumb('Component mounted', 'lifecycle');
   });
@@ -804,9 +804,9 @@ export function useLogHive() {
                       <CodeBlock
                         language="typescript"
                         code={`// app/layout.tsx (App Router)
-import { LogHive } from 'loghive-sdk';
+import { Monita } from 'monita';
 
-const logger = new LogHive({
+const logger = new Monita({
   apiKey: process.env.MONITA_API_KEY,
   projectId: 'my-nextjs-app',
   environment: process.env.NODE_ENV,
@@ -892,9 +892,9 @@ export async function GET(request: Request) {
                     <CardContent>
                       <CodeBlock
                         language="typescript"
-                        code={`import { LogHive, LogLevel } from "loghive-sdk";
+                        code={`import { Monita, LogLevel } from "monita";
 
-const devLogger = new LogHive({
+const devLogger = new Monita({
   apiKey: process.env.MONITA_DEV_API_KEY,
   projectId: "my-app-dev",
   environment: "development",
@@ -919,7 +919,7 @@ const devLogger = new LogHive({
   debug: true, // Enable SDK debug logs
   
   onError: (error) => {
-    console.error('LogHive SDK error:', error);
+    console.error('Monita SDK error:', error);
   },
 });`}
                         showCopy
@@ -941,7 +941,7 @@ const devLogger = new LogHive({
                     <CardContent>
                       <CodeBlock
                         language="typescript"
-                        code={`const stagingLogger = new LogHive({
+                        code={`const stagingLogger = new Monita({
   apiKey: process.env.MONITA_STAGING_API_KEY,
   projectId: "my-app-staging",
   environment: "staging",
@@ -990,7 +990,7 @@ const devLogger = new LogHive({
                     <CardContent>
                       <CodeBlock
                         language="typescript"
-                        code={`const prodLogger = new LogHive({
+                        code={`const prodLogger = new Monita({
   apiKey: process.env.MONITA_PROD_API_KEY,
   projectId: "my-app-prod",
   environment: "production",
@@ -1363,7 +1363,7 @@ const devLogger = new LogHive({
             </Badge>
             <h2 className="text-3xl font-bold mb-4">What&apos;s Coming Next</h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Upcoming features and improvements to the LogHive SDK
+              Upcoming features and improvements to the Monita SDK
             </p>
           </div>
 
@@ -1475,7 +1475,7 @@ const devLogger = new LogHive({
               </CardHeader>
               <CardContent>
                 <Button variant="outline" className="w-full bg-transparent" asChild>
-                  <Link href="https://docs.loghive.com" target="_blank">
+                  <Link href="https://loghive.vercel.app/sdk" target="_blank">
                     View Documentation
                     <ExternalLink className="w-4 h-4 ml-2" />
                   </Link>
@@ -1493,7 +1493,7 @@ const devLogger = new LogHive({
               </CardHeader>
               <CardContent>
                 <Button variant="outline" className="w-full bg-transparent" asChild>
-                  <Link href="https://github.com/loghive/examples" target="_blank">
+                  <Link href="https://github.com/Stanwukong/loghive-sdk" target="_blank">
                     Browse Examples
                     <ExternalLink className="w-4 h-4 ml-2" />
                   </Link>
@@ -1519,7 +1519,7 @@ const devLogger = new LogHive({
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-md transition-shadow">
+            {/* <Card className="hover:shadow-md transition-shadow">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <MessageCircle className="w-5 h-5 text-purple-500" />
@@ -1535,7 +1535,7 @@ const devLogger = new LogHive({
                   </Link>
                 </Button>
               </CardContent>
-            </Card>
+            </Card> */}
 
             <Card className="hover:shadow-md transition-shadow">
               <CardHeader>
@@ -1547,7 +1547,7 @@ const devLogger = new LogHive({
               </CardHeader>
               <CardContent>
                 <Button variant="outline" className="w-full bg-transparent" asChild>
-                  <Link href="/changelog">
+                  <Link href="https://github.com/Stanwukong/loghive-sdk/blob/main/CHANGELOG.md" target="_blank">
                     View Changelog
                     <ExternalLink className="w-4 h-4 ml-2" />
                   </Link>
@@ -1565,7 +1565,7 @@ const devLogger = new LogHive({
               </CardHeader>
               <CardContent>
                 <Button variant="outline" className="w-full bg-transparent" asChild>
-                  <Link href="mailto:support@loghive.com">
+                  <Link href="mailto:stanleyajanaku@gmail.com">
                     Contact Support
                     <ExternalLink className="w-4 h-4 ml-2" />
                   </Link>
@@ -1583,7 +1583,7 @@ const devLogger = new LogHive({
           </Badge>
           <h2 className="text-3xl font-bold mb-4">Start Auto-Capturing in 30 Seconds</h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-8">
-            Join thousands of developers who trust LogHive SDK for comprehensive auto-instrumentation
+            Join thousands of developers who trust Monita SDK for comprehensive auto-instrumentation
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
             <Button size="lg" className="text-base" asChild>
@@ -1596,7 +1596,7 @@ const devLogger = new LogHive({
               Schedule Demo
             </Button>
             <Button size="lg" variant="ghost" className="text-base" asChild>
-              <Link href="https://github.com/loghive/sdk" target="_blank">
+              <Link href="https://github.com/Stanwukong/loghive-sdk" target="_blank">
                 <Github className="mr-2 w-4 h-4" />
                 Star on GitHub
               </Link>

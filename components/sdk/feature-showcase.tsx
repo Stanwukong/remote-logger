@@ -1,12 +1,31 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Search, Filter, Bell, BarChart3, Shield, Zap, Database, Clock } from "lucide-react"
-import { CodeBlock } from "./code-block"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Search,
+  Filter,
+  Bell,
+  BarChart3,
+  Shield,
+  Zap,
+  Database,
+  Clock,
+} from "lucide-react";
+import { CodeBlock } from "./code-block";
 
 export function FeatureShowcase() {
   return (
-    <Tabs defaultValue="search" className="w-full">
+    <Tabs
+      defaultValue="search"
+      className="w-full border-2 rounded-xl border-amber-400"
+    >
+      <p className="text-center w-full text-amber-600 animate-pulse">IN DEVELOPMENT</p>
       <TabsList className="grid w-full grid-cols-4 max-w-2xl mx-auto mb-8">
         <TabsTrigger value="search">Search & Filter</TabsTrigger>
         <TabsTrigger value="alerts">Smart Alerts</TabsTrigger>
@@ -22,20 +41,36 @@ export function FeatureShowcase() {
                 <Search className="w-5 h-5 text-blue-500" />
                 <span>Advanced Search</span>
               </CardTitle>
-              <CardDescription>Powerful query language with full-text search and filters</CardDescription>
+              <CardDescription>
+                Powerful query language with full-text search and filters
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div>
-                  <h4 className="font-semibold text-sm mb-2">Full-text Search</h4>
-                  <CodeBlock language="text" code='error AND database AND "connection timeout"' showCopy={false} />
+                  <h4 className="font-semibold text-sm mb-2">
+                    Full-text Search
+                  </h4>
+                  <CodeBlock
+                    language="text"
+                    code='error AND database AND "connection timeout"'
+                    showCopy={false}
+                  />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-sm mb-2">Field-specific Queries</h4>
-                  <CodeBlock language="text" code="level:error service:api-server userId:123" showCopy={false} />
+                  <h4 className="font-semibold text-sm mb-2">
+                    Field-specific Queries
+                  </h4>
+                  <CodeBlock
+                    language="text"
+                    code="level:error service:api-server userId:123"
+                    showCopy={false}
+                  />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-sm mb-2">Time Range Filters</h4>
+                  <h4 className="font-semibold text-sm mb-2">
+                    Time Range Filters
+                  </h4>
                   <CodeBlock
                     language="text"
                     code="timestamp:[2024-01-01 TO 2024-01-31] AND level:warn"
@@ -52,7 +87,9 @@ export function FeatureShowcase() {
                 <Filter className="w-5 h-5 text-green-500" />
                 <span>Smart Filtering</span>
               </CardTitle>
-              <CardDescription>Filter logs by any field with autocomplete suggestions</CardDescription>
+              <CardDescription>
+                Filter logs by any field with autocomplete suggestions
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
@@ -67,7 +104,8 @@ export function FeatureShowcase() {
                   <Badge variant="secondary">region:us-east-1</Badge>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Combine multiple filters with AND/OR logic. Save frequently used filter combinations.
+                  Combine multiple filters with AND/OR logic. Save frequently
+                  used filter combinations.
                 </p>
               </div>
             </CardContent>
@@ -83,7 +121,9 @@ export function FeatureShowcase() {
                 <Bell className="w-5 h-5 text-orange-500" />
                 <span>Intelligent Alerts</span>
               </CardTitle>
-              <CardDescription>ML-powered anomaly detection and custom thresholds</CardDescription>
+              <CardDescription>
+                ML-powered anomaly detection and custom thresholds
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <CodeBlock
@@ -121,7 +161,9 @@ notifications:
                 <Zap className="w-5 h-5 text-purple-500" />
                 <span>Multi-Channel Notifications</span>
               </CardTitle>
-              <CardDescription>Send alerts to Slack, email, webhooks, and more</CardDescription>
+              <CardDescription>
+                Send alerts to Slack, email, webhooks, and more
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -131,7 +173,9 @@ notifications:
                   </div>
                   <div>
                     <h4 className="font-semibold text-sm">Slack Integration</h4>
-                    <p className="text-xs text-muted-foreground">Real-time alerts to your team channels</p>
+                    <p className="text-xs text-muted-foreground">
+                      Real-time alerts to your team channels
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3 p-3 border rounded-lg">
@@ -139,8 +183,12 @@ notifications:
                     <span className="text-blue-500 font-bold text-sm">@</span>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-sm">Email Notifications</h4>
-                    <p className="text-xs text-muted-foreground">Customizable email templates</p>
+                    <h4 className="font-semibold text-sm">
+                      Email Notifications
+                    </h4>
+                    <p className="text-xs text-muted-foreground">
+                      Customizable email templates
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3 p-3 border rounded-lg">
@@ -149,7 +197,9 @@ notifications:
                   </div>
                   <div>
                     <h4 className="font-semibold text-sm">Webhooks</h4>
-                    <p className="text-xs text-muted-foreground">Integrate with PagerDuty, Opsgenie, etc.</p>
+                    <p className="text-xs text-muted-foreground">
+                      Integrate with PagerDuty, Opsgenie, etc.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -166,27 +216,40 @@ notifications:
                 <BarChart3 className="w-5 h-5 text-blue-500" />
                 <span>Real-time Analytics</span>
               </CardTitle>
-              <CardDescription>Comprehensive metrics and trend analysis</CardDescription>
+              <CardDescription>
+                Comprehensive metrics and trend analysis
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center p-3 bg-muted/30 rounded-lg">
                     <div className="text-2xl font-bold text-blue-500">1.2M</div>
-                    <div className="text-xs text-muted-foreground">Logs Today</div>
+                    <div className="text-xs text-muted-foreground">
+                      Logs Today
+                    </div>
                   </div>
                   <div className="text-center p-3 bg-muted/30 rounded-lg">
                     <div className="text-2xl font-bold text-red-500">23</div>
-                    <div className="text-xs text-muted-foreground">Active Errors</div>
+                    <div className="text-xs text-muted-foreground">
+                      Active Errors
+                    </div>
                   </div>
                 </div>
                 <div className="h-24 bg-muted/30 rounded-lg flex items-end justify-center space-x-1 p-4">
-                  {[40, 60, 30, 80, 45, 70, 55, 90, 35, 65].map((height, index) => (
-                    <div key={index} className="bg-blue-500/60 rounded-t flex-1" style={{ height: `${height}%` }} />
-                  ))}
+                  {[40, 60, 30, 80, 45, 70, 55, 90, 35, 65].map(
+                    (height, index) => (
+                      <div
+                        key={index}
+                        className="bg-blue-500/60 rounded-t flex-1"
+                        style={{ height: `${height}%` }}
+                      />
+                    )
+                  )}
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Track log volume, error rates, response times, and custom metrics over time.
+                  Track log volume, error rates, response times, and custom
+                  metrics over time.
                 </p>
               </div>
             </CardContent>
@@ -198,7 +261,9 @@ notifications:
                 <Database className="w-5 h-5 text-green-500" />
                 <span>Custom Dashboards</span>
               </CardTitle>
-              <CardDescription>Build personalized views for your team</CardDescription>
+              <CardDescription>
+                Build personalized views for your team
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <CodeBlock
@@ -243,18 +308,26 @@ notifications:
                 <Clock className="w-5 h-5 text-purple-500" />
                 <span>High Performance</span>
               </CardTitle>
-              <CardDescription>Handle millions of logs with minimal latency</CardDescription>
+              <CardDescription>
+                Handle millions of logs with minimal latency
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center p-3 bg-muted/30 rounded-lg">
-                    <div className="text-2xl font-bold text-green-500">{"<50ms"}</div>
-                    <div className="text-xs text-muted-foreground">Ingestion Latency</div>
+                    <div className="text-2xl font-bold text-green-500">
+                      {"<50ms"}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Ingestion Latency
+                    </div>
                   </div>
                   <div className="text-center p-3 bg-muted/30 rounded-lg">
                     <div className="text-2xl font-bold text-blue-500">10M+</div>
-                    <div className="text-xs text-muted-foreground">Logs/Second</div>
+                    <div className="text-xs text-muted-foreground">
+                      Logs/Second
+                    </div>
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -281,7 +354,9 @@ notifications:
                 <Shield className="w-5 h-5 text-red-500" />
                 <span>Enterprise Security</span>
               </CardTitle>
-              <CardDescription>SOC 2 compliant with end-to-end encryption</CardDescription>
+              <CardDescription>
+                SOC 2 compliant with end-to-end encryption
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
@@ -307,7 +382,9 @@ notifications:
                 </div>
                 <div className="flex items-center space-x-3">
                   <div className="w-2 h-2 bg-green-500 rounded-full" />
-                  <span className="text-sm">Audit logs & compliance reports</span>
+                  <span className="text-sm">
+                    Audit logs & compliance reports
+                  </span>
                 </div>
               </div>
             </CardContent>
@@ -315,5 +392,5 @@ notifications:
         </div>
       </TabsContent>
     </Tabs>
-  )
+  );
 }
