@@ -47,11 +47,6 @@ export interface ErrorSummary {
   trend: "up" | "down" | "stable"
 }
 
-export interface MetricData {
-  timestamp: string
-  value: number
-  label?: string
-}
 
 export interface ChartDataPoint {
   timestamp: string

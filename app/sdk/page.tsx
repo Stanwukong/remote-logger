@@ -867,7 +867,7 @@ export async function GET(request: Request) {
                         </p>
                         <Badge variant="outline">
                           <Clock className="w-3 h-3 mr-1" />
-                          Coming in v2.2
+                          Coming soon.
                         </Badge>
                       </div>
                     </CardContent>

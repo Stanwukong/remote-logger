@@ -65,33 +65,77 @@ export type ProjectUpdateData = {
 
 // Filters for fetching a list of projects.
 export type ProjectFilters = {
-  isArchived?: boolean;
-  tag?: string;
+  includeInactive?: boolean;
+  dateRange?: any;
+  groupBy?: string;
 };
 
-// Summary of all projects.
-export type ProjectsSummary = {
-  totalProjects: number;
-  activeProjects: number;
-  archivedProjects: number;
-  projectsByTag: Record<string, number>;
+export interface ProjectsSummary {
+    totalProjects: number;
+    activeProjects: number;
+    inactiveProjects: number;
+    totalLogsOverall: number; // Total logs across all projects (from LogModel)
+    avgLogsPerProject: number; // Average logs per project
+    maxLogsPerProject: number; // Max logs per project
+    minLogsPerProject: number; // Min logs per project
+    totalActiveErrorLogs: number; // NEW: Error logs from the last hour
+    totalActiveProjects: number; // NEW: Projects with activity in last 24 hours
+}
+
+
+export interface ServicePerformance {
+  service: string;
+  responseTime: string;
+  status: "good" | "excellent" | "poor" | "warning" | "critical"; // Added more statuses for completeness
+}
+
+export interface UsageStatistics {
+  dailyLogVolume: string;
+  storageUsed: string;
+  apiRequests: string;
+  activeIntegrations: number;
+  quotaUsedPercentage: number;
+}
+
+export type ProjectsAnalytics = {
+  data: {
+    logVolumeChartData: ChartData;
+    errorDistributionChartData: ChartData;
+    logLevelsChartData: ChartData;
+    responseTimeChartData: ChartData;
+    topErrorSources: TopErrorSource[];
+    servicePerformance: ServicePerformance[];
+    usageStatistics: UsageStatistics;
+  };
+  meta?: {
+    generatedAt?: string;
+    responseTime: number;
+    cacheHit: boolean;
+    queryCount: number;
+  };
 };
 
-// Analytics data for projects.
-export type ProjectAnalytics = {
-  totalLogs: number;
-  activeProjects: number;
-  projects: {
-    projectId: string;
-    logCount: number;
-  }[];
-};
+export interface TopErrorSource {
+  source: string;
+  count: number;
+  percentage: number;
+}
 
 // Usage statistics for a single project.
 export type ProjectStats = {
   totalLogs: number;
   dailyLogCount: { date: string; count: number }[];
 };
+
+export interface ChartData {
+  labels: string[];
+  datasets: {
+    label: string;
+    data: number[];
+    backgroundColor?: string | string[];
+    borderColor?: string;
+  }[];
+}
 
 // Payload for bulk deletion.
 export type BulkDeletePayload = {

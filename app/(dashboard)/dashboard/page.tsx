@@ -1,55 +1,69 @@
 // src/app/dashboard/page.tsx
 "use client";
 
-// Import existing custom components
 import { SystemStatus } from "@/components/system-status";
-import { RealtimeLogStream } from "@/components/realtime-log-stream";
-import { QuickActions } from "@/components/quick-actions";
+// import { RealtimeLogStream } from "@/components/realtime-log-stream";
+// import { QuickActions } from "@/components/quick-actions";
 
-// Import the newly created dashboard sub-components
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
-import { KeyMetricsGrid, defaultKeyMetrics } from "@/components/dashboard/key-metrics-grid";
-import { PerformanceMetricsSection, defaultPerformanceMetrics } from "@/components/dashboard/performance-metrics-section";
-import { OverviewTabContent, defaultLogVolumeChartData, defaultErrorDistributionChartData } from "@/components/dashboard/overview-tab-content";
-import { AlertsTabContent, defaultActiveAlerts, defaultAlertSummary, defaultAlertRulesSummary } from "@/components/dashboard/alerts-tab-content";
-import { ProjectsTabContent, defaultProjectsData } from "@/components/dashboard/projects-tab-content";
-import { AnalyticsTabContent, defaultLogLevelsChartData, defaultResponseTimeChartData, defaultTopErrorSources, defaultServicePerformance, defaultUsageStatistics } from "@/components/dashboard/analytics-tab-content";
-import { DashboardTabs } from "@/components/dashboard/dashboard-tabs";
+import { KeyMetricsGrid } from "@/components/dashboard/key-metrics-grid";
+// import {
+//   PerformanceMetricsSection,
+//   defaultPerformanceMetrics,
+// } from "@/components/dashboard/performance-metrics-section";
+// import {
+//   OverviewTabContent,
+//   defaultLogVolumeChartData,
+//   defaultErrorDistributionChartData,
+// } from "@/components/dashboard/overview-tab-content";
+// import {
+//   AlertsTabContent,
+//   defaultActiveAlerts,
+//   defaultAlertSummary,
+//   defaultAlertRulesSummary,
+// } from "@/components/dashboard/alerts-tab-content";
+// import { ProjectsTabContent } from "@/components/dashboard/projects-tab-content";
+// import {
+//   AnalyticsTabContent,
+//   defaultLogLevelsChartData,
+//   defaultResponseTimeChartData,
+//   defaultTopErrorSources,
+//   defaultServicePerformance,
+//   defaultUsageStatistics,
+// } from "@/components/dashboard/analytics-tab-content";
+// import { DashboardTabs } from "@/components/dashboard/dashboard-tabs";
 import { useRouter } from "next/navigation";
 import EmptyProjectsPage from "@/components/Empty/dashboard";
-import { useEffect, useState } from "react";
-
+import { useDashboardData } from "@/hooks/dashboard.hook";
+import { HealthStatusWidget } from "@/components/ui/health-status-widget";
+// import { HealthStatusGrid } from "@/components/dashboard/health-status-grid";
 
 export default function DashboardPage() {
-  const [hasProjects, setHasProjects] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
-  const router = useRouter()
-  // In a real application, you would fetch data here (e.g., using React Query, SWR, or Next.js data fetching)
-  // and pass it down as props to the respective components.
+  const {
+    healthStatus,
+    metrics,
+    performanceMetrics,
+    performanceStatus,
+    hasData,
+    isLoading: projectsLoading,
+    isError,
+  } = useDashboardData();
 
-  // Simulate loading and checking for projects
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      // Simulate checking if user has projects
-      // In real app, this would be an API call
-      setHasProjects(false) // Set to false to show empty state
-      setIsLoading(false)
-    }, 1000)
-
-    return () => clearTimeout(timer)
-  }, [])
+  const router = useRouter();
+  // console.log(healthStatus, performanceStatus);
 
   const handleRefresh = () => {
-    router.refresh()
-    // Implement data re-fetching logic here
+    router.refresh();
   };
+
+  const newMetrics = [...(metrics ?? []), ...(performanceMetrics ?? [])];
 
   const handleExport = () => {
     console.log("Exporting dashboard data!");
     // Implement data export logic here
   };
 
-  if (isLoading) {
+  if (projectsLoading) {
     return (
       <div className="space-y-8 animate-pulse">
         <div className="h-8 bg-muted rounded w-48"></div>
@@ -60,33 +74,34 @@ export default function DashboardPage() {
         </div>
         <div className="h-96 bg-muted rounded"></div>
       </div>
-    )
+    );
   }
 
-  if (!hasProjects) {
-    return <EmptyProjectsPage/>
+  if (isError || !hasData) {
+    return <EmptyProjectsPage />;
   }
 
   return (
-    <div className="space-y-8 p-6 md:px-8 lg:p-10"> 
+    <div className="space-y-8 p-6 md:px-8 lg:p-10">
       {/* Header with Actions */}
       <DashboardHeader
         title="Dashboard"
         description="Welcome back! Here's what's happening with your applications."
         onRefresh={handleRefresh}
-        onExport={handleExport}// Example: link to a new project creation page
+        onExport={handleExport} // Example: link to a new project creation page
       />
 
       {/* System Status Banner */}
       <SystemStatus />
 
-      {/* Key Metrics Grid */}
-      <KeyMetricsGrid metrics={defaultKeyMetrics} />
+      <KeyMetricsGrid metrics={newMetrics} />
 
-      {/* Performance Metrics */}
-      <PerformanceMetricsSection metrics={defaultPerformanceMetrics} />
+      <div className="flex items-center gap-10 w-full">
+        <HealthStatusWidget message={healthStatus?.message} status={healthStatus?.status} details={healthStatus?.details}/>
+        <HealthStatusWidget {...performanceStatus} />
+      </div>
 
-      {/* Main Content Tabs */}
+      {/* Main Content Tabs
       <DashboardTabs
         overviewContent={
           <OverviewTabContent
@@ -94,7 +109,7 @@ export default function DashboardPage() {
             errorDistributionChartData={defaultErrorDistributionChartData}
           />
         }
-        liveLogsContent={<RealtimeLogStream />} 
+        liveLogsContent={<RealtimeLogStream />}
         alertsContent={
           <AlertsTabContent
             activeAlerts={defaultActiveAlerts}
@@ -102,9 +117,7 @@ export default function DashboardPage() {
             alertRulesSummary={defaultAlertRulesSummary}
           />
         }
-        projectsContent={
-          <ProjectsTabContent projects={defaultProjectsData} />
-        }
+        // projectsContent={<ProjectsTabContent projects={projects} />}
         analyticsContent={
           <AnalyticsTabContent
             logLevelsChartData={defaultLogLevelsChartData}
@@ -117,7 +130,7 @@ export default function DashboardPage() {
       />
 
       {/* Quick Actions */}
-      <QuickActions />
+      {/* <QuickActions /> */}
     </div>
   );
 }

@@ -4,6 +4,33 @@ import { ApiResponse } from "./auth.service";
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api/v1/";
 
+/**
+ * Helper function to get a cookie value by name.
+ * @param name The name of the cookie to retrieve.
+ * @returns The value of the cookie, or an empty string if not found.
+ */
+function getCookie(name: string): string {
+  if (typeof document === "undefined") return ""; // Return empty string if not in a browser environment
+  const nameEQ = name + "=";
+  const ca = document.cookie.split(';');
+  for (let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+  }
+  return "";
+}
+
+/**
+ * Helper function to remove a cookie by name.
+ * This works by setting the cookie's expiration to a past date.
+ * @param name The name of the cookie to remove.
+ */
+function removeCookie(name: string): void {
+  if (typeof document === "undefined") return; // Exit if not in a browser environment
+  document.cookie = name + '=; Max-Age=-99999999;';
+}
+
 export const apiClient = axios.create({
   baseURL: BASE_URL,
   timeout: 10000,
@@ -14,9 +41,10 @@ export const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("authToken");
+    // Get the auth token from cookies instead of localStorage
+    const token = getCookie("authToken");
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers.Authorization = `${token}`;
     }
     return config;
   },
@@ -27,7 +55,8 @@ apiClient.interceptors.response.use(
   (response: AxiosResponse<ApiResponse>) => response,
   (error: AxiosError<ApiResponse>) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem("authToken");
+      removeCookie("authToken");
+      // TODO: redirect the user to login page 
     }
     return Promise.reject(error);
   }

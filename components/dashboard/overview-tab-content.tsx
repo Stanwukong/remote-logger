@@ -14,7 +14,7 @@ interface ChartData {
   }[];
 }
 
-interface OverviewTabContentProps {
+export interface OverviewTabContentProps {
   logVolumeChartData: ChartData;
   errorDistributionChartData: ChartData;
   // ProjectHealthCard and AlertsOverview are assumed to fetch their own data or take no props

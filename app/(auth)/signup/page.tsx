@@ -21,13 +21,10 @@ import {
   Check,
   Eye,
   EyeOff,
-  Github,
-  Mail,
   Shield,
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import {
   Form,
   FormControl,
@@ -39,6 +36,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
+import { signupUser } from "@/services/auth.service";
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -59,22 +57,24 @@ export default function SignUpPage() {
     },
   });
 
-  const handleSocialSignup = async (provider: string) => {
-    setIsLoading(true);
+  // const handleSocialSignup = async (provider: string) => {
+  //   setIsLoading(true);
 
-    // Simulate social signup
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+  //   // Simulate social signup
+  //   await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    toast(`Creating account with ${provider}`);
+  //   toast(`Creating account with ${provider}`);
 
-    router.push("/dashboard");
-  };
+  //   router.push("/dashboard");
+  // };
 
   const onSubmit = async (values: z.infer<typeof signUpSchema>) => {
     setIsLoading(true);
 
     try {
-      // await signupUser(values);
+      const res = await signupUser(values);
+
+      console.log(res)
 
       toast.success("Account created successfully!");
       router.push("/dashboard");
