@@ -1,7 +1,7 @@
 import { ApiResponse } from "@/types/api";
 import { apiClient } from "./config";
 import { ApiError, handleApiError } from "./auth.service";
-import { BulkDeletePayload, Project, ProjectAnalytics, ProjectCreateData, ProjectFilters, ProjectsSummary, ProjectStats, ProjectUpdateData } from "@/types/project.types";
+import { BulkDeletePayload, Project, ProjectCreateData, ProjectFilters, ProjectsAnalytics, ProjectsSummary, ProjectStats, ProjectUpdateData } from "@/types/project.types";
 
 // ============================================
 // PROJECTS SERVICE
@@ -33,7 +33,7 @@ export const projectService = {
           response.data.errors
         );
       }
-      return response.data.data;
+      return response.data;
     } catch (error) {
       handleApiError(error);
     }
@@ -110,7 +110,7 @@ export const projectService = {
    */
   getProjectsAnalytics: async () => {
     try {
-      const response = await apiClient.get<ApiResponse<ProjectAnalytics>>(
+      const response = await apiClient.get<ApiResponse<ProjectsAnalytics>>(
         `/projects/analytics`
       );
       if (response.data.status === "error") {

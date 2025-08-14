@@ -12,7 +12,7 @@ import { queryClient } from "@/lib/query/client";
 // PROJECTS QUERY HOOKS
 // ============================================
 
-const queryKeys = {
+export const queryKeys = {
   all: ["projects"] as const,
   lists: (filters: ProjectFilters) =>
     [...queryKeys.all, "list", filters] as const,
@@ -105,16 +105,7 @@ export const useCreateProject = () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.summary() });
       queryClient.invalidateQueries({ queryKey: queryKeys.analytics() });
 
-      // Optionally, add the new project to the cache
-      queryClient.setQueryData(
-        queryKeys.lists({}),
-        (old: Project[] | undefined) => {
-          if (old) {
-            return [newProject, ...old];
-          }
-          return [newProject];
-        }
-      );
+      
     },
   });
 };

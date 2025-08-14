@@ -30,7 +30,6 @@ export function NewProjectModal() {
   const {
     mutateAsync: createProject,
     isPending,
-    isError,
     data: createdProjectData,
     reset: resetMutation,
   } = useCreateProject();
@@ -102,6 +101,7 @@ export function NewProjectModal() {
 
       setStep("success");
     } catch (error) {
+      console.log(error)
       toast.error("Error creating project", {
         description: `An error occurred while creating the project.`,
       });

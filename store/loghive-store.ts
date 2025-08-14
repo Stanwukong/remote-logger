@@ -3,6 +3,7 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
 interface LogHiveState {
+    currentUser: string | null
     currentProject: string | null;
     selectedTimeRange: '1h' | '24h' | '7d' | '30d';
     filterLevel: LogEntry['level'] | 'all';

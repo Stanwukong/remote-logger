@@ -5,3 +5,4 @@ export interface ApiResponse<T = any> {
     errors?: string[];
     meta?: any
 }
+

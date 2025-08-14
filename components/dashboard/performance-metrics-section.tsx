@@ -4,7 +4,7 @@ import { Progress } from "@/components/ui/progress";
 import { TrendingUp, TrendingDown, CheckCircle, Cpu, HardDrive, Network, Timer } from "lucide-react";
 
 // Define a type for each performance metric card's data
-interface PerformanceMetricCardData {
+export interface PerformanceMetricCardData {
   title: string;
   value: string;
   change: string;

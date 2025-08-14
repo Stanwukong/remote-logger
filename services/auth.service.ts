@@ -79,7 +79,7 @@ export const authService = {
   */
   signIn: async (email: string, password: string) => {
     try {
-      const response = await apiClient.post<ApiResponse>('/signin', { email, password })
+      const response = await apiClient.post<ApiResponse>('/login', { email, password })
 
       if (response.data.status === "error") {
         throw new ApiError(

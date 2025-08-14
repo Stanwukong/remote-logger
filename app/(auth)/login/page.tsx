@@ -19,13 +19,10 @@ import {
   ArrowRight,
   Eye,
   EyeOff,
-  Github,
-  Mail,
   Shield,
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import {
   Form,
   FormControl,
@@ -51,24 +48,26 @@ export default function LoginPage() {
     },
   });
 
-  const handleSocialSignup = async (provider: string) => {
-    setIsLoading(true);
+  // const handleSocialSignup = async (provider: string) => {
+  //   setIsLoading(true);
 
-    // Simulate social signup
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+  //   // Simulate social signup
+  //   await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    toast(`Creating account with ${provider}`);
+  //   toast(`Creating account with ${provider}`);
 
-    router.push("/dashboard");
-  };
+  //   router.push("/dashboard");
+  // };
 
   const onSubmit = async (values: z.infer<typeof signInSchema>) => {
     setIsLoading(true);
 
     try {
-      await signinUser(values.email, values.password);
+      const res = await signinUser(values.email, values.password);
 
-      toast.success("You've been successfuly logged in.");
+      console.log(res)
+      
+      toast.success("Login successful.");
       router.push("/dashboard");
     } catch (error) {
       toast.error(`Something went wrong. Please try again. ${error}`);
@@ -176,7 +175,7 @@ export default function LoginPage() {
                     <FormControl>
                       <div className="flex gap-2">
                         <Input
-                          placeholder="Create a strong password"
+                          placeholder="Enter your password"
                           {...field}
                           type={showPassword ? "text" : "password"}
                           disabled={isLoading}

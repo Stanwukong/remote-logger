@@ -6,10 +6,10 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 // Define a type for an individual project card
-interface ProjectCardData {
+export interface ProjectCardData {
   name: string;
   status: "healthy" | "warning" | "critical";
-  logCount: number;
+  logCount?: string;
   errors: number;
   uptime: string;
   lastActivity: string;
@@ -96,7 +96,7 @@ export const defaultProjectsData: ProjectCardData[] = [
     id: "web-application-id", // Added unique ID
     name: "Web Application",
     status: "healthy",
-    logs: "45.2K",
+    logCount: "45.2K",
     errors: 12,
     uptime: "99.9%",
     lastActivity: "2 minutes ago",
@@ -105,7 +105,7 @@ export const defaultProjectsData: ProjectCardData[] = [
     id: "api-service-id", // Added unique ID
     name: "API Service",
     status: "warning",
-    logs: "128.7K",
+    logCount: "128.7K",
     errors: 3,
     uptime: "99.5%",
     lastActivity: "1 minute ago",
@@ -114,7 +114,7 @@ export const defaultProjectsData: ProjectCardData[] = [
     id: "background-workers-id", // Added unique ID
     name: "Background Workers",
     status: "healthy",
-    logs: "89.1K",
+    logCount: "89.1K",
     errors: 0,
     uptime: "100%",
     lastActivity: "30 seconds ago",
