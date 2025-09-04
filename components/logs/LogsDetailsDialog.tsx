@@ -22,7 +22,7 @@ export const LogDetailsDialog: React.FC<LogDetailsDialogProps> = ({ log, onClose
 
   return (
     <Dialog open={!!log} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto scrollbar-hide">
+      <DialogContent className="max-w-6xl max-h-[80vh] overflow-y-auto scrollbar-hide">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
             {levelIcon}

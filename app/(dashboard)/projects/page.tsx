@@ -5,49 +5,41 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Activity, AlertTriangle, Users, Clock, Search, Filter, Eye, Settings, FolderPlus, Plus } from "lucide-react"
+import { Activity, AlertTriangle, Users, Clock, Search, Filter, Eye, Settings, FolderPlus, Plus, Info } from "lucide-react"
 import Link from "next/link"
 import type { Project } from "@/types/analytics"
 import { useEffect, useState } from "react"
 import { mockProjects } from "@/lib/mock-data"
 import { EmptyState } from "@/components/Empty/empty-state"
 import { NewProjectModal } from "@/components/dashboard/new-project-modal"
+import { useProjects } from "@/hooks/project.hooks"
+import { ProjectDetailsModal } from "@/components/dashboard/projects/ProjectDetailsModal"
 
 export default function ProjectsPage() {
-  const [projects, setProjects] = useState<Project[] | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  // const [projects, setProjects] = useState<Project[] | null>(null)
+  // const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
+
+  const { data: newData , isLoading, isError, } = useProjects()
+
+  const projects = newData?.data
+
+  console.log("PROJECTS:", projects)
 
   const filteredProjects = projects?.filter((project) => {
     const matchesSearch = project.name.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesStatus = statusFilter === "all" || project.status === statusFilter
     return matchesSearch && matchesStatus
   })
-
-
-  // Simulate loading and checking for projects
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      // Simulate checking if user has projects
-      // In real app, this would be an API call
-      setProjects(mockProjects) // Set to false to show empty state
-      setIsLoading(false)
-    }, 5000)
-
-    return () => clearTimeout(timer)
-  }, [])
-
   
 
-  const getStatusBadgeVariant = (status: Project["status"]) => {
+  const getTrendBadgeVariant = (status: string) => {
     switch (status) {
-      case "healthy":
+      case "increase":
         return "default"
-      case "warning":
+      case "decrease":
         return "secondary"
-      case "critical":
-        return "destructive"
       default:
         return "outline"
     }
@@ -162,8 +154,8 @@ export default function ProjectsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Projects</h1>
-          <p className="text-muted-foreground">Manage and monitor all your projects</p>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Projects</h1>
+          <p className="hidden md:block text-muted-foreground">Manage and monitor all your projects</p>
         </div>
         <div className="flex items-center space-x-2">
           <div className="relative">
@@ -172,11 +164,11 @@ export default function ProjectsPage() {
               placeholder="Search projects..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 w-64"
+              className="pl-10  md:w-64"
             />
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-32">
+            <SelectTrigger className="w-32 hidden md:flex">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -186,102 +178,100 @@ export default function ProjectsPage() {
               <SelectItem value="critical">Critical</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline">
-            <Filter className="w-4 h-4 mr-2" />
-            Filters
-          </Button>
         </div>
       </div>
 
-      {/* Projects Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {filteredProjects?.map((project) => (
-          <Card key={project.id} className="hover:shadow-md transition-shadow">
+          <Card key={project._id} className="hover:shadow-md transition-all duration-200 hover:border-primary/20">
             <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div
-                    className={`w-3 h-3 rounded-full ${
-                      project.status === "healthy"
-                        ? "bg-green-500"
-                        : project.status === "warning"
-                          ? "bg-yellow-500"
-                          : "bg-red-500"
-                    }`}
-                  />
-                  <div>
-                    <CardTitle className="text-lg">{project.name}</CardTitle>
-                    <div className="flex items-center space-x-2 mt-1">
-                      <Badge variant="outline" className="text-xs">
-                        {project.environment}
-                      </Badge>
-                      <Badge variant={getStatusBadgeVariant(project.status)} className="text-xs">
-                        {project.status}
-                      </Badge>
-                    </div>
-                  </div>
+              <div className="flex items-start justify-between">
+                <div className="space-y-1">
+                  <CardTitle className="text-lg">{project.name}</CardTitle>
+                  <CardDescription className="text-sm">{project.description || "No description"}</CardDescription>
                 </div>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link href={`/analytics/projects/${project.id}`}>
-                    <Eye className="w-4 h-4" />
-                  </Link>
-                </Button>
+                <div className="flex items-center space-x-2">
+                  <div className={`w-2 h-2 rounded-full ${project.isActive ? "bg-green-500" : "bg-gray-400"}`} />
+                  <Badge variant={project.isActive ? "default" : "secondary"} className="text-xs">
+                    {project.isActive ? "Active" : "Inactive"}
+                  </Badge>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* Key Metrics */}
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <div className="flex items-center space-x-1 text-muted-foreground mb-1">
-                    <Activity className="w-3 h-3" />
-                    <span>Events (24h)</span>
+              {/* Health Score */}
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">Health Score</span>
+                <div className="flex items-center space-x-2">
+                  <div
+                    className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                      project.metrics.healthScore >= 80
+                        ? "bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400"
+                        : project.metrics.healthScore >= 60
+                          ? "bg-yellow-100 text-yellow-600 dark:bg-yellow-900/20 dark:text-yellow-400"
+                          : "bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400"
+                    }`}
+                  >
+                    {project.metrics.healthScore}
                   </div>
-                  <div className="font-semibold">{(project.totalEvents / 1000).toFixed(1)}K</div>
-                </div>
-                <div>
-                  <div className="flex items-center space-x-1 text-muted-foreground mb-1">
-                    <AlertTriangle className="w-3 h-3" />
-                    <span>Error Rate</span>
-                  </div>
-                  <div className="font-semibold text-destructive">{project.errorRate}%</div>
-                </div>
-                <div>
-                  <div className="flex items-center space-x-1 text-muted-foreground mb-1">
-                    <Users className="w-3 h-3" />
-                    <span>Active Users</span>
-                  </div>
-                  <div className="font-semibold">{project.activeUsers.toLocaleString()}</div>
-                </div>
-                <div>
-                  <div className="flex items-center space-x-1 text-muted-foreground mb-1">
-                    <Clock className="w-3 h-3" />
-                    <span>Avg Load</span>
-                  </div>
-                  <div className="font-semibold">{(project.avgPageLoad / 1000).toFixed(1)}s</div>
                 </div>
               </div>
 
-              {/* Last Activity */}
-              <div className="pt-3 border-t">
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>Last activity: {formatTimestamp(project.lastEvent)}</span>
-                  <span>Uptime: {project.uptime}%</span>
+              {/* Stats */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <div className="flex items-center space-x-2">
+                    <Activity className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Logs (24h)</span>
+                  </div>
+                  <p className="text-lg font-semibold">{project?.metrics.recentActivity.logsLast24h.toLocaleString()}</p>
                 </div>
+                <div className="space-y-1">
+                  <div className="flex items-center space-x-2">
+                    <AlertTriangle className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Errors (24h)</span>
+                  </div>
+                  <p className="text-lg font-semibold text-destructive">{project.metrics.recentActivity.errorsLast24h}</p>
+                </div>
+              </div>
+
+              {/* Team Members */}
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">Team Members</span>
+                <span className="text-sm font-medium">{project.teamMembers.length}</span>
+              </div>
+
+              {/* Created Date */}
+              <div className="text-sm text-muted-foreground">
+                Created {new Date(project.createdAt).toLocaleDateString()}
               </div>
 
               {/* Actions */}
-              <div className="flex items-center space-x-2 pt-2">
-                <Button variant="outline" size="sm" className="flex-1 bg-transparent" asChild>
-                  <Link href={`/projects/${project.id}`}>View Details</Link>
+              <div className="flex space-x-2 pt-2">
+                <Button asChild className="flex-1">
+                  <Link href={`/projects/${project._id}`}>View Dashboard</Link>
                 </Button>
-                <Button variant="ghost" size="sm">
-                  <Settings className="w-4 h-4" />
+                <ProjectDetailsModal
+                  project={project}
+                  trigger={
+                    <Button variant="outline" size="icon">
+                      <Info className="w-4 h-4" />
+                    </Button>
+                  }
+                />
+                <Button variant="outline" size="icon" asChild>
+                  <Link href={`/projects/${project._id}/settings`}>
+                    <Settings className="w-4 h-4" />
+                  </Link>
                 </Button>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
+
+      {/* Projects Grid */}
+      
 
       {/* Empty State */}
       {filteredProjects?.length === 0 && (

@@ -54,7 +54,7 @@ export const logService = {
         }
       });
 
-      const response = await apiClient.get<ApiResponse<LogEntry[]>>(
+      const response = await apiClient.get<ApiResponse>(
         `/${projectId}/logs?${params.toString()}`
       );
 

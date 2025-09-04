@@ -7,11 +7,28 @@ import { logService } from "@/services/log.service";
 import { LogEntry, LogFilters } from "@/types/analytics";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
-// Hook to get all logs with filters
+// Centralized query keys for logs (mirrors projects hook architecture)
+export const logQueryKeys = {
+  all: ["logs"] as const,
+  list: (projectId: string, filters: LogFilters) =>
+    [...logQueryKeys.all, "list", projectId, filters] as const,
+  byId: (projectId: string, logId: string) =>
+    [...logQueryKeys.all, "detail", projectId, logId] as const,
+  summary: (projectId: string, timeRange?: string) =>
+    [...logQueryKeys.all, "summary", projectId, timeRange] as const,
+  trends: (projectId: string, timeRange: string, interval: string) =>
+    [...logQueryKeys.all, "trends", projectId, timeRange, interval] as const,
+  distinct: (projectId: string, field: string) =>
+    [...logQueryKeys.all, "distinct", projectId, field] as const,
+  uniqueErrors: (projectId: string, timeRange?: string) =>
+    [...logQueryKeys.all, "unique-errors", projectId, timeRange] as const,
+};
 
+
+// Hook to get all logs with filters
 export const useLogs = (projectId: string, filters: LogFilters = {}) => {
   return useQuery({
-    queryKey: ["logs", projectId, filters],
+    queryKey: logQueryKeys.list(projectId, filters),
     queryFn: () => logService.getAllLogs(projectId, filters),
     enabled: !!projectId,
     staleTime: 30 * 1000, // 30 seconds
@@ -22,7 +39,7 @@ export const useLogs = (projectId: string, filters: LogFilters = {}) => {
 // Hook to get a specific log by ID
 export const useLog = (projectId: string, logId: string) => {
   return useQuery({
-    queryKey: ["log", projectId, logId],
+    queryKey: logQueryKeys.byId(projectId, logId),
     queryFn: () => logService.getLogById(projectId, logId),
     enabled: !!projectId && !!logId,
     staleTime: 5 * 60 * 1000, // 5 minutes (individual logs don't change)
@@ -32,7 +49,7 @@ export const useLog = (projectId: string, logId: string) => {
 // Hook to get log summary
 export const useLogSummary = (projectId: string, timeRange?: string) => {
   return useQuery({
-    queryKey: ["log-summary", projectId, timeRange],
+    queryKey: logQueryKeys.summary(projectId, timeRange),
     queryFn: () => logService.getLogsSummary(projectId, timeRange),
     enabled: !!projectId,
     staleTime: 60 * 1000, // 1 minute
@@ -47,7 +64,7 @@ export const useLogTrends = (
   interval: string = "1h"
 ) => {
   return useQuery({
-    queryKey: ["log-trends", projectId, timeRange, interval],
+    queryKey: logQueryKeys.trends(projectId, timeRange, interval),
     queryFn: () => logService.getLogTrends(projectId, timeRange, interval),
     enabled: !!projectId,
     staleTime: 2 * 60 * 1000, // 2 minutes
@@ -58,7 +75,7 @@ export const useLogTrends = (
 // Hook to get distinct values for a field
 export const useDistinctValues = (projectId: string, field: string) => {
   return useQuery({
-    queryKey: ["distinct-values", projectId, field],
+    queryKey: logQueryKeys.distinct(projectId, field),
     queryFn: () => logService.getDistinctValues(projectId, field),
     enabled: !!projectId && !!field,
     staleTime: 10 * 60 * 1000, // 10 minutes (distinct values change slowly)
@@ -68,7 +85,7 @@ export const useDistinctValues = (projectId: string, field: string) => {
 // Hook to get unique errors
 export const useUniqueErrors = (projectId: string, timeRange?: string) => {
   return useQuery({
-    queryKey: ["unique-errors", projectId, timeRange],
+    queryKey: logQueryKeys.uniqueErrors(projectId, timeRange),
     queryFn: () => logService.getUniqueErrors(projectId, timeRange),
     enabled: !!projectId,
     staleTime: 2 * 60 * 1000, // 2 minutes
@@ -92,14 +109,11 @@ export const useCreateLog = () => {
     }) => logService.createLog(projectId, logData),
     onSuccess: (newLog, { projectId }) => {
       // Invalidate and refetch logs
-      queryClient.invalidateQueries({ queryKey: ["logs", projectId] });
-      queryClient.invalidateQueries({ queryKey: ["log-summary", projectId] });
-      queryClient.invalidateQueries({ queryKey: ["log-trends", projectId] });
-      queryClient.invalidateQueries({ queryKey: ["unique-errors", projectId] });
+      queryClient.invalidateQueries({ queryKey: logQueryKeys.all });
 
       // Optimistically add new log to cache if it's an error level
       if (newLog && newLog.level === "error") {
-        queryClient.setQueryData(["logs", projectId], (old: any) => {
+        queryClient.setQueryData(logQueryKeys.list(projectId, {} as LogFilters), (old: any) => {
           if (old?.logs) {
             return {
               ...old,
@@ -125,10 +139,7 @@ export const useDeleteLogs = () => {
     }) => logService.deleteLogs(projectId, filters),
     onSuccess: (_, { projectId }) => {
       // Invalidate all log-related queries
-      queryClient.invalidateQueries({ queryKey: ["logs", projectId] });
-      queryClient.invalidateQueries({ queryKey: ["log-summary", projectId] });
-      queryClient.invalidateQueries({ queryKey: ["log-trends", projectId] });
-      queryClient.invalidateQueries({ queryKey: ["unique-errors", projectId] });
+      queryClient.invalidateQueries({ queryKey: logQueryKeys.all });
     },
   });
 };

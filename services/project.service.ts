@@ -10,7 +10,7 @@ import { BulkDeletePayload, Project, ProjectCreateData, ProjectFilters, Projects
 export const projectService = {
   /**
    * Get all projects for the current user with optional filters.
-   * @param filters - An object containing filters like `isArchived` or `tag`.
+   * @param filters - An object containing filters like `isActive` or `tag`.
    */
   getAllProjects: async (filters: ProjectFilters = {}) => {
     try {
@@ -22,7 +22,7 @@ export const projectService = {
       });
 
 
-      const response = await apiClient.get<ApiResponse<Project[]>>(
+      const response = await apiClient.get<ApiResponse>(
         `/projects?${params.toString()}`
       );
 
@@ -46,7 +46,7 @@ export const projectService = {
   getProjectById: async (projectId: string) => {
     try {
       const response = await apiClient.get<ApiResponse<Project>>(
-        `/projects/${projectId}`
+        `/projects/${projectId}?populateRefs=true&includeAnalytics=true&includeRecommendations=true`
       );
       if (response.data.status === "error") {
         throw new ApiError(

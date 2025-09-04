@@ -8,19 +8,21 @@ import { LogsFilterCard } from "@/components/logs/LogsFilterCard";
 import { LogsHeader } from "@/components/logs/LogsHeader";
 import { LogsSummary } from "@/components/logs/LogsSummary";
 import { Card, CardContent } from "@/components/ui/card";
-import { generateMockLogs } from "@/lib/mock-data";
-import { LogEntry } from "@/types/analytics";
+import { LogEntry, LogFilters } from "@/types/analytics";
 import { RefreshCw, Search } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { DateRange } from "react-day-picker";
+import { useSearchParams } from "next/navigation";
+import { useProjects } from "@/hooks/project.hooks";
+import { useDistinctValues, useLogs } from "@/hooks/log.hooks";
 
 export default function LogsExplorer() {
-  const [hasProjects, setHasProjects] = useState(false);
-  const [isLoading, setIsLoading] = useState(true)
+  const searchParams = useSearchParams();
+  const { data: projectsResponse, isLoading: isProjectsLoading } =
+    useProjects();
+  const projects = projectsResponse?.data ?? [];
 
-  const [logs, setLogs] = useState<LogEntry[]>([]);
   const [filteredLogs, setFilteredLogs] = useState<LogEntry[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selectedLog, setSelectedLog] = useState<LogEntry | null>(null);
 
   // Filter states
@@ -39,122 +41,87 @@ export default function LogsExplorer() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20; // Define items per page for pagination
 
-  // Mock data for filters (these would typically come from an API)
+  // Available filters from API
+
   const availableProjects = useMemo(
-    () => ["web-app", "api-service", "mobile-app", "analytics", "auth-service"],
+    () => projects.map((p) => ({ id: p._id, name: p.name ?? p.id })),
+    [projects]
+  );
+
+  console.log(availableProjects);
+
+  const availableLevels = useMemo(
+    () => ["error", "warn", "info", "debug", "trace", "fatal"],
     []
+  );
+
+  const paramProjectId = searchParams.get("projectId") || "";
+  const activeProjectId = useMemo(() => {
+    if (selectedProjects.length > 0) return selectedProjects[0];
+    if (paramProjectId) return paramProjectId;
+    return projects[0]?._id || projects[0]?.id || "";
+  }, [selectedProjects, paramProjectId, projects]);
+
+  const { data: distinctServices } = useDistinctValues(
+    activeProjectId,
+    "service"
   );
   const availableServices = useMemo(
-    () => ["frontend", "backend", "database", "cache", "queue", "auth"],
-    []
-  );
-  const availableLevels = useMemo(
-    () => ["error", "warn", "info", "debug", "trace"],
-    []
+    () => distinctServices ?? [],
+    [distinctServices]
   );
 
-  // Fetch logs on component mount
-  useEffect(() => {
-    const fetchLogs = async () => {
-      setLoading(true);
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const mockLogs = generateMockLogs(undefined, 100); // Generate more logs for pagination
-      setLogs(mockLogs);
-      setLoading(false);
-    };
-    fetchLogs();
-  }, []);
+  const serverFilters: LogFilters = useMemo(
+    () => ({
+      level:
+        selectedLevels.length === 1 ? (selectedLevels[0] as any) : undefined,
+      service: selectedServices.length === 1 ? selectedServices[0] : undefined,
+      search: searchTerm || undefined,
+      startDate: dateRange.from ? dateRange.from.toISOString() : undefined,
+      endDate: dateRange.to
+        ? new Date(
+            new Date(dateRange.to).setHours(23, 59, 59, 999)
+          ).toISOString()
+        : undefined,
+      limit: 500,
+    }),
+    [selectedLevels, selectedServices, searchTerm, dateRange]
+  );
 
-  // Simulate loading and checking for projects
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      // Simulate checking if user has projects
-      // In real app, this would be an API call
-      setHasProjects(false) // Set to false to show empty state
-      setIsLoading(false)
-    }, 1000)
+  const {
+    data: logsData,
+    isLoading: logsLoading,
+    refetch,
+  } = useLogs(activeProjectId, serverFilters);
+  const logs: LogEntry[] = useMemo(() => logsData?.logs ?? [], [logsData]);
 
-    return () => clearTimeout(timer)
-  }, [])
+  const hasProjects = projects.length > 0;
+  const isLoading = isProjectsLoading;
 
-
-  // Memoized filter logic
+  // Sorting and pagination only (server handles filtering)
   const applyFiltersAndSort = useCallback(() => {
-    let currentFiltered = [...logs];
-
-    // Filter by search term
-    if (searchTerm) {
-      currentFiltered = currentFiltered.filter(
-        (log) =>
-          log.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          log.service?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          log.projectId.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // Filter by levels
-    if (selectedLevels.length > 0) {
-      currentFiltered = currentFiltered.filter((log) =>
-        selectedLevels.includes(log.level)
-      );
-    }
-
-    // Filter by projects
-    if (selectedProjects.length > 0) {
-      currentFiltered = currentFiltered.filter((log) =>
-        selectedProjects.includes(log.projectId)
-      );
-    }
-
-    // Filter by services
-    if (selectedServices.length > 0) {
-      currentFiltered = currentFiltered.filter(
-        (log) => log.service && selectedServices.includes(log.service)
-      );
-    }
-
-    // Filter by date range
-    if (dateRange.from || dateRange.to) {
-      currentFiltered = currentFiltered.filter((log) => {
-        const logDate = new Date(log.timestamp);
-        if (dateRange.from && logDate < dateRange.from) return false;
-        // Adjust 'to' date to include the entire day
-        const toDateAdjusted = dateRange.to
-          ? new Date(dateRange.to.setHours(23, 59, 59, 999))
-          : undefined;
-        if (toDateAdjusted && logDate > toDateAdjusted) return false;
-        return true;
-      });
-    }
-
-    // Sort
-    currentFiltered.sort((a, b) => {
+    let current = [...logs];
+    current.sort((a, b) => {
       const dateA = new Date(a.timestamp).getTime();
       const dateB = new Date(b.timestamp).getTime();
-      if (sortBy === "newest") {
-        return dateB - dateA;
-      } else if (sortBy === "oldest") {
-        return dateA - dateB;
-      } else if (sortBy === "level") {
-        // Example: custom sort order for levels
-        const levelOrder = { error: 1, warn: 2, info: 3, debug: 4, trace: 5 };
-        return (levelOrder[a.level] || 99) - (levelOrder[b.level] || 99);
+      if (sortBy === "newest") return dateB - dateA;
+      if (sortBy === "oldest") return dateA - dateB;
+      if (sortBy === "level") {
+        const order = {
+          fatal: 0,
+          error: 1,
+          warn: 2,
+          info: 3,
+          debug: 4,
+          trace: 5,
+        } as Record<string, number>;
+        return (order[a.level] ?? 99) - (order[b.level] ?? 99);
       }
       return 0;
     });
-
-    setFilteredLogs(currentFiltered);
-    setCurrentPage(1); // Reset to first page on filter/sort change
-  }, [
-    logs,
-    searchTerm,
-    selectedLevels,
-    selectedProjects,
-    selectedServices,
-    dateRange,
-    sortBy,
-  ]);
+    setFilteredLogs(current);
+    setCurrentPage(1);
+  }, [logs, sortBy]);
 
   // Apply filters and sort whenever dependencies change
   useEffect(() => {
@@ -163,9 +130,8 @@ export default function LogsExplorer() {
 
   // Handlers for child components
   const handleRefresh = useCallback(() => {
-    // In a real app, you'd re-fetch data from your API
-    window.location.reload(); // Simple page reload for mock data
-  }, []);
+    refetch();
+  }, [refetch]);
 
   const handleExport = useCallback(() => {
     // Implement actual export logic here (e.g., to CSV, JSON)
@@ -201,9 +167,8 @@ export default function LogsExplorer() {
   }, []);
 
   const handleDeleteLog = useCallback((logId: string) => {
-    // Placeholder for actual delete logic
+    // Placeholder for actual delete logic - remove locally from current view
     if (window.confirm(`Are you sure you want to delete log ${logId}?`)) {
-      setLogs((prevLogs) => prevLogs.filter((log) => log.id !== logId));
       setFilteredLogs((prevFiltered) =>
         prevFiltered.filter((log) => log.id !== logId)
       );
@@ -240,8 +205,7 @@ export default function LogsExplorer() {
     return <EmptyLogsPage />;
   }
 
- 
- if (isLoading) {
+  if (isLoading) {
     return (
       <div className="space-y-8 animate-pulse">
         <div className="h-8 bg-muted rounded w-48"></div>
@@ -252,7 +216,7 @@ export default function LogsExplorer() {
         </div>
         <div className="h-96 bg-muted rounded"></div>
       </div>
-    )
+    );
   }
 
   return (
@@ -286,7 +250,7 @@ export default function LogsExplorer() {
 
       <Card>
         <CardContent className="p-0">
-          {loading ? (
+          {logsLoading ? (
             <div className="p-8 text-center">
               <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4 text-muted-foreground" />
               <p className="text-muted-foreground">Loading logs...</p>

@@ -14,7 +14,7 @@ export type ProjectTag = {
 export type TeamMember = {
   id: string;
   userId: string;
-  role: "owner" | "admin" | "member";
+  role: "owner" | "member";
   email: string;
 };
 
@@ -28,22 +28,109 @@ export type IntegrationSettings = {
 
 // The main project data structure.
 export type Project = {
-  id: string;
-  name: string;
-  description: string;
-  apiKey: string;
-  userId: string;
-  isArchived: boolean;
-  tags: ProjectTag[];
-  teamMembers: TeamMember[];
-  integrationSettings: IntegrationSettings[];
-  rateLimit: {
-    maxRequests: number;
-    windowInMinutes: number;
+  project: {
+    _id: string;
+    name: string;
+    apiKey: string;
+    ownerId: {
+      _id: string;
+      email: string;
+      firstName: string;
+      lastName: string;
+    };
+    teamMembers: Array<{
+      user: {
+        _id: string;
+        email: string;
+        firstName: string;
+        lastName: string;
+      };
+      role: string;
+      _id: string;
+    }>;
+    isActive: boolean;
+    logCount: number;
+    alertRuleCount: number;
+    rateLimitConfig: {
+      maxRequestsPerMinute: number;
+      burstLimit: number;
+    };
+    tags: string[];
+    createdAt: string;
+    updatedAt: string;
   };
-  logCount: number;
-  createdAt: string;
-  updatedAt: string;
+  analytics: {
+    overview: {
+      totalLogs: number;
+      errorLogs: number;
+      recentLogs: number;
+      errorRate: number;
+      timeRange: string;
+      lastUpdated: string;
+    };
+    responseTime: {
+      current: {
+        avgResponseTime: number;
+        health: string;
+      };
+      history: Array<{
+        timestamp: string;
+        avgResponseTime: number;
+      }>;
+    };
+    errors: {
+      analysis: Array<{
+        _id: {
+          level: string;
+          service: string;
+          environment: string;
+        };
+        count: number;
+        lastOccurence: string;
+      }>;
+      topErrors: Array<{
+        _id: string;
+        count: number;
+        lastSeen: string;
+        services: string[];
+        environments: string[];
+      }>;
+      health: string;
+    };
+    performance: {
+      metrics: {
+        totalRequests: number;
+        successfulRequests: number;
+        errorRequests: number;
+        avgResponseTime: number | null;
+      };
+      health: string;
+    };
+    usage: {
+      serviceBreakdown: Array<{
+        _id: string;
+        requestCount: number;
+        errorCount: number;
+        lastActivity: string;
+      }>;
+      environmentBreakdown: Array<{
+        _id: string;
+        requestCount: number;
+        errorCount: number;
+      }>;
+      insights: string[];
+    };
+  };
+  recommendations: {
+    priority: string;
+    categories: {
+      performance: string[];
+      reliability: string[];
+      optimization: string[];
+      monitoring: string[];
+    };
+    healthScore: number;
+  };
 };
 
 // Data for creating a new project.
@@ -65,23 +152,22 @@ export type ProjectUpdateData = {
 
 // Filters for fetching a list of projects.
 export type ProjectFilters = {
+  searchBy?: boolean;
+  sortOrder?: any;
   includeInactive?: boolean;
-  dateRange?: any;
-  groupBy?: string;
 };
 
 export interface ProjectsSummary {
-    totalProjects: number;
-    activeProjects: number;
-    inactiveProjects: number;
-    totalLogsOverall: number; // Total logs across all projects (from LogModel)
-    avgLogsPerProject: number; // Average logs per project
-    maxLogsPerProject: number; // Max logs per project
-    minLogsPerProject: number; // Min logs per project
-    totalActiveErrorLogs: number; // NEW: Error logs from the last hour
-    totalActiveProjects: number; // NEW: Projects with activity in last 24 hours
+  totalProjects: number;
+  activeProjects: number;
+  inactiveProjects: number;
+  totalLogsOverall: number; // Total logs across all projects (from LogModel)
+  avgLogsPerProject: number; // Average logs per project
+  maxLogsPerProject: number; // Max logs per project
+  minLogsPerProject: number; // Min logs per project
+  totalActiveErrorLogs: number; // NEW: Error logs from the last hour
+  totalActiveProjects: number; // NEW: Projects with activity in last 24 hours
 }
-
 
 export interface ServicePerformance {
   service: string;

@@ -56,7 +56,9 @@ export default function DashboardPage() {
     router.refresh();
   };
 
-  const newMetrics = [...(metrics ?? []), ...(performanceMetrics ?? [])];
+  console.log(metrics, performanceMetrics)
+
+  const newMetrics = [...metrics, ...performanceMetrics];
 
   const handleExport = () => {
     console.log("Exporting dashboard data!");
