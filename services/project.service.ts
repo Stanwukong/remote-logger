@@ -10,7 +10,7 @@ import { BulkDeletePayload, Project, ProjectCreateData, ProjectFilters, Projects
 export const projectService = {
   /**
    * Get all projects for the current user with optional filters.
-   * @param filters - An object containing filters like `isArchived` or `tag`.
+   * @param filters - An object containing filters like `isActive` or `tag`.
    */
   getAllProjects: async (filters: ProjectFilters = {}) => {
     try {
@@ -22,7 +22,7 @@ export const projectService = {
       });
 
 
-      const response = await apiClient.get<ApiResponse<Project[]>>(
+      const response = await apiClient.get<ApiResponse>(
         `/projects?${params.toString()}`
       );
 
@@ -46,7 +46,7 @@ export const projectService = {
   getProjectById: async (projectId: string) => {
     try {
       const response = await apiClient.get<ApiResponse<Project>>(
-        `/projects/${projectId}`
+        `/projects/${projectId}?populateRefs=true&includeAnalytics=true&includeRecommendations=true`
       );
       if (response.data.status === "error") {
         throw new ApiError(
@@ -154,7 +154,7 @@ export const projectService = {
    */
   createProject: async (projectData: ProjectCreateData) => {
     try {
-      const response = await apiClient.post<ApiResponse<Project>>(
+      const response = await apiClient.post<ApiResponse>(
         "/projects",
         projectData
       );
@@ -178,7 +178,7 @@ export const projectService = {
    */
   updateProject: async (projectId: string, projectData: ProjectUpdateData) => {
     try {
-      const response = await apiClient.put<ApiResponse<Project>>(
+      const response = await apiClient.put<ApiResponse>(
         `/projects/${projectId}`,
         projectData
       );
@@ -201,7 +201,7 @@ export const projectService = {
    */
   archiveProject: async (projectId: string) => {
     try {
-      const response = await apiClient.put<ApiResponse<Project>>(
+      const response = await apiClient.put<ApiResponse>(
         `/projects/${projectId}/archive`
       );
       if (response.data.status === "error") {
@@ -223,7 +223,7 @@ export const projectService = {
    */
   restoreProject: async (projectId: string) => {
     try {
-      const response = await apiClient.put<ApiResponse<Project>>(
+      const response = await apiClient.put<ApiResponse>(
         `/projects/${projectId}/restore`
       );
       if (response.data.status === "error") {
@@ -292,7 +292,7 @@ export const projectService = {
    */
   regenerateApiKey: async (projectId: string) => {
     try {
-      const response = await apiClient.post<ApiResponse<Project>>(
+      const response = await apiClient.post<ApiResponse>(
         `/projects/${projectId}/regenerate-api-key`
       );
       if (response.data.status === "error") {
@@ -318,7 +318,7 @@ export const projectService = {
     rateLimit: { maxRequests: number; windowInMinutes: number }
   ) => {
     try {
-      const response = await apiClient.put<ApiResponse<Project>>(
+      const response = await apiClient.put<ApiResponse>(
         `/projects/${projectId}/rate-limit`,
         rateLimit
       );

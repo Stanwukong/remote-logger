@@ -126,7 +126,7 @@ export const useUpdateProject = () => {
       if (updatedProject) {
         // Invalidate specific project detail and all project lists
         queryClient.invalidateQueries({
-          queryKey: queryKeys.details(updatedProject.id),
+          queryKey: queryKeys.details(updatedProject.project._id),
         });
         queryClient.invalidateQueries({ queryKey: queryKeys.lists({}) });
       }
@@ -180,7 +180,7 @@ export const useArchiveProject = () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.lists({}) });
       if (archivedProject) {
         queryClient.invalidateQueries({
-          queryKey: queryKeys.details(archivedProject.id),
+          queryKey: queryKeys.details(archivedProject.project._id),
         });
       }
 

@@ -66,7 +66,7 @@ export const useDashboardData = () => {
 
   // Transform data
   const overviewData = overviewQuery.data?.data as DashboardOverview;
-  const performanceData = performanceQuery.data?.data;
+  const performanceData = performanceQuery.data;
 
   console.log(performanceData)
 

@@ -26,7 +26,10 @@ interface LogsFilterCardProps {
   onSelectedServicesChange: (services: string[]) => void;
   onClearFilters: () => void;
   activeFiltersCount: number;
-  availableProjects: string[];
+  availableProjects: {
+    id: string;
+    name: string;
+  }[];
   availableServices: string[];
   availableLevels: string[];
 }
@@ -61,18 +64,20 @@ export const LogsFilterCard: React.FC<LogsFilterCardProps> = ({
     };
   }, [localSearchTerm, onSearchTermChange]);
 
-
-  const handleCheckboxChange = useCallback((
-    currentSelection: string[],
-    item: string,
-    setter: (newSelection: string[]) => void
-  ) => {
-    if (currentSelection.includes(item)) {
-      setter(currentSelection.filter((i) => i !== item));
-    } else {
-      setter([...currentSelection, item]);
-    }
-  }, []);
+  const handleCheckboxChange = useCallback(
+    (
+      currentSelection: string[],
+      item: string,
+      setter: (newSelection: string[]) => void
+    ) => {
+      if (currentSelection.includes(item)) {
+        setter(currentSelection.filter((i) => i !== item));
+      } else {
+        setter([...currentSelection, item]);
+      }
+    },
+    []
+  );
 
   return (
     <Card>
@@ -116,12 +121,16 @@ export const LogsFilterCard: React.FC<LogsFilterCardProps> = ({
             <Label>Date Range</Label>
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" className="w-full justify-start text-left font-normal bg-transparent">
+                <Button
+                  variant="outline"
+                  className="w-full justify-start text-left font-normal bg-transparent"
+                >
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {dateRange.from ? (
                     dateRange.to ? (
                       <>
-                        {format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}
+                        {format(dateRange.from, "LLL dd, y")} -{" "}
+                        {format(dateRange.to, "LLL dd, y")}
                       </>
                     ) : (
                       format(dateRange.from, "LLL dd, y")
@@ -156,9 +165,18 @@ export const LogsFilterCard: React.FC<LogsFilterCardProps> = ({
                   <Checkbox
                     id={`level-${level}`}
                     checked={selectedLevels.includes(level)}
-                    onCheckedChange={() => handleCheckboxChange(selectedLevels, level, onSelectedLevelsChange)}
+                    onCheckedChange={() =>
+                      handleCheckboxChange(
+                        selectedLevels,
+                        level,
+                        onSelectedLevelsChange
+                      )
+                    }
                   />
-                  <Label htmlFor={`level-${level}`} className="flex items-center space-x-2">
+                  <Label
+                    htmlFor={`level-${level}`}
+                    className="flex items-center space-x-2"
+                  >
                     {getLevelIcon(level)}
                     <span className="capitalize">{level}</span>
                   </Label>
@@ -172,15 +190,24 @@ export const LogsFilterCard: React.FC<LogsFilterCardProps> = ({
             <Label>Projects</Label>
             <div className="space-y-2">
               {availableProjects.map((project) => (
-                <div key={project} className="flex items-center space-x-2">
+                <div key={project.id} className="flex items-center space-x-2">
                   <Checkbox
                     id={`project-${project}`}
-                    checked={selectedProjects.includes(project)}
-                    onCheckedChange={() => handleCheckboxChange(selectedProjects, project, onSelectedProjectsChange)}
+                    checked={selectedProjects.includes(project.id)}
+                    onCheckedChange={() =>
+                      handleCheckboxChange(
+                        selectedProjects,
+                        project.id,
+                        onSelectedProjectsChange
+                      )
+                    }
                   />
-                  <Label htmlFor={`project-${project}`} className="flex items-center space-x-2">
+                  <Label
+                    htmlFor={`project-${project.name}`}
+                    className="flex items-center space-x-2"
+                  >
                     <Server className="w-4 h-4" />
-                    <span>{project}</span>
+                    <span>{project.name}</span>
                   </Label>
                 </div>
               ))}
@@ -196,9 +223,18 @@ export const LogsFilterCard: React.FC<LogsFilterCardProps> = ({
                   <Checkbox
                     id={`service-${service}`}
                     checked={selectedServices.includes(service)}
-                    onCheckedChange={() => handleCheckboxChange(selectedServices, service, onSelectedServicesChange)}
+                    onCheckedChange={() =>
+                      handleCheckboxChange(
+                        selectedServices,
+                        service,
+                        onSelectedServicesChange
+                      )
+                    }
                   />
-                  <Label htmlFor={`service-${service}`} className="flex items-center space-x-2">
+                  <Label
+                    htmlFor={`service-${service}`}
+                    className="flex items-center space-x-2"
+                  >
                     <Code className="w-4 h-4" />
                     <span className="capitalize">{service}</span>
                   </Label>

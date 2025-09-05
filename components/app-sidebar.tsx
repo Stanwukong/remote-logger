@@ -1,3 +1,4 @@
+"use client";
 import {
   Sidebar,
   SidebarContent,
@@ -23,6 +24,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Badge  } from "@/components/ui/badge";
+import { LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { authService } from "@/services/auth.service";
 
 const navigationItems = [
   {
@@ -90,6 +94,31 @@ const resourceItems = [
 ];
 
 export function AppSidebar() {
+  const router = useRouter();
+
+  const clearAllCookies = () => {
+    const cookies = document.cookie.split(";");
+    for (const cookie of cookies) {
+      const eqPos = cookie.indexOf("=");
+      const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await authService.signOut();
+    } catch {}
+    try {
+      clearAllCookies();
+      if (typeof window !== "undefined") {
+        localStorage.clear();
+        sessionStorage.clear();
+      }
+    } catch {}
+    router.replace("/login");
+  };
+
   return (
     <Sidebar className="border-r border-border/40 ">
       <SidebarHeader className="border-b border-border/40 p-4">
@@ -168,9 +197,19 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="border-t border-border/40 p-4">
-        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-          <div className="w-2 h-2 bg-green-500 rounded-full" />
-          <span>All systems operational</span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+            <div className="w-2 h-2 bg-green-500 rounded-full" />
+            <span>All systems operational</span>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+            aria-label="Logout"
+          >
+            <LogOut className="w-4 h-4" />
+            Logout
+          </button>
         </div>
       </SidebarFooter>
     </Sidebar>

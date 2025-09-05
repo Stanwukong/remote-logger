@@ -104,13 +104,10 @@ export const authService = {
    */
   signOut: async (): Promise<void> => {
     try {
-      await apiClient.post('/signout')
+      Cookies.remove('authToken');
     } catch (error) {
       console.error('Sign out error:', error)
-    } finally {
-      // Remove the cookie on sign out
-      Cookies.remove('authToken');
-    }
+    } 
   },
 
   /**

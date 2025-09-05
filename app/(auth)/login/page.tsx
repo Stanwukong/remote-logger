@@ -70,7 +70,8 @@ export default function LoginPage() {
       toast.success("Login successful.");
       router.push("/dashboard");
     } catch (error) {
-      toast.error(`Something went wrong. Please try again. ${error}`);
+      toast.error(`Login failed. Please try again.`);
+      console.error(error)
     }
 
     console.log(values);
