@@ -154,7 +154,7 @@ export const projectService = {
    */
   createProject: async (projectData: ProjectCreateData) => {
     try {
-      const response = await apiClient.post<ApiResponse<Project>>(
+      const response = await apiClient.post<ApiResponse>(
         "/projects",
         projectData
       );
@@ -178,7 +178,7 @@ export const projectService = {
    */
   updateProject: async (projectId: string, projectData: ProjectUpdateData) => {
     try {
-      const response = await apiClient.put<ApiResponse<Project>>(
+      const response = await apiClient.put<ApiResponse>(
         `/projects/${projectId}`,
         projectData
       );
@@ -201,7 +201,7 @@ export const projectService = {
    */
   archiveProject: async (projectId: string) => {
     try {
-      const response = await apiClient.put<ApiResponse<Project>>(
+      const response = await apiClient.put<ApiResponse>(
         `/projects/${projectId}/archive`
       );
       if (response.data.status === "error") {
@@ -223,7 +223,7 @@ export const projectService = {
    */
   restoreProject: async (projectId: string) => {
     try {
-      const response = await apiClient.put<ApiResponse<Project>>(
+      const response = await apiClient.put<ApiResponse>(
         `/projects/${projectId}/restore`
       );
       if (response.data.status === "error") {
@@ -292,7 +292,7 @@ export const projectService = {
    */
   regenerateApiKey: async (projectId: string) => {
     try {
-      const response = await apiClient.post<ApiResponse<Project>>(
+      const response = await apiClient.post<ApiResponse>(
         `/projects/${projectId}/regenerate-api-key`
       );
       if (response.data.status === "error") {
@@ -318,7 +318,7 @@ export const projectService = {
     rateLimit: { maxRequests: number; windowInMinutes: number }
   ) => {
     try {
-      const response = await apiClient.put<ApiResponse<Project>>(
+      const response = await apiClient.put<ApiResponse>(
         `/projects/${projectId}/rate-limit`,
         rateLimit
       );

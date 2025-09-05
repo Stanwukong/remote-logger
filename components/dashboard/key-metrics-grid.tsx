@@ -8,10 +8,10 @@ export interface MetricData {
   value: string;
   change: string;
   icon: LucideIcon; // Lucide icon component
-  trend: "up" | "down" | "neutral";
+  trend: string;
   subtitle?: string;
   details?: string;
-  variant?: "default" | "destructive" | "warning" | "success"; // Assuming SummaryWidget accepts a variant
+  variant?: string // Assuming SummaryWidget accepts a variant
 }
 
 interface KeyMetricsGridProps {

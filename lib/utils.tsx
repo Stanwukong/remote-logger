@@ -1,4 +1,4 @@
-import { DashboardOverview, MetricData, PerformanceData, PerformanceMetricData } from "@/types/dashboard";
+import { DashboardOverview, MetricData } from "@/types/dashboard";
 import { clsx, type ClassValue } from "clsx";
 import { format } from "date-fns";
 import {
@@ -216,8 +216,8 @@ export const mapDashboardToHealthStatus = (
 };
 
 export const mapPerformanceToMetrics = (
-  performanceData: PerformanceData
-): PerformanceMetricData[] => {
+  performanceData
+)=> {
   if (
     !performanceData ||
     performanceData.status !== "success" ||
@@ -417,7 +417,7 @@ export const mapPerformanceToMetrics = (
 };
 
 export const mapPerformanceToOverallStatus = (
-  performanceData: PerformanceData
+  performanceData
 ) => {
   if (
     !performanceData ||

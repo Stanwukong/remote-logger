@@ -5,11 +5,9 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Activity, AlertTriangle, Users, Clock, Search, Filter, Eye, Settings, FolderPlus, Plus, Info } from "lucide-react"
+import { Activity, AlertTriangle,Search,  Settings, FolderPlus, Plus, Info } from "lucide-react"
 import Link from "next/link"
-import type { Project } from "@/types/analytics"
-import { useEffect, useState } from "react"
-import { mockProjects } from "@/lib/mock-data"
+import {  useState } from "react"
 import { EmptyState } from "@/components/Empty/empty-state"
 import { NewProjectModal } from "@/components/dashboard/new-project-modal"
 import { useProjects } from "@/hooks/project.hooks"
@@ -21,7 +19,7 @@ export default function ProjectsPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
 
-  const { data: newData , isLoading, isError, } = useProjects()
+  const { data: newData , isLoading  } = useProjects()
 
   const projects = newData?.data
 
@@ -34,28 +32,7 @@ export default function ProjectsPage() {
   })
   
 
-  const getTrendBadgeVariant = (status: string) => {
-    switch (status) {
-      case "increase":
-        return "default"
-      case "decrease":
-        return "secondary"
-      default:
-        return "outline"
-    }
-  }
 
-  const formatTimestamp = (timestamp: string) => {
-    const date = new Date(timestamp)
-    const now = new Date()
-    const diffMs = now.getTime() - date.getTime()
-    const diffMins = Math.floor(diffMs / (1000 * 60))
-
-    if (diffMins < 1) return "Just now"
-    if (diffMins < 60) return `${diffMins}m ago`
-    if (diffMins < 1440) return `${Math.floor(diffMins / 60)}h ago`
-    return `${Math.floor(diffMins / 1440)}d ago`
-  }
 
    const hasProjects = projects ? true : false
 

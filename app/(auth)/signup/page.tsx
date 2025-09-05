@@ -80,6 +80,7 @@ export default function SignUpPage() {
       router.push("/dashboard");
     } catch (error) {
       toast.error(`Account creation failed. Please try again.`);
+      console.error(error)
     }
 
     console.log(values);

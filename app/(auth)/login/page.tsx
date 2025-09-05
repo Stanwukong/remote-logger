@@ -71,6 +71,7 @@ export default function LoginPage() {
       router.push("/dashboard");
     } catch (error) {
       toast.error(`Login failed. Please try again.`);
+      console.error(error)
     }
 
     console.log(values);

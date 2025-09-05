@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
-import { useMemo } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -49,7 +50,6 @@ import {
   Calendar,
   BarChart3,
   List,
-  Flame,
 } from "lucide-react";
 import { useProject } from "@/hooks/project.hooks";
 import { Project } from "@/types/project.types";

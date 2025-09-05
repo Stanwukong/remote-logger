@@ -7,8 +7,8 @@ interface SummaryWidgetProps {
   value: string
   change: string
   icon: LucideIcon
-  trend: "up" | "down" | "neutral"
-  variant?: "default" | "destructive" | "warning" | "success"
+  trend: string
+  variant?: string
   subtitle?: string
   details?: string
 }
