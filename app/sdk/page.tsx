@@ -78,7 +78,7 @@ export default function SDKPage() {
                 <Package className="w-3 h-3 mr-1" />
                 v1.0.1
               </Badge>
-              <Badge variant="outline" className="text-xs">
+              <Badge variant="outline" className="text-xs hidden md:inline">
                 <Star className="w-3 h-3 mr-1 text-yellow-500" />
                 MIT
               </Badge>
