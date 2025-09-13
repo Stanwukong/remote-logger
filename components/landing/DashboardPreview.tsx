@@ -198,9 +198,9 @@ export function DashboardPreview() {
       <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex justify-between">
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col md:gap-6">
             <h2 className="text-2xl font-bold">Dashboard</h2>
-            <p className="text-sm text-muted-foreground">Real-time overview of your applications</p>
+            <p className=" hidden md:block text-sm text-muted-foreground">Real-time overview of your applications</p>
           </div>
           <div className="flex items-center space-x-2">
             <Button variant="outline" size="sm" className="text-xs bg-transparent">
@@ -215,7 +215,7 @@ export function DashboardPreview() {
         </div>
 
         {/* Metrics Cards */}
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {metrics.map((metric, index) => (
             <Card key={index} className="hover:shadow-md transition-all duration-200">
               <CardHeader className="pb-2">
@@ -338,7 +338,7 @@ export function DashboardPreview() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2 max-h-48 overflow-y-auto">
+                <div className="space-y-2 max-h-48 overflow-y-auto scrollbar-hide">
                   {logs.map((log) => (
                     <div
                       key={log.id}
@@ -372,7 +372,7 @@ export function DashboardPreview() {
           </TabsContent>
 
           <TabsContent value="alerts" className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm">Active Alerts</CardTitle>
@@ -438,7 +438,7 @@ export function DashboardPreview() {
           </TabsContent>
 
           <TabsContent value="projects" className="space-y-4">
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[
                 { name: "Web App", status: "healthy", logs: "45.2K", errors: 12 },
                 { name: "API Service", status: "warning", logs: "128.7K", errors: 3 },

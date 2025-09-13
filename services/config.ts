@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import { ApiResponse } from "./auth.service";
 
 const BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api/v1/";
+  process.env.NODE_ENV !== "production" ? "http://localhost:5000/api/v1" : process.env.NEXT_PUBLIC_API_BASE_URL 
 
 /**
  * Helper function to get a cookie value by name.

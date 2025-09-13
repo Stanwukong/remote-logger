@@ -12,16 +12,17 @@ import type { NextRequest } from "next/server";
 export async function middleware(request: NextRequest) {
   // 1. Define the public paths that do not require authentication.
   const publicPaths = ["/", "/login", "/signup", "/sdk"];
+  const authPaths = ["/login", "/signup"];
 
   // 2. Check if the current path is a public path.
   const isPublicPath = publicPaths.includes(request.nextUrl.pathname);
 
-  console.log(isPublicPath)
 
   // 3. Get the authentication token from cookies.
   //    The middleware runs on the server, so `window.localStorage` is not available.
   //    We must get the token from the request's cookies.
   const token = request.cookies.get("authToken");
+
 
   //    If a user is NOT authenticated (no token)...
   if (!token) {
@@ -42,7 +43,7 @@ export async function middleware(request: NextRequest) {
     // ...and they try to access a public path, redirect them to a protected page
     // like the dashboard. This prevents authenticated users from seeing sign-in
     // or sign-up pages unnecessarily.
-    if (isPublicPath) {
+    if (authPaths) {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
 
