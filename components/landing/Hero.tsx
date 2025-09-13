@@ -38,7 +38,7 @@ export function Hero() {
           </Button>
         </Link>
 
-        <Button
+        {/* <Button
           size="lg"
           variant="outline"
           className="text-base px-8 py-6 bg-transparent"
@@ -48,7 +48,7 @@ export function Hero() {
             <Play className="mr-2 w-4 h-4" />
             Watch Demo
           </Link>
-        </Button>
+        </Button> */}
 
         <Button
           size="lg"

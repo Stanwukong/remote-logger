@@ -24,11 +24,11 @@ function IntegrationCard({ name, icon: Icon }: IntegrationCardProps) {
 const integrationData = {
   languages: {
     icon: Code,
-    items: ["Node.js", "Python", "Go", "Java", "PHP", "Ruby", "C#", ".NET", "Rust", "Elixir", "Scala", "Kotlin"]
+    items: ["Node.js"]
   },
   frameworks: {
     icon: Layers,
-    items: ["React", "Next.js", "Express", "FastAPI", "Django", "Rails", "Spring", "Laravel", "Gin", "Echo", "Fiber", "NestJS"]
+    items: ["React", "Next.js", "Express", "NestJS"]
   },
   platforms: {
     icon: Server,

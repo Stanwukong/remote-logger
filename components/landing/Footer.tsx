@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { Activity, Github, Twitter, MessageSquare } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Activity, Github, Twitter, MessageSquare } from "lucide-react";
 
 const footerSections = [
   {
@@ -11,7 +11,7 @@ const footerSections = [
       { href: "/sdk", label: "SDK" },
       { href: "/integrations", label: "Integrations" },
       { href: "/changelog", label: "Changelog" },
-    ]
+    ],
   },
   {
     title: "Resources",
@@ -21,7 +21,7 @@ const footerSections = [
       { href: "/blog", label: "Blog" },
       { href: "/community", label: "Community" },
       { href: "/status", label: "Status" },
-    ]
+    ],
   },
   {
     title: "Company",
@@ -31,9 +31,9 @@ const footerSections = [
       { href: "/contact", label: "Contact" },
       { href: "/privacy", label: "Privacy" },
       { href: "/terms", label: "Terms" },
-    ]
-  }
-]
+    ],
+  },
+];
 
 export function Footer() {
   return (
@@ -49,7 +49,11 @@ export function Footer() {
               <span className="font-semibold text-lg">LogHive</span>
             </div>
             <p className="text-muted-foreground text-sm">
-              Where your logs swarm into <span className="font-semibold hover:text-black dark:hover:text-white hover:cursor-pointer">Insight</span>.
+              Where your logs swarm into{" "}
+              <span className="font-semibold hover:text-black dark:hover:text-white hover:cursor-pointer">
+                Insight
+              </span>
+              .
             </p>
             <div className="flex space-x-4">
               <Button variant="ghost" size="icon">
@@ -64,21 +68,26 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Footer Sections */}
-          {footerSections.map((section) => (
-            <div key={section.title}>
-              <h3 className="font-semibold mb-4">{section.title}</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                {section.links.map((link) => (
-                  <li key={link.href}>
-                    <a href={link.href} className="hover:text-foreground transition-colors">
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <div className="flex justify-between w-full items-center">
+            {/* Footer Sections */}
+            {footerSections.map((section) => (
+              <div key={section.title}>
+                <h3 className="font-semibold mb-4">{section.title}</h3>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  {section.links.map((link) => (
+                    <li key={link.href}>
+                      <a
+                        href={link.href}
+                        className="hover:text-foreground transition-colors"
+                      >
+                        {link.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
 
         <Separator className="mb-8" />
@@ -96,5 +105,5 @@ export function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }

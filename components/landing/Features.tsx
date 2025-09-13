@@ -13,8 +13,8 @@ const mainFeatures = [
   {
     icon: BarChart3,
     title: "Project-Specific Insights",
-    description: "Get detailed analytics and metrics for each project with customizable dashboards and comprehensive reporting.",
-    features: ["Custom dashboards", "Performance metrics", "Trend analysis"]
+    description: "Get detailed analytics and metrics for each project with comprehensive reporting.",
+    features: [ "Performance metrics", "Trend analysis"]
   },
   {
     icon: Shield,
