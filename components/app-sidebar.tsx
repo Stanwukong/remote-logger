@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+
 "use client";
 import {
   Sidebar,
@@ -21,59 +24,53 @@ import {
   HelpCircle,
   Search,
   AlertTriangle,
+  Loader2,
 } from "lucide-react";
 import Link from "next/link";
 import { Badge  } from "@/components/ui/badge";
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { authService } from "@/services/auth.service";
+import { useProjects } from "@/hooks/project.hooks";
+import { Project } from "@/types/project.types";
 
-const navigationItems = [
-  {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: BarChart3,
-  },
-  {
-    title: "Projects",
-    url: "/projects",
-    icon: Folder,
-    badge: "12"
-  },
-  {
-    title: "Logs Explorer",
-    url: "/logs",
-    icon: Search
-  },
-  {
-    title: "Alerts",
-    url: "/alerts",
-    icon: AlertTriangle,
-    badge: "3",
-    badgeVariants: "destructive" as const
+// Navigation items will be created dynamically to include project count
+
+// Helper function to get project status based on analytics
+const getProjectStatus = (project: Project): string => {
+  if (!project.analytics) return "inactive";
+  
+  const { errorRate } = project.analytics.overview;
+  const responseTimeHealth = project.analytics.responseTime.current.health;
+  const performanceHealth = project.analytics.performance.health;
+  const errorHealth = project.analytics.errors.health;
+  
+  if (errorRate > 0.1 || responseTimeHealth === "critical" || performanceHealth === "critical" || errorHealth === "critical") {
+    return "critical";
   }
-];
+  if (errorRate > 0.05 || responseTimeHealth === "poor" || performanceHealth === "poor" || errorHealth === "poor") {
+    return "warning";
+  }
+  if (responseTimeHealth === "excellent" && performanceHealth === "excellent" && errorHealth === "excellent") {
+    return "excellent";
+  }
+  
+  return "good";
+};
 
-const projectItems = [
-  {
-    title: "Web App",
-    url: "/projects/web-app",
-    icon: Activity,
-    status: "active",
-  },
-  {
-    title: "API Service",
-    url: "/projects/api-service",
-    icon: Activity,
-    status: "active",
-  },
-  {
-    title: "Worker Queue",
-    url: "/projects/worker-queue",
-    icon: Activity,
-    status: "active",
-  },
-];
+// Helper function to get status badge variant
+const getStatusBadgeVariant = (status: string) => {
+  switch (status) {
+    case "critical":
+      return "destructive";
+    case "warning":
+      return "secondary";
+    case "excellent":
+      return "default";
+    default:
+      return "outline";
+  }
+};
 
 const resourceItems = [
   {
@@ -95,6 +92,44 @@ const resourceItems = [
 
 export function AppSidebar() {
   const router = useRouter();
+  
+  // Fetch recent projects from database
+  const { data: projectsResponse, isLoading, error } = useProjects({ 
+    includeInactive: false 
+  });
+
+  
+  // Get recent projects (last 5 active projects)
+  const recentProjects = projectsResponse?.data?.slice(0, 5) || [];
+
+  console.log(recentProjects)
+  
+  // Create navigation items with dynamic project count
+  const navigationItems = [
+    {
+      title: "Dashboard",
+      url: "/dashboard",
+      icon: BarChart3,
+    },
+    {
+      title: "Projects",
+      url: "/projects",
+      icon: Folder,
+      badge: projectsResponse?.data?.length?.toString() || "0"
+    },
+    {
+      title: "Logs Explorer",
+      url: "/logs",
+      icon: Search
+    },
+    {
+      title: "Alerts",
+      url: "/alerts",
+      icon: AlertTriangle,
+      badge: "3",
+      badgeVariants: "destructive" as const
+    }
+  ];
 
   const clearAllCookies = () => {
     const cookies = document.cookie.split(";");
@@ -144,6 +179,14 @@ export function AppSidebar() {
                     <Link href={item.url}>
                       <item.icon className="w-4 h-4" />
                       <span>{item.title}</span>
+                      {item.badge && (
+                        <Badge 
+                          variant={item.badgeVariants || "secondary"} 
+                          className="ml-auto text-xs"
+                        >
+                          {item.badge}
+                        </Badge>
+                      )}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -158,19 +201,48 @@ export function AppSidebar() {
           <SidebarGroupLabel>Recent Projects</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {projectItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link href={item.url}>
-                      <item.icon className="w-4 h-4" />
-                      <span>{item.title}</span>
-                      <Badge variant="outline" className="ml-auto text-xs">
-                        {item.status}
-                      </Badge>
-                    </Link>
+              {isLoading ? (
+                <SidebarMenuItem>
+                  <SidebarMenuButton disabled>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Loading projects...</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-              ))}
+              ) : error ? (
+                <SidebarMenuItem>
+                  <SidebarMenuButton disabled>
+                    <AlertTriangle className="w-4 h-4 text-destructive" />
+                    <span>Failed to load</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ) : recentProjects.length === 0 ? (
+                <SidebarMenuItem>
+                  <SidebarMenuButton disabled>
+                    <Folder className="w-4 h-4" />
+                    <span>No projects yet</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ) : (
+                recentProjects.map((project) => {
+                  const status = getProjectStatus(project);
+                  return (
+                    <SidebarMenuItem key={project._id}>
+                      <SidebarMenuButton asChild>
+                        <Link href={`/projects/${project._id}`}>
+                          <Activity className="w-4 h-4" />
+                          <span className="truncate">{project.name}</span>
+                          <Badge 
+                            variant={getStatusBadgeVariant(status) as any} 
+                            className="ml-auto text-xs"
+                          >
+                            {status}
+                          </Badge>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
