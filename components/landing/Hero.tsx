@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Code, Construction, Play } from "lucide-react";
+import { ArrowRight, Code, Construction } from "lucide-react";
 import Link from "next/link";
 import { TrustIndicators } from "./TrustIndicators";
 import { DashboardPreview } from "./DashboardPreview";

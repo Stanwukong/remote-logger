@@ -10,45 +10,29 @@ import type { NextRequest } from "next/server";
  * token (or session) and redirects them accordingly.
  */
 export async function middleware(request: NextRequest) {
-  // 1. Define the public paths that do not require authentication.
   const publicPaths = ["/", "/login", "/signup", "/sdk"];
   const authPaths = ["/login", "/signup"];
 
-  // 2. Check if the current path is a public path.
+  // 2. Check if the current path is a public path or auth path.
   const isPublicPath = publicPaths.includes(request.nextUrl.pathname);
-
+  const isAuthPath = authPaths.includes(request.nextUrl.pathname);
 
   // 3. Get the authentication token from cookies.
-  //    The middleware runs on the server, so `window.localStorage` is not available.
-  //    We must get the token from the request's cookies.
   const token = request.cookies.get("authToken");
 
-
-  //    If a user is NOT authenticated (no token)...
+  // 4. If a user is NOT authenticated (no token)...
   if (!token) {
-    // ...and they are trying to access a protected page, redirect them to the
-    // sign-in page.
     if (!isPublicPath) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
-
-    // ...otherwise, they are not authenticated but are trying to access a
-    // public page, so let the request proceed.
     return NextResponse.next();
   }
 
-  // 4. Handle redirection logic.
-  //    If a user is authenticated (has a token)...
   if (token) {
-    // ...and they try to access a public path, redirect them to a protected page
-    // like the dashboard. This prevents authenticated users from seeing sign-in
-    // or sign-up pages unnecessarily.
-    if (authPaths) {
+    if (isAuthPath) {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
 
-    // ...otherwise, they are authenticated and accessing a protected page,
-    // so let the request proceed.
     return NextResponse.next();
   }
 }

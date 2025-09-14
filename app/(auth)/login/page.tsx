@@ -66,15 +66,16 @@ export default function LoginPage() {
       const res = await signinUser(values.email, values.password);
 
       console.log(res)
+
       
-      toast.success("Login successful.");
       router.push("/dashboard");
+      toast.success("Login successful.");
+      
     } catch (error) {
       toast.error(`Login failed. Please try again.`);
       console.error(error)
     }
 
-    console.log(values);
     setIsLoading(false);
   };
 
