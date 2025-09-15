@@ -73,12 +73,12 @@ export default function SDKPage() {
               </div>
               <span className="text-xl font-semibold">Monita</span>
             </Link>
-            <div className="flex items-center space-x-2 ml-4">
+            <div className="items-center space-x-2 ml-4 hidden md:flex">
               <Badge variant="secondary" className="text-xs">
                 <Package className="w-3 h-3 mr-1" />
-                v1.0.1
+                v1.0.3
               </Badge>
-              <Badge variant="outline" className="text-xs hidden md:inline">
+              <Badge variant="outline" className="text-xs">
                 <Star className="w-3 h-3 mr-1 text-yellow-500" />
                 MIT
               </Badge>
@@ -127,8 +127,8 @@ export default function SDKPage() {
             Zero-Config Auto-Instrumentation
           </Badge>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-6 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent px-2">
-            Monita SDK
-            <br />
+            Monita SDK {" "}
+            <br className="md:hidden"/>
             <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
               Intelligent Logging
             </span>
