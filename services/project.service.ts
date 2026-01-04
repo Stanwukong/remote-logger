@@ -350,17 +350,16 @@ export const projectService = {
    */
   getSDKConfig: async (projectId: string) => {
     try {
-      const response = await apiClient.get<ApiResponse<SDKConfig>>(
+      const response = await apiClient.get<SDKConfig>(
         `/projects/${projectId}/config`
       );
-      if (response.data.status === "error") {
+      if (response.status !== 200) {
         throw new ApiError(
-          response.data.message || "Failed to fetch SDK configuration",
+           "Failed to fetch SDK configuration",
           response.status,
-          response.data.errors
         );
       }
-      return response.data.data;
+      return response.data;
     } catch (error) {
       handleApiError(error);
     }

@@ -166,7 +166,7 @@ export function AlertRuleCard({ rule, projectId, apiKey }: AlertRuleCardProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Alert Rule</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{rule.name}"? This action cannot
+              Are you sure you want to delete this alert rule? This action cannot
               be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>

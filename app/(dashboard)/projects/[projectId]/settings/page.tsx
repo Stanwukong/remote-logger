@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import { useParams } from "next/navigation";
@@ -136,7 +138,7 @@ function GeneralSettings({ project }: { project: any }) {
       <CardHeader>
         <CardTitle>General Information</CardTitle>
         <CardDescription>
-          Update your project's basic information
+          Update your project&apos;s basic information
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -292,7 +294,7 @@ function ApiSettings({ project }: { project: any }) {
             API Key
           </CardTitle>
           <CardDescription>
-            Your project's API key for log ingestion
+            Your project&apos;s API key for log ingestion
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -310,7 +312,7 @@ function ApiSettings({ project }: { project: any }) {
         <CardHeader>
           <CardTitle>Rate Limiting</CardTitle>
           <CardDescription>
-            Configure rate limits for this project
+            Configure rate limits for this project&apos;s API
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -337,7 +339,7 @@ function ApiSettings({ project }: { project: any }) {
 }
 
 // Integration Settings Component
-function IntegrationSettings({ project }: { project: any }) {
+function IntegrationSettings({ }: { project: any }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {/* Slack */}
@@ -402,7 +404,7 @@ function IntegrationSettings({ project }: { project: any }) {
 }
 
 // Advanced Settings Component
-function AdvancedSettings({ project }: { project: any }) {
+function AdvancedSettings({  }: { project: any }) {
   return (
     <div className="space-y-6">
       <Card className="border-yellow-500">

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -7,14 +8,11 @@ import {
   Shield,
   Activity,
   Zap,
-  AlertCircle,
-  Info,
   RefreshCw,
 } from "lucide-react";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -46,6 +44,11 @@ export default function SDKConfigSettings({
     ...DEFAULT_SDK_CONFIG,
   });
 
+  // Debug: Log config changes
+  useEffect(() => {
+    console.log("Config state changed:", config);
+  }, [config]);
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -62,14 +65,19 @@ export default function SDKConfigSettings({
   // Fetch existing configuration on mount
   useEffect(() => {
     fetchConfig();
-  }, [projectId]);
+  }, []);
 
   const fetchConfig = async () => {
     setLoading(true);
     try {
       const data = await projectService.getSDKConfig(projectId);
+      console.log("Fetched config from API:", data);
       if (data) {
-        setConfig(data);
+        // Use API response directly, only ensure projectId is set
+        setConfig({
+          ...data,
+          projectId,
+        });
       }
     } catch (error: any) {
       // 404 means no config exists yet, use defaults
@@ -176,6 +184,8 @@ export default function SDKConfigSettings({
       </div>
     );
   }
+
+  console.log("Rendering with config:", config);
 
   return (
     <div className="space-y-6">

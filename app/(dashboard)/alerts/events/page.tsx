@@ -81,7 +81,7 @@ export default function AlertEventsPage() {
         </Select>
         <Select
           value={statusFilter}
-          onValueChange={(value: any) => setStatusFilter(value)}
+          onValueChange={(value: "all" | "active" | "acknowledged" | "resolved") => setStatusFilter(value)}
         >
           <SelectTrigger className="w-full md:w-48">
             <SelectValue />

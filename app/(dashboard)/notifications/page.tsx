@@ -5,11 +5,9 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Bell, CheckCheck, Trash2 } from "lucide-react";
+import { Bell, CheckCheck } from "lucide-react";
 import {
   useNotifications,
   useMarkAsRead,
@@ -17,6 +15,7 @@ import {
 } from "@/hooks/useNotifications";
 import { Notification } from "@/types/notification.types";
 import { formatDistanceToNow } from "date-fns";
+import { Badge } from "@/components/ui/badge";
 
 export default function NotificationsPage() {
   const { data, isLoading } = useNotifications({ limit: 50 });
@@ -79,7 +78,7 @@ export default function NotificationsPage() {
             <Bell className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-semibold mb-2">No notifications</h3>
             <p className="text-muted-foreground">
-              You're all caught up! Check back later for updates.
+              You&apos;re all caught up! Check back later for updates.
             </p>
           </CardContent>
         </Card>
