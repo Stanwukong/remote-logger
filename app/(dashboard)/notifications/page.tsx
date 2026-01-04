@@ -1,0 +1,190 @@
+"use client";
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Bell, CheckCheck, Trash2 } from "lucide-react";
+import {
+  useNotifications,
+  useMarkAsRead,
+  useMarkAllAsRead,
+} from "@/hooks/useNotifications";
+import { Notification } from "@/types/notification.types";
+import { formatDistanceToNow } from "date-fns";
+
+export default function NotificationsPage() {
+  const { data, isLoading } = useNotifications({ limit: 50 });
+  const markAsReadMutation = useMarkAsRead();
+  const markAllAsReadMutation = useMarkAllAsRead();
+
+  const notifications = data?.notifications || [];
+  const unreadCount = data?.unreadCount || 0;
+
+  const handleMarkAsRead = (id: string) => {
+    markAsReadMutation.mutate(id);
+  };
+
+  const handleMarkAllAsRead = () => {
+    markAllAsReadMutation.mutate();
+  };
+
+  return (
+    <div className="p-6 space-y-8">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+            <Bell className="w-8 h-8" />
+            Notifications
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            {unreadCount > 0
+              ? `${unreadCount} unread notification${
+                  unreadCount > 1 ? "s" : ""
+                }`
+              : "All caught up!"}
+          </p>
+        </div>
+        {unreadCount > 0 && (
+          <Button
+            onClick={handleMarkAllAsRead}
+            disabled={markAllAsReadMutation.isPending}
+          >
+            <CheckCheck className="w-4 h-4 mr-2" />
+            Mark All as Read
+          </Button>
+        )}
+      </div>
+
+      {/* Notifications List */}
+      {isLoading ? (
+        <div className="space-y-4">
+          {[...Array(5)].map((_, i) => (
+            <Card key={i} className="animate-pulse">
+              <CardContent className="p-6">
+                <div className="h-16 bg-muted rounded" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : notifications.length === 0 ? (
+        <Card>
+          <CardContent className="p-12 text-center">
+            <Bell className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">No notifications</h3>
+            <p className="text-muted-foreground">
+              You're all caught up! Check back later for updates.
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          {notifications.map((notification) => (
+            <NotificationCard
+              key={notification._id}
+              notification={notification}
+              onMarkAsRead={handleMarkAsRead}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function NotificationCard({
+  notification,
+  onMarkAsRead,
+}: {
+  notification: Notification;
+  onMarkAsRead: (id: string) => void;
+}) {
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case "error":
+        return "border-red-500 bg-red-50";
+      case "warning":
+        return "border-yellow-500 bg-yellow-50";
+      case "success":
+        return "border-green-500 bg-green-50";
+      case "info":
+      default:
+        return "border-blue-500 bg-blue-50";
+    }
+  };
+
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case "error":
+        return "🔴";
+      case "warning":
+        return "⚠️";
+      case "success":
+        return "✅";
+      case "info":
+      default:
+        return "ℹ️";
+    }
+  };
+
+  return (
+    <Card
+      className={`${
+        !notification.read
+          ? "border-l-4 " + getTypeColor(notification.type)
+          : ""
+      }`}
+    >
+      <CardHeader>
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-xl">{getTypeIcon(notification.type)}</span>
+              <Badge variant="outline" className="capitalize">
+                {notification.type}
+              </Badge>
+              {!notification.read && (
+                <Badge variant="default" className="text-xs">
+                  New
+                </Badge>
+              )}
+            </div>
+            <CardDescription className="text-base text-foreground">
+              {notification.message}
+            </CardDescription>
+          </div>
+          {!notification.read && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onMarkAsRead(notification._id)}
+            >
+              Mark as read
+            </Button>
+          )}
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="flex items-center justify-between text-sm text-muted-foreground">
+          <span>
+            {formatDistanceToNow(new Date(notification.createdAt), {
+              addSuffix: true,
+            })}
+          </span>
+          {notification.metadata && (
+            <span className="text-xs">
+              {notification.metadata.projectName &&
+                `Project: ${notification.metadata.projectName}`}
+            </span>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

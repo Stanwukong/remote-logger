@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   LineChart,
@@ -162,6 +162,7 @@ const HealthIndicator = ({
 
 export default function ProjectDashboard() {
   const params = useParams<{ projectId: string }>();
+  const router = useRouter();
   const projectId =
     typeof params?.projectId === "string" ? params.projectId : "";
   const { data: projectData, isLoading } = useProject(projectId);
@@ -268,7 +269,7 @@ export default function ProjectDashboard() {
             </div>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={() => router.push(`/projects/${project._id}/settings`)}>
               <Settings className="w-4 h-4 mr-2" />
               Settings
             </Button>
