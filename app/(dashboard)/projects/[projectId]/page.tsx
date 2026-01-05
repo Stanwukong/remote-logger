@@ -53,6 +53,10 @@ import {
 } from "lucide-react";
 import { useProject } from "@/hooks/project.hooks";
 import { Project } from "@/types/project.types";
+import AnalyticsErrors from "@/components/analytics/AnalyticsErrors";
+import AnalyticsPerformance from "@/components/analytics/AnalyticsPerformance";
+import AnalyticsActivity from "@/components/analytics/AnalyticsActivity";
+import AnalyticsSessions from "@/components/analytics/AnalyticsSessions";
 
 // Utility components
 const MetricCard = ({
@@ -166,7 +170,6 @@ export default function ProjectDashboard() {
   const projectId =
     typeof params?.projectId === "string" ? params.projectId : "";
   const { data: projectData, isLoading } = useProject(projectId);
-  
 
   if (isLoading) {
     return (
@@ -214,8 +217,6 @@ export default function ProjectDashboard() {
       ? "fair"
       : "poor";
 
-  
-
   if (!project) {
     return (
       <div className="p-6 max-w-7xl mx-auto">
@@ -227,7 +228,7 @@ export default function ProjectDashboard() {
           <div className="mt-4">
             <Button asChild>
               <Link href="/projects">Back to Projects</Link>
-          </Button>
+            </Button>
           </div>
         </div>
       </div>
@@ -269,7 +270,11 @@ export default function ProjectDashboard() {
             </div>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => router.push(`/projects/${project._id}/settings`)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push(`/projects/${project._id}/settings`)}
+            >
               <Settings className="w-4 h-4 mr-2" />
               Settings
             </Button>
@@ -325,10 +330,12 @@ export default function ProjectDashboard() {
         </div>
 
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="errors">Errors</TabsTrigger>
             <TabsTrigger value="performance">Performance</TabsTrigger>
+            <TabsTrigger value="activity">Activity</TabsTrigger>
+            <TabsTrigger value="sessions">Sessions</TabsTrigger>
             <TabsTrigger value="usage">Usage</TabsTrigger>
             <TabsTrigger value="recommendations">Actions</TabsTrigger>
           </TabsList>
@@ -427,7 +434,7 @@ export default function ProjectDashboard() {
                   </div>
                 </CardContent>
               </Card>
-        </div>
+            </div>
 
             {/* Service Breakdown */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -519,253 +526,24 @@ export default function ProjectDashboard() {
                   </div>
                 </CardContent>
               </Card>
-            </div>
-        </TabsContent>
+            </div>ç
+          </TabsContent>
 
           <TabsContent value="errors" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Error Analysis */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <AlertTriangle className="w-5 h-5" />
-                    Error Analysis
-                  </CardTitle>
-                  <CardDescription>Breakdown by severity level</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {analytics.errors.analysis.map((error, index) => {
-                      const config = {
-                        error: {
-                          color: "text-red-600",
-                          bg: "bg-red-50 border-red-200",
-                          icon: XCircle,
-                        },
-                        warn: {
-                          color: "text-yellow-600",
-                          bg: "bg-yellow-50 border-yellow-200",
-                          icon: AlertCircle,
-                        },
-                        fatal: {
-                          color: "text-red-800",
-                          bg: "bg-red-100 border-red-300",
-                          icon: XCircle,
-                        },
-                      }[error._id.level] || {
-                        color: "text-gray-600",
-                        bg: "bg-gray-50",
-                        icon: Info,
-                      };
-
-                      return (
-                        <div
-                          key={index}
-                          className={`p-4 rounded-lg border ${config.bg}`}
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-2">
-                              <config.icon className="h-4 w-4" />
-                              <span className="font-medium capitalize">
-                                {error._id.level}
-                              </span>
-                            </div>
-                            <Badge variant="outline" className={config.color}>
-                              {error.count} occurrences
-                            </Badge>
-                          </div>
-                          <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-                            <div>Service: {error._id.service}</div>
-                            <div>Environment: {error._id.environment}</div>
-                          </div>
-                          <p className="text-xs text-muted-foreground mt-2">
-                            Last:{" "}
-                            {new Date(error.lastOccurence).toLocaleString()}
-                          </p>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Top Errors */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Target className="w-5 h-5" />
-                    Critical Issues
-                  </CardTitle>
-                  <CardDescription>
-                    Most frequent error patterns
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {analytics.errors.topErrors.map((error) => (
-                      <div
-                        key={error._id}
-                        className="p-4 border rounded-lg bg-red-50 border-red-200"
-                      >
-                        <div className="flex items-start justify-between mb-3">
-                          <h4 className="font-medium text-sm text-red-800">
-                            {error._id}
-                          </h4>
-                          <Badge variant="destructive" className="text-xs">
-                            {error.count} times
-                          </Badge>
-                        </div>
-                        <div className="space-y-2 text-xs">
-                          <div className="flex items-center gap-2">
-                            <span className="text-muted-foreground">
-                              Services:
-                            </span>
-                            {error.services.map((service) => (
-                              <Badge
-                                key={service}
-                                variant="outline"
-                                className="h-5"
-                              >
-                                {service}
-                              </Badge>
-                            ))}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-muted-foreground">
-                              Environments:
-                            </span>
-                            {error.environments.map((env) => (
-                              <Badge
-                                key={env}
-                                variant="secondary"
-                                className="h-5"
-                              >
-                                {env}
-                              </Badge>
-                            ))}
-                          </div>
-                          <p className="text-muted-foreground">
-                            Last seen:{" "}
-                            {new Date(error.lastSeen).toLocaleString()}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-        </TabsContent>
+            <AnalyticsErrors projectId={projectId} />
+          </TabsContent>
 
           <TabsContent value="performance" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <MetricCard
-                title="Total Requests"
-                value={analytics.performance.metrics.totalRequests}
-                subtitle="Last period"
-                icon={Activity}
-              />
+            <AnalyticsPerformance projectId={projectId} />
+          </TabsContent>
 
-              <MetricCard
-                title="Successful Requests"
-                value={analytics.performance.metrics.successfulRequests}
-                subtitle={`${Math.round(
-                  (analytics.performance.metrics.successfulRequests /
-                    analytics.performance.metrics.totalRequests) *
-                    100
-                )}% success rate`}
-                icon={CheckCircle}
-                variant="success"
-              />
+          <TabsContent value="activity" className="space-y-6">
+            <AnalyticsActivity projectId={projectId} />
+          </TabsContent>
 
-              <MetricCard
-                title="Failed Requests"
-                value={analytics.performance.metrics.errorRequests}
-                subtitle="Needs attention"
-                icon={XCircle}
-                variant="destructive"
-              />
-            </div>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Zap className="w-5 h-5" />
-                  Performance Insights
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <Alert
-                    variant={
-                      analytics.performance.health === "poor"
-                        ? "destructive"
-                        : "default"
-                    }
-                  >
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>
-                      System health is currently{" "}
-                      <strong>{analytics.performance.health}</strong> based on
-                      recent performance metrics.
-                    </AlertDescription>
-                  </Alert>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <h4 className="font-medium text-sm">Key Insights</h4>
-                      <ul className="space-y-1 text-sm text-muted-foreground">
-                        {analytics.usage.insights.map((insight, index) => (
-                          <li key={index} className="flex items-start gap-2">
-                            <div className="w-1 h-1 bg-blue-500 rounded-full mt-2 shrink-0"></div>
-                            {insight}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Response Time Chart */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Clock className="w-5 h-5" />
-                  Average Response Time
-                </CardTitle>
-                <CardDescription>
-                  Historical trend of response times (in ms)
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart
-                    data={analytics.responseTime.history}
-                    margin={{
-                      top: 5,
-                      right: 30,
-                      left: 20,
-                      bottom: 5,
-                    }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip />
-                    <Line
-                      type="monotone"
-                      dataKey="avgResponseTime"
-                      stroke="#8884d8"
-                      strokeWidth={2}
-                      activeDot={{ r: 8 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-        </TabsContent>
+          <TabsContent value="sessions" className="space-y-6">
+            <AnalyticsSessions projectId={projectId} />
+          </TabsContent>
 
           <TabsContent value="usage" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -859,7 +637,7 @@ export default function ProjectDashboard() {
                 </CardContent>
               </Card>
             </div>
-        </TabsContent>
+          </TabsContent>
 
           <TabsContent value="recommendations" className="space-y-6">
             <div className="grid grid-cols-1 gap-6">
@@ -922,8 +700,8 @@ export default function ProjectDashboard() {
                 </CardContent>
               </Card>
             </div>
-        </TabsContent>
-      </Tabs>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
