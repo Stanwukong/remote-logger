@@ -142,9 +142,6 @@ export function AppSidebar() {
 
   const handleLogout = async () => {
     try {
-      await authService.signOut();
-    } catch {}
-    try {
       clearAllCookies();
       if (typeof window !== "undefined") {
         localStorage.clear();
@@ -155,8 +152,8 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar className="border-r border-border/40 ">
-      <SidebarHeader className="border-b border-border/40 p-4">
+    <Sidebar className="border-r border-border/40">
+      <SidebarHeader className="border-b border-border/40">
         <div className="flex items-center space-x-2">
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
             <Activity className="w-5 h-5 text-primary-foreground" />
@@ -168,12 +165,12 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="overflow-x-clip">
         <SidebarGroup>
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navigationItems.map((item) => (
+              {navigationItems.map((item) =>  (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <Link href={item.url}>

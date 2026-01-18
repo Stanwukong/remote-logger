@@ -181,7 +181,7 @@ export const generateMockLogs = (projectId?: string, count = 50): LogEntry[] => 
     const message = messageList[Math.floor(Math.random() * messageList.length)]
 
     const log: LogEntry = {
-      id: `log_${i}_${Date.now()}`,
+      _id: `log_${i}_${Date.now()}`,
       projectId,
       timestamp: new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000).toISOString(),
       level,

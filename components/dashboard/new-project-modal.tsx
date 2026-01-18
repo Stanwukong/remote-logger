@@ -239,7 +239,7 @@ export function NewProjectModal() {
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg">
-                    {createdProjectData?.id}
+                    {createdProjectData?.name}
                   </CardTitle>
                 </CardHeader>
                 {createdProjectData?.description && (

@@ -580,7 +580,7 @@ export default function ProjectDashboard() {
                           </div>
                           <p className="text-xs text-muted-foreground mt-2">
                             Last:{" "}
-                            {new Date(error.lastOccurence).toLocaleString()}
+                            {new Date(error.lastOccurrence).toLocaleString()}
                           </p>
                         </div>
                       );
@@ -679,12 +679,14 @@ export default function ProjectDashboard() {
               />
 
               <MetricCard
-                title="Failed Requests"
-                value={analytics.performance.metrics.errorRequests}
+                title="Average Response Time"
+                value={analytics.performance.metrics.avgResponseTime?.toFixed() ?? "N/A"}
                 subtitle="Needs attention"
                 icon={XCircle}
                 variant="destructive"
               />
+
+              
             </div>
 
             <Card>

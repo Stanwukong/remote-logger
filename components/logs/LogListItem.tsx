@@ -1,4 +1,12 @@
-import { ChevronDown, ChevronRight, Clock, Eye, Globe, Trash2, User } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  Clock,
+  Eye,
+  Globe,
+  Trash2,
+  User,
+} from "lucide-react";
 import { Button } from "../ui/button";
 import { LogEntry } from "@/types/analytics";
 import { useMemo } from "react";
@@ -11,7 +19,7 @@ interface LogListItemProps {
   isExpanded: boolean;
   onToggleExpansion: (logId: string) => void;
   onViewDetails: (log: LogEntry) => void;
-  onDeleteLog: (logId: string) => void; // Placeholder for delete functionality
+  onDeleteLog: (logId: string) => void;
 }
 
 export const LogListItem: React.FC<LogListItemProps> = ({
@@ -21,25 +29,33 @@ export const LogListItem: React.FC<LogListItemProps> = ({
   onViewDetails,
   onDeleteLog,
 }) => {
-  const timestamp = useMemo(() => formatTimestamp(log.timestamp), [log.timestamp]);
+  const timestamp = useMemo(
+    () => formatTimestamp(log.timestamp),
+    [log.timestamp]
+  );
   const levelColorClass = useMemo(() => getLevelColor(log.level), [log.level]);
   const levelIcon = useMemo(() => getLevelIcon(log.level), [log.level]);
 
+
   return (
     <div
-      key={log.id}
+      key={log._id}
       className={`border-l-4 p-4 hover:bg-muted/30 transition-colors ${levelColorClass}`}
     >
       <div className="flex items-start space-x-4">
         <Button
           variant="ghost"
           size="sm"
-          className="p-0 h-auto self-center"
-          onClick={() => onToggleExpansion(log.id)}
+          className="p-4 h-auto self-center"
+          onClick={() => onToggleExpansion(log._id)}
           aria-expanded={isExpanded}
-          aria-controls={`log-details-${log.id}`}
+          aria-controls={`log-details-${log._id}`}
         >
-          {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+          {isExpanded ? (
+            <ChevronDown className="w-4 h-4" />
+          ) : (
+            <ChevronRight className="w-4 h-4" />
+          )}
         </Button>
 
         <div className="flex-1 min-w-0">
@@ -49,7 +65,7 @@ export const LogListItem: React.FC<LogListItemProps> = ({
               {log.level.toUpperCase()}
             </Badge>
             <Badge variant="secondary" className="text-xs">
-              {log.projectId}
+              {log.environment || "N/A"}
             </Badge>
             {log.service && (
               <Badge variant="outline" className="text-xs">
@@ -75,19 +91,25 @@ export const LogListItem: React.FC<LogListItemProps> = ({
             {log.url && (
               <div className="flex items-center space-x-1">
                 <Globe className="w-3 h-3" />
-                <span className="truncate max-w-[150px] sm:max-w-xs">{log.url}</span>
+                <span className="truncate max-w-[150px] sm:max-w-xs">
+                  {log.url}
+                </span>
               </div>
             )}
             {log.userAgent && (
               <div className="flex items-center space-x-1">
                 <User className="w-3 h-3" />
-                <span>User Agent</span> {/* Consider truncating or showing on hover */}
+                <span>User Agent</span>{" "}
+                {/* Consider truncating or showing on hover */}
               </div>
             )}
           </div>
 
           {isExpanded && (
-            <div id={`log-details-${log.id}`} className="mt-4 space-y-3 animate-fade-in">
+            <div
+              id={`log-details-${log._id}`}
+              className="mt-4 space-y-3 animate-fade-in"
+            >
               {/* Error Details */}
               {log.error && (
                 <div className="bg-muted/50 p-3 rounded-lg">
@@ -117,7 +139,9 @@ export const LogListItem: React.FC<LogListItemProps> = ({
                   </div>
                   {log.error.stack && (
                     <details className="mt-2">
-                      <summary className="cursor-pointer text-xs font-medium">Stack Trace</summary>
+                      <summary className="cursor-pointer text-xs font-medium">
+                        Stack Trace
+                      </summary>
                       <pre className="mt-2 bg-muted p-2 rounded text-xs overflow-x-auto whitespace-pre-wrap">
                         {log.error.stack}
                       </pre>
@@ -158,18 +182,22 @@ export const LogListItem: React.FC<LogListItemProps> = ({
                   </div>
                   {log.url && (
                     <div>
-                      <strong>URL:</strong> <span className="break-all">{log.url}</span>
+                      <strong>URL:</strong>{" "}
+                      <span className="break-all">{log.url}</span>
                     </div>
                   )}
                   {log.referrer && (
                     <div>
-                      <strong>Referrer:</strong> <span className="break-all">{log.referrer}</span>
+                      <strong>Referrer:</strong>{" "}
+                      <span className="break-all">{log.referrer}</span>
                     </div>
                   )}
                   {log.userAgent && (
                     <div className="col-span-1 sm:col-span-2">
                       <strong>User Agent:</strong>
-                      <span className="block mt-1 break-all">{log.userAgent}</span>
+                      <span className="block mt-1 break-all">
+                        {log.userAgent}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -179,10 +207,21 @@ export const LogListItem: React.FC<LogListItemProps> = ({
         </div>
 
         <div className="flex flex-col space-y-2">
-          <Button variant="ghost" size="sm" onClick={() => onViewDetails(log)} aria-label="View full log details">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onViewDetails(log)}
+            aria-label="View full log details"
+          >
             <Eye className="w-4 h-4" />
           </Button>
-          <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => onDeleteLog(log.id)} aria-label="Delete log entry">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-destructive hover:text-destructive"
+            onClick={() => onDeleteLog(log._id)}
+            aria-label="Delete log entry"
+          >
             <Trash2 className="w-4 h-4" />
           </Button>
         </div>
