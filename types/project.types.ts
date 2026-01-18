@@ -86,7 +86,7 @@ export type Project = {
           environment: string;
         };
         count: number;
-        lastOccurence: string;
+        lastOccurrence: string;
       }>;
       topErrors: Array<{
         _id: string;

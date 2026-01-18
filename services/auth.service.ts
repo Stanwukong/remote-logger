@@ -53,7 +53,7 @@ export const authService = {
       const { confirmPassword, ...serverPayload } = payload;
 
       const response = await apiClient.post<ApiResponse>(
-        "/signup",
+        "/users/signup",
         serverPayload
       );
 
@@ -79,7 +79,7 @@ export const authService = {
   */
   signIn: async (email: string, password: string) => {
     try {
-      const response = await apiClient.post<ApiResponse>('/login', { email, password })
+      const response = await apiClient.post<ApiResponse>('/users/login', { email, password })
 
       if (response.data.status === "error") {
         throw new ApiError(
