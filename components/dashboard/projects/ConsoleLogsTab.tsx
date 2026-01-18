@@ -78,7 +78,7 @@ export function ConsoleLogsTab({ logs }: ConsoleLogsTabProps) {
         <div className="space-y-2 max-h-96 overflow-y-auto">
           {displayedLogs.map((log) => (
             <div
-              key={log.id}
+              key={log._id}
               className={`flex items-start space-x-3 p-3 rounded-lg border text-sm transition-all duration-200 ${
                 log.level === "error"
                   ? "border-red-200 bg-red-50 dark:bg-red-950/20 dark:border-red-800"

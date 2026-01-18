@@ -79,7 +79,7 @@ export function AlertRuleCard({ rule, projectId, apiKey }: AlertRuleCardProps) {
                 {rule.name}
               </CardTitle>
               <CardDescription className="mt-1">
-                Trigger when {rule.condition.keyword} {rule.condition.level}{" "}
+                Trigger when {rule.condition.frequency || rule.condition.keyword || 0} {rule.condition.level || "error"}{" "}
                 logs occur
               </CardDescription>
             </div>
@@ -94,7 +94,7 @@ export function AlertRuleCard({ rule, projectId, apiKey }: AlertRuleCardProps) {
           {/* Condition Details */}
           <div
             className={`p-3 rounded-lg border ${getSeverityColor(
-              rule.condition.level
+              rule.condition.level || "info"
             )}`}
           >
             <div className="flex items-center gap-2 mb-2">
@@ -110,7 +110,7 @@ export function AlertRuleCard({ rule, projectId, apiKey }: AlertRuleCardProps) {
               </p>
               <p>
                 <span className="font-medium">Threshold:</span>{" "}
-                {rule.condition.keyword} occurrences
+                {rule.condition.frequency || rule.condition.keyword || 0} occurrences
               </p>
               <p className="flex items-center gap-1">
                 <Clock className="w-3 h-3" />

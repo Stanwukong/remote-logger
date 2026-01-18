@@ -82,7 +82,7 @@ export function ErrorsTab({ logs }: ErrorsTabProps) {
           <CardContent>
             <div className="space-y-3 md:space-y-4">
               {errorLogs.slice(0, 5).map((log) => (
-                <div key={log.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                <div key={log._id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
                   <div className="flex-1 min-w-0 pr-4">
                     <h4 className="font-medium text-sm truncate">{log.message}</h4>
                     <p className="text-xs text-muted-foreground">

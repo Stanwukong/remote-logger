@@ -43,7 +43,7 @@ export function CreateAlertModal({
     projectId: "",
     condition: {
       level: "error",
-      keyword: 10,
+      frequency: 10,
       intervalMinutes: 5,
     },
     isActive: true,
@@ -71,7 +71,7 @@ export function CreateAlertModal({
             projectId: "",
             condition: {
               level: "error",
-              keyword: 10,
+              frequency: 10,
               intervalMinutes: 5,
             },
             isActive: true,
@@ -176,13 +176,13 @@ export function CreateAlertModal({
                 type="number"
                 min="1"
                 placeholder="10"
-                value={formData.condition?.keyword}
+                value={formData.condition?.frequency}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
                     condition: {
                       ...formData.condition!,
-                      keyword: parseInt(e.target.value) || 0,
+                      frequency: parseInt(e.target.value) || 0,
                     },
                   })
                 }

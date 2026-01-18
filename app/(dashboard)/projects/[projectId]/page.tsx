@@ -680,7 +680,7 @@ export default function ProjectDashboard() {
 
               <MetricCard
                 title="Average Response Time"
-                value={analytics.performance.metrics.avgResponseTime?.toFixed()}
+                value={analytics.performance.metrics.avgResponseTime?.toFixed() ?? "N/A"}
                 subtitle="Needs attention"
                 icon={XCircle}
                 variant="destructive"

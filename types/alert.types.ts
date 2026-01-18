@@ -5,14 +5,18 @@ export interface AlertRule {
   name: string;
   projectId: string;
   condition: {
-    level: string;
-    keyword: number;
+    level?: string;
+    keyword?: string;
     frequency?: number;
-    intervalMinutes: number;
+    intervalMinutes?: number;
   };
   isActive: boolean;
   notifyChannels: string[];
-  notificationConfig?: Record<string, any>;
+  notificationConfig?: {
+    emails?: string[];
+    slackWebhookUrl?: string;
+    webhookUrl?: string;
+  };
   createdAt: string;
   updatedAt: string;
 }
@@ -39,26 +43,34 @@ export interface CreateAlertRuleData {
   projectId: string;
   condition: {
     level: string;
-    keyword: number;
+    keyword?: string;
     frequency?: number;
-    intervalMinutes: number;
+    intervalMinutes?: number;
   };
   isActive?: boolean;
   notifyChannels?: string[];
-  notificationConfig?: Record<string, any>;
+  notificationConfig?: {
+    emails?: string[];
+    slackWebhookUrl?: string;
+    webhookUrl?: string;
+  };
 }
 
 export interface UpdateAlertRuleData {
   name?: string;
   condition?: {
     level: string;
-    keyword: number;
+    keyword?: string;
     frequency?: number;
-    intervalMinutes: number;
+    intervalMinutes?: number;
   };
   isActive?: boolean;
   notifyChannels?: string[];
-  notificationConfig?: Record<string, any>;
+  notificationConfig?: {
+    emails?: string[];
+    slackWebhookUrl?: string;
+    webhookUrl?: string;
+  };
 }
 
 export interface AlertEventFilters {
