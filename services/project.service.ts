@@ -1,7 +1,17 @@
 import { ApiResponse } from "@/types/api";
 import { apiClient } from "./config";
 import { ApiError, handleApiError } from "./auth.service";
-import { BulkDeletePayload, Project, ProjectCreateData, ProjectFilters, ProjectsAnalytics, ProjectsSummary, ProjectStats, ProjectUpdateData } from "@/types/project.types";
+import {
+  BulkDeletePayload,
+  Project,
+  ProjectCreateData,
+  ProjectFilters,
+  ProjectsAnalytics,
+  ProjectsSummary,
+  ProjectStats,
+  ProjectUpdateData,
+} from "@/types/project.types";
+import { SDKConfig } from "@/types/sdk-config.types";
 
 // ============================================
 // PROJECTS SERVICE
@@ -20,7 +30,6 @@ export const projectService = {
           params.append(key, value.toString());
         }
       });
-
 
       const response = await apiClient.get<ApiResponse>(
         `/projects?${params.toString()}`
@@ -325,6 +334,51 @@ export const projectService = {
       if (response.data.status === "error") {
         throw new ApiError(
           response.data.message || "Failed to update rate limit",
+          response.status,
+          response.data.errors
+        );
+      }
+      return response.data.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  /**
+   * Get SDK configuration for a project.
+   * @param projectId - The ID of the project.
+   */
+  getSDKConfig: async (projectId: string) => {
+    try {
+      const response = await apiClient.get<SDKConfig>(
+        `/projects/${projectId}/config`
+      );
+      if (response.status !== 200) {
+        throw new ApiError(
+           "Failed to fetch SDK configuration",
+          response.status,
+        );
+      }
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  /**
+   * Update SDK configuration for a project.
+   * @param projectId - The ID of the project.
+   * @param config - The SDK configuration to update.
+   */
+  updateSDKConfig: async (projectId: string, config: SDKConfig) => {
+    try {
+      const response = await apiClient.put<ApiResponse<SDKConfig>>(
+        `/projects/${projectId}/config`,
+        config
+      );
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to update SDK configuration",
           response.status,
           response.data.errors
         );
