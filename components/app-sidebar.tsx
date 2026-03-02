@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Badge  } from "@/components/ui/badge";
+import { SignalDot } from "@/components/shared/SignalDot";
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { authService } from "@/services/auth.service";
@@ -154,12 +155,26 @@ export function AppSidebar() {
   return (
     <Sidebar className="border-r border-border/40">
       <SidebarHeader className="border-b border-border/40">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <Activity className="w-5 h-5 text-primary-foreground" />
-          </div>
+        <div className="flex items-center space-x-2.5">
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 28 28"
+            fill="none"
+            className="text-signal shrink-0"
+          >
+            <path
+              d="M4 20L4 16L8 12L12 18L18 8L22 14L24 10"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <circle cx="4" cy="20" r="2" fill="currentColor" />
+            <circle cx="24" cy="10" r="2" fill="currentColor" />
+          </svg>
           <div>
-            <h2 className="font-semibold text-lg">LogHive</h2>
+            <h2 className="font-display font-semibold text-lg tracking-[-0.02em]">Monita</h2>
             <p className="text-xs text-muted-foreground">Developer Console</p>
           </div>
         </div>
@@ -268,7 +283,7 @@ export function AppSidebar() {
       <SidebarFooter className="border-t border-border/40 p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-            <div className="w-2 h-2 bg-green-500 rounded-full" />
+            <SignalDot status="ok" size="sm" pulse />
             <span>All systems operational</span>
           </div>
           <button

@@ -1,76 +1,117 @@
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Code, Layers, Server, Zap, LucideIcon } from "lucide-react"
+"use client";
 
-interface IntegrationCardProps {
-  name: string
-  icon: LucideIcon
-}
+import { SectionHeading } from "@/components/shared/SectionHeading";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useScrollReveal } from "@/hooks/useGsapAnimations";
 
-function IntegrationCard({ name, icon: Icon }: IntegrationCardProps) {
-  return (
-    <Card className="text-center hover:shadow-md transition-shadow">
-      <CardContent className="p-6">
-        <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
-          <Icon className="w-6 h-6 text-primary" />
-        </div>
-        <p className="font-medium">{name}</p>
-      </CardContent>
-    </Card>
-  )
-}
-
-const integrationData = {
-  languages: {
-    icon: Code,
-    items: ["Node.js"]
-  },
+const integrationData: Record<
+  string,
+  { items: { name: string; soon?: boolean }[] }
+> = {
   frameworks: {
-    icon: Layers,
-    items: ["React", "Next.js", "Express", "NestJS"]
+    items: [
+      { name: "React" },
+      { name: "Next.js" },
+      { name: "Vue", soon: true },
+      { name: "Angular", soon: true },
+      { name: "Svelte", soon: true },
+      { name: "Express" },
+      { name: "NestJS", soon: true },
+      { name: "Nuxt", soon: true },
+    ],
   },
-  platforms: {
-    icon: Server,
-    items: ["AWS", "Google Cloud", "Azure", "Vercel", "Netlify", "Heroku", "DigitalOcean", "Railway", "Fly.io", "Render", "Supabase", "PlanetScale"]
+  languages: {
+    items: [
+      { name: "JavaScript" },
+      { name: "TypeScript" },
+      { name: "Python", soon: true },
+      { name: "Go", soon: true },
+    ],
   },
-  tools: {
-    icon: Zap,
-    items: ["Slack", "Discord", "Teams", "PagerDuty", "Datadog", "New Relic", "Sentry", "Grafana", "Prometheus", "Kibana", "Splunk", "LogRocket"]
-  }
+  notifications: {
+    items: [
+      { name: "Slack" },
+      { name: "Email" },
+      { name: "Webhook" },
+      { name: "Discord", soon: true },
+      { name: "PagerDuty", soon: true },
+      { name: "Teams", soon: true },
+    ],
+  },
+  cloud: {
+    items: [
+      { name: "Vercel" },
+      { name: "AWS" },
+      { name: "Railway" },
+      { name: "Render" },
+      { name: "Fly.io" },
+      { name: "Google Cloud", soon: true },
+      { name: "Azure", soon: true },
+      { name: "DigitalOcean", soon: true },
+    ],
+  },
+};
+
+function IntegrationTile({
+  name,
+  soon,
+}: {
+  name: string;
+  soon?: boolean;
+}) {
+  return (
+    <div
+      className={`flex items-center justify-center h-20 rounded-lg border border-border-subtle bg-bg-surface text-sm font-medium text-text-primary transition-all duration-200 hover:border-border-accent hover:-translate-y-0.5 relative ${
+        soon ? "opacity-50" : ""
+      }`}
+    >
+      {name}
+      {soon && (
+        <span className="absolute -top-2 -right-2 text-[9px] font-display font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-bg-elevated border border-border-accent text-text-muted">
+          soon
+        </span>
+      )}
+    </div>
+  );
 }
 
 export function Integrations() {
+  const containerRef = useScrollReveal();
+
   return (
-    <section className="container mx-auto px-4 py-24 bg-muted/30 rounded-3xl my-24">
-      <div className="text-center mb-16">
-        <Badge variant="outline" className="mb-4">
-          Integrations
-        </Badge>
-        <h2 className="text-4xl font-bold mb-4">Works with your entire stack</h2>
-        <p className="text-muted-foreground text-xl max-w-2xl mx-auto">
-          Seamlessly integrate with your favorite tools and platforms
-        </p>
+    <section
+      id="integrations"
+      className="py-24 bg-bg-surface/50"
+      ref={containerRef}
+    >
+      <div className="max-w-[1280px] mx-auto px-6">
+        <SectionHeading
+          eyebrow="INTEGRATIONS"
+          headline="Works with your stack."
+          sub="Drop the SDK in any JavaScript environment. No lock-in, no rewrites, no migration pain."
+        />
+
+        <div className="mt-12" data-reveal>
+          <Tabs defaultValue="frameworks" className="w-full">
+            <TabsList className="grid w-full grid-cols-4 max-w-lg mx-auto mb-10 bg-bg-elevated">
+              <TabsTrigger value="frameworks">Frameworks</TabsTrigger>
+              <TabsTrigger value="languages">Languages</TabsTrigger>
+              <TabsTrigger value="notifications">Notifications</TabsTrigger>
+              <TabsTrigger value="cloud">Cloud</TabsTrigger>
+            </TabsList>
+
+            {Object.entries(integrationData).map(([key, data]) => (
+              <TabsContent key={key} value={key}>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+                  {data.items.map((item) => (
+                    <IntegrationTile key={item.name} {...item} />
+                  ))}
+                </div>
+              </TabsContent>
+            ))}
+          </Tabs>
+        </div>
       </div>
-
-      <Tabs defaultValue="languages" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 max-w-2xl mx-auto mb-12">
-          <TabsTrigger value="languages">Languages</TabsTrigger>
-          <TabsTrigger value="frameworks">Frameworks</TabsTrigger>
-          <TabsTrigger value="platforms">Platforms</TabsTrigger>
-          <TabsTrigger value="tools">Tools</TabsTrigger>
-        </TabsList>
-
-        {Object.entries(integrationData).map(([key, data]) => (
-          <TabsContent key={key} value={key} className="space-y-8">
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
-              {data.items.map((item) => (
-                <IntegrationCard key={item} name={item} icon={data.icon} />
-              ))}
-            </div>
-          </TabsContent>
-        ))}
-      </Tabs>
     </section>
-  )
+  );
 }

@@ -81,23 +81,23 @@ export function ConsoleLogsTab({ logs }: ConsoleLogsTabProps) {
               key={log._id}
               className={`flex items-start space-x-3 p-3 rounded-lg border text-sm transition-all duration-200 ${
                 log.level === "error"
-                  ? "border-red-200 bg-red-50 dark:bg-red-950/20 dark:border-red-800"
+                  ? "border-level-error/30 bg-level-error/5"
                   : log.level === "warn"
-                    ? "border-yellow-200 bg-yellow-50 dark:bg-yellow-950/20 dark:border-yellow-800"
+                    ? "border-level-warn/30 bg-level-warn/5"
                     : log.level === "info"
-                      ? "border-blue-200 bg-blue-50 dark:bg-blue-950/20 dark:border-blue-800"
-                      : "border-gray-200 bg-gray-50 dark:bg-gray-950/20 dark:border-gray-800"
+                      ? "border-level-info/30 bg-level-info/5"
+                      : "border-border-subtle bg-bg-surface/50"
               }`}
             >
               <div
                 className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
                   log.level === "error"
-                    ? "bg-red-500"
+                    ? "bg-level-error"
                     : log.level === "warn"
-                      ? "bg-yellow-500"
+                      ? "bg-level-warn"
                       : log.level === "info"
-                        ? "bg-blue-500"
-                        : "bg-gray-500"
+                        ? "bg-level-info"
+                        : "bg-level-debug"
                 }`}
               />
               <div className="flex-1 min-w-0">

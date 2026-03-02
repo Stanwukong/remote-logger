@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { useDistinctValues, useLogs } from "@/hooks/log.hooks";
 import { useProjects } from "@/hooks/project.hooks";
 import { LogEntry, LogFilters } from "@/types/analytics";
@@ -11,10 +9,11 @@ import { LogsHeader } from "./LogsHeader";
 import { LogsFilterCard } from "./LogsFilterCard";
 import { LogsSummary } from "./LogsSummary";
 import { Card, CardContent } from "../ui/card";
-import { RefreshCw, Search } from "lucide-react";
+import { RefreshCw, Search, AlertCircle } from "lucide-react";
 import { LogListItem } from "./LogListItem";
 import { LogsPagination } from "./LogPagination";
 import { LogDetailsDialog } from "./LogsDetailsDialog";
+import { Button } from "../ui/button";
 
 export default function LogsExplorerContent() {
   const searchParams = useSearchParams();
@@ -76,9 +75,10 @@ export default function LogsExplorerContent() {
 
   const serverFilters: LogFilters = useMemo(
     () => ({
-      level:
-        selectedLevels.length === 1 ? (selectedLevels[0] as any) : undefined,
-      service: selectedServices.length === 1 ? selectedServices[0] : undefined,
+      // Use levels array for multi-select, level for single
+      levels: selectedLevels.length > 0 ? (selectedLevels as LogFilters['levels']) : undefined,
+      // Use services array for multi-select, service for single
+      services: selectedServices.length > 0 ? selectedServices : undefined,
       search: searchTerm || undefined,
       startDate: dateRange.from ? dateRange.from.toISOString() : undefined,
       endDate: dateRange.to
@@ -94,6 +94,7 @@ export default function LogsExplorerContent() {
   const {
     data: logsData,
     isLoading: logsLoading,
+    isError: logsError,
     refetch,
   } = useLogs(activeProjectId, serverFilters);
   const logs: LogEntry[] = useMemo(() => logsData?.logs ?? [], [logsData]);
@@ -241,7 +242,19 @@ export default function LogsExplorerContent() {
 
       <Card>
         <CardContent className="p-0">
-          {logsLoading ? (
+          {logsError ? (
+            <div className="p-8 text-center">
+              <AlertCircle className="w-8 h-8 mx-auto mb-4 text-destructive" />
+              <h3 className="text-lg font-semibold mb-2">Failed to load logs</h3>
+              <p className="text-muted-foreground mb-4">
+                There was an error fetching logs. Please try again.
+              </p>
+              <Button onClick={() => refetch()} variant="outline">
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Retry
+              </Button>
+            </div>
+          ) : logsLoading ? (
             <div className="p-8 text-center">
               <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4 text-muted-foreground" />
               <p className="text-muted-foreground">Loading logs...</p>

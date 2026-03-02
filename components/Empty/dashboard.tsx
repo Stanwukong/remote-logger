@@ -28,7 +28,7 @@ const EmptyDashboardPage = () => {
 
       <EmptyState
         icon={FolderPlus}
-        title="Welcome to LogHive!"
+        title="Welcome to Monita!"
         description="Get started by creating your first project. Once you have projects set up, you'll see comprehensive analytics, error tracking, and performance metrics right here."
       >
         <div className="space-y-4">
@@ -65,7 +65,7 @@ const EmptyDashboardPage = () => {
                 <span className="text-sm font-medium">Total Logs</span>
               </div>
               <div className="text-2xl font-bold">24,567</div>
-              <div className="text-xs text-green-600">+12% from last week</div>
+              <div className="text-xs text-status-ok">+12% from last week</div>
             </div>
             <div className="bg-muted/50 p-4 rounded-lg">
               <div className="flex items-center space-x-2 mb-2">
@@ -73,7 +73,7 @@ const EmptyDashboardPage = () => {
                 <span className="text-sm font-medium">Active Errors</span>
               </div>
               <div className="text-2xl font-bold">23</div>
-              <div className="text-xs text-red-600">+3 new today</div>
+              <div className="text-xs text-status-danger">+3 new today</div>
             </div>
             <div className="bg-muted/50 p-4 rounded-lg">
               <div className="flex items-center space-x-2 mb-2">
@@ -81,7 +81,7 @@ const EmptyDashboardPage = () => {
                 <span className="text-sm font-medium">Active Users</span>
               </div>
               <div className="text-2xl font-bold">1,234</div>
-              <div className="text-xs text-green-600">+8% this month</div>
+              <div className="text-xs text-status-ok">+8% this month</div>
             </div>
             <div className="bg-muted/50 p-4 rounded-lg">
               <div className="flex items-center space-x-2 mb-2">
@@ -89,7 +89,7 @@ const EmptyDashboardPage = () => {
                 <span className="text-sm font-medium">Avg Response</span>
               </div>
               <div className="text-2xl font-bold">245ms</div>
-              <div className="text-xs text-yellow-600">+12ms slower</div>
+              <div className="text-xs text-status-warn">+12ms slower</div>
             </div>
           </div>
         </CardContent>

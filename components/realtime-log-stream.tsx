@@ -89,15 +89,15 @@ export function RealtimeLogStream() {
   const getLevelColor = (level: string) => {
     switch (level) {
       case "error":
-        return "border-l-red-500 bg-red-50/50 dark:bg-red-950/20"
+        return "border-l-level-error bg-level-error/5"
       case "warn":
-        return "border-l-yellow-500 bg-yellow-50/50 dark:bg-yellow-950/20"
+        return "border-l-level-warn bg-level-warn/5"
       case "info":
-        return "border-l-blue-500 bg-blue-50/50 dark:bg-blue-950/20"
+        return "border-l-level-info bg-level-info/5"
       case "debug":
-        return "border-l-gray-500 bg-gray-50/50 dark:bg-gray-950/20"
+        return "border-l-level-debug bg-level-debug/5"
       default:
-        return "border-l-green-500 bg-green-50/50 dark:bg-green-950/20"
+        return "border-l-status-ok bg-status-ok/5"
     }
   }
 

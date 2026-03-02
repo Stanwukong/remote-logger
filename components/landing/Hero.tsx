@@ -1,75 +1,135 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Code, Construction } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { TrustIndicators } from "./TrustIndicators";
+import { SignalDot } from "@/components/shared/SignalDot";
+import { TerminalBlock } from "@/components/shared/TerminalBlock";
+import { HeroCanvas } from "./HeroCanvas";
 import { DashboardPreview } from "./DashboardPreview";
+import { useHeroSequence } from "@/hooks/useGsapAnimations";
 
 export function Hero() {
+  const containerRef = useHeroSequence();
+
   return (
-    <section className="container mx-auto px-4 py-24 text-center relative">
-      <Badge
-        variant="secondary"
-        className="px-3 border-amber-500 mb-6 animate-pulse"
-      >
-        <Construction className="w-3 h-3 mr-1" />
-        <p>Under construction</p>
-      </Badge>
+    <section
+      ref={containerRef}
+      className="relative min-h-screen overflow-hidden pt-16"
+      style={{
+        background:
+          "linear-gradient(180deg, var(--bg-void) 0%, var(--bg-base) 60%, var(--bg-void) 100%)",
+      }}
+    >
+      {/* Background layers */}
+      <div className="absolute inset-0 bg-dot-grid opacity-40" />
+      <HeroCanvas />
 
-      <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 bg-gradient-to-r from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
-        The Developer&apos;s
-        <br />
-        <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-          Logging Companion
-        </span>
-      </h1>
+      {/* Vignette overlay */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "linear-gradient(to bottom, transparent 60%, var(--bg-void) 100%)",
+        }}
+      />
 
-      <p className="text-lg md:text-2xl text-muted-foreground mb-8 max-w-2xl md:max-w-3xl mx-auto leading-relaxed">
-        Visualize real-time logs, track error insights, and configure
-        intelligent alert rules. Built for developers who demand{" "}
-        <span className="text-primary font-semibold">clarity and control</span>.
-      </p>
+      {/* Hero content */}
+      <div className="relative z-10 max-w-[1280px] mx-auto px-6 pt-24 pb-16 md:pt-32">
+        {/* Badge pill */}
+        <div className="flex justify-center mb-8" data-hero-badge>
+          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-signal bg-signal-muted">
+            <SignalDot status="ok" size="sm" />
+            <span className="text-xs font-display font-semibold uppercase tracking-[0.08em] text-signal">
+              Real-time observability for JS apps
+            </span>
+          </div>
+        </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-        <Link href={"/sdk"}>
-          <Button size="lg" className="text-base px-8 py-6">
-            Start Free Trial
-            <ArrowRight className="ml-2 w-4 h-4" />
+        {/* Headline */}
+        <div className="text-center max-w-5xl mx-auto mb-6">
+          <h1
+            className="font-display font-extrabold tracking-[-0.03em] leading-[1.05]"
+            style={{ fontSize: "clamp(52px, 8vw, 96px)" }}
+          >
+            <span data-hero-headline>Stop guessing what&apos;s</span>
+            <br />
+            <span data-hero-headline>breaking in</span>
+            <br />
+            <span data-hero-headline className="text-signal">
+              production.
+            </span>
+          </h1>
+        </div>
+
+        {/* Subheadline */}
+        <p
+          className="text-center text-base sm:text-lg text-text-secondary max-w-2xl mx-auto mb-10 leading-relaxed"
+          data-hero-sub
+        >
+          One npm install. One line of code. Instant dashboards, real-time
+          alerts, and AI-powered insights — without the enterprise complexity.
+        </p>
+
+        {/* CTA row */}
+        <div
+          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8"
+          data-hero-ctas
+        >
+          <Button
+            variant="signal"
+            size="lg"
+            className="font-display font-bold text-base px-8 py-6"
+            asChild
+          >
+            <Link href="/signup">
+              Start monitoring free
+              <ArrowRight className="ml-2 w-4 h-4" />
+            </Link>
           </Button>
-        </Link>
+          <TerminalBlock
+            code="npm install monita"
+            className="w-full sm:w-auto min-w-[280px]"
+            showCopy
+          />
+        </div>
 
-        {/* <Button
-          size="lg"
-          variant="outline"
-          className="text-base px-8 py-6 bg-transparent"
-          asChild
+        {/* Trust bar */}
+        <div
+          className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 text-sm text-text-muted mb-16"
+          data-hero-trust
         >
-          <Link href="#demo">
-            <Play className="mr-2 w-4 h-4" />
-            Watch Demo
-          </Link>
-        </Button> */}
+          <span className="flex items-center gap-2">
+            <span className="w-1 h-1 rounded-full bg-text-muted" />
+            10,000 logs free/mo
+          </span>
+          <span className="flex items-center gap-2">
+            <span className="w-1 h-1 rounded-full bg-text-muted" />
+            No credit card
+          </span>
+          <span className="flex items-center gap-2">
+            <span className="w-1 h-1 rounded-full bg-text-muted" />5 min setup
+          </span>
+        </div>
 
-        <Button
-          size="lg"
-          variant="ghost"
-          className="text-base px-8 py-6"
-          asChild
+        {/* Dashboard preview */}
+        <div
+          className="relative max-w-[1000px] mx-auto"
+          data-hero-preview
+          style={{
+            perspective: "2000px",
+          }}
         >
-          <Link href="/sdk">
-            <Code className="mr-2 w-4 h-4" />
-            View SDK
-          </Link>
-        </Button>
-      </div>
-
-      <TrustIndicators />
-
-      {/* Dashboard Preview */}
-      <div className="relative max-w-7xl mx-auto">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 rounded-3xl blur-3xl" />
-        <div className="relative">
-          <DashboardPreview />
+          <div
+            className="relative rounded-2xl border border-border-subtle overflow-hidden"
+            style={{
+              transform: "rotateX(8deg)",
+              boxShadow:
+                "0 0 0 1px var(--border-faint), 0 60px 120px rgba(0,0,0,0.8), 0 0 60px #00d97e10",
+            }}
+          >
+            <DashboardPreview />
+          </div>
         </div>
       </div>
     </section>

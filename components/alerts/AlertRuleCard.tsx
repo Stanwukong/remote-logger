@@ -58,13 +58,13 @@ export function AlertRuleCard({ rule, projectId, apiKey }: AlertRuleCardProps) {
     switch (level.toLowerCase()) {
       case "fatal":
       case "error":
-        return "text-red-600 bg-red-50 border-red-200";
+        return "text-level-error bg-level-error/10 border-level-error/30";
       case "warn":
-        return "text-yellow-600 bg-yellow-50 border-yellow-200";
+        return "text-level-warn bg-level-warn/10 border-level-warn/30";
       case "info":
-        return "text-blue-600 bg-blue-50 border-blue-200";
+        return "text-level-info bg-level-info/10 border-level-info/30";
       default:
-        return "text-gray-600 bg-gray-50 border-gray-200";
+        return "text-text-muted bg-bg-surface border-border-subtle";
     }
   };
 

@@ -50,17 +50,17 @@ export function AlertsStats({ alerts, apiStats }: AlertsStatsProps) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Active Alerts</CardTitle>
-          <AlertTriangle className="h-4 w-4 text-red-500" />
+          <AlertTriangle className="h-4 w-4 text-status-danger" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-red-600">{stats.active}</div>
+          <div className="text-2xl font-bold text-status-danger">{stats.active}</div>
           <div className="flex items-center space-x-2 text-xs text-muted-foreground">
             {trends.activeChange < 0 ? (
-              <TrendingDown className="h-3 w-3 text-green-500" />
+              <TrendingDown className="h-3 w-3 text-status-ok" />
             ) : (
-              <TrendingUp className="h-3 w-3 text-red-500" />
+              <TrendingUp className="h-3 w-3 text-status-danger" />
             )}
-            <span className={trends.activeChange < 0 ? "text-green-600" : "text-red-600"}>
+            <span className={trends.activeChange < 0 ? "text-status-ok" : "text-status-danger"}>
               {Math.abs(trends.activeChange)}% from last week
             </span>
           </div>
@@ -70,10 +70,10 @@ export function AlertsStats({ alerts, apiStats }: AlertsStatsProps) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Acknowledged</CardTitle>
-          <Clock className="h-4 w-4 text-yellow-500" />
+          <Clock className="h-4 w-4 text-status-warn" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-yellow-600">{stats.acknowledged}</div>
+          <div className="text-2xl font-bold text-status-warn">{stats.acknowledged}</div>
           <p className="text-xs text-muted-foreground">Being investigated</p>
         </CardContent>
       </Card>
@@ -81,17 +81,17 @@ export function AlertsStats({ alerts, apiStats }: AlertsStatsProps) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Resolved</CardTitle>
-          <CheckCircle className="h-4 w-4 text-green-500" />
+          <CheckCircle className="h-4 w-4 text-status-ok" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-green-600">{stats.resolved}</div>
+          <div className="text-2xl font-bold text-status-ok">{stats.resolved}</div>
           <div className="flex items-center space-x-2 text-xs text-muted-foreground">
             {trends.resolutionChange > 0 ? (
-              <TrendingUp className="h-3 w-3 text-green-500" />
+              <TrendingUp className="h-3 w-3 text-status-ok" />
             ) : (
-              <TrendingDown className="h-3 w-3 text-red-500" />
+              <TrendingDown className="h-3 w-3 text-status-danger" />
             )}
-            <span className={trends.resolutionChange > 0 ? "text-green-600" : "text-red-600"}>
+            <span className={trends.resolutionChange > 0 ? "text-status-ok" : "text-status-danger"}>
               {Math.abs(trends.resolutionChange)}% from last week
             </span>
           </div>
@@ -101,7 +101,7 @@ export function AlertsStats({ alerts, apiStats }: AlertsStatsProps) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Total Alerts</CardTitle>
-          <Bell className="h-4 w-4 text-blue-500" />
+          <Bell className="h-4 w-4 text-data-info" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{stats.total}</div>
@@ -122,15 +122,15 @@ export function AlertsStats({ alerts, apiStats }: AlertsStatsProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-status-danger rounded-full"></div>
                 <span className="text-sm">Critical: {stats.critical}</span>
               </div>
               <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-status-warn rounded-full"></div>
                 <span className="text-sm">Warning: {stats.warning}</span>
               </div>
               <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-data-info rounded-full"></div>
                 <span className="text-sm">Info: {alerts.filter((a) => a.severity === "info").length}</span>
               </div>
             </div>

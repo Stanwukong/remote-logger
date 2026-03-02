@@ -390,17 +390,12 @@ export const alertRuleService = {
 
   /**
    * Get rules by project
-   * GET /api/alert-rules
+   * GET /api/alert-rules/project/:projectId
    */
   getRulesByProject: async (projectId: string) => {
     try {
       const response = await apiClient.get<ApiResponse<AlertRule[]>>(
-        `/alert-rules`,
-        {
-          headers: {
-            'X-Project-ID': projectId
-          }
-        }
+        `/alert-rules/project/${projectId}`
       );
 
       if (response.data.status === "error") {

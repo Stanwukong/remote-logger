@@ -156,18 +156,18 @@ export function NewProjectModal() {
             <div className="grid gap-6 py-6">
               <div className="grid gap-2">
                 <Label htmlFor="name" className="flex items-center gap-1">
-                  Project Name <span className="text-red-500">*</span>
+                  Project Name <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="name"
                   placeholder="My Awesome App"
                   value={formData.name}
                   onChange={(e) => handleInputChange("name", e.target.value)}
-                  className={errors.name ? "border-red-500" : ""}
+                  className={errors.name ? "border-destructive" : ""}
                   maxLength={50}
                 />
                 {errors.name && (
-                  <div className="flex items-center gap-1 text-sm text-red-500">
+                  <div className="flex items-center gap-1 text-sm text-destructive">
                     <AlertCircle className="w-3 h-3" />
                     {errors.name}
                   </div>
@@ -186,12 +186,12 @@ export function NewProjectModal() {
                   onChange={(e) =>
                     handleInputChange("description", e.target.value)
                   }
-                  className={errors.description ? "border-red-500" : ""}
+                  className={errors.description ? "border-destructive" : ""}
                   rows={3}
                   maxLength={200}
                 />
                 {errors.description && (
-                  <div className="flex items-center gap-1 text-sm text-red-500">
+                  <div className="flex items-center gap-1 text-sm text-destructive">
                     <AlertCircle className="w-3 h-3" />
                     {errors.description}
                   </div>
@@ -224,7 +224,7 @@ export function NewProjectModal() {
         ) : (
           <div>
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-green-600">
+              <DialogTitle className="flex items-center gap-2 text-status-ok">
                 <Check className="w-5 h-5" />
                 Project Created Successfully!
               </DialogTitle>
@@ -315,12 +315,12 @@ export function NewProjectModal() {
                 </div>
               </div>
 
-              <Card className="bg-blue-50 border-blue-200 dark:bg-blue-950 dark:border-blue-800">
+              <Card className="bg-data-info/10 border-data-info/30">
                 <CardContent className="pt-4">
                   <div className="text-sm">
                     <p className="font-medium mb-2">Next Steps:</p>
                     <ul className="space-y-1 text-muted-foreground">
-                      <li>• Install the LogHive SDK in your application</li>
+                      <li>• Install the Monita SDK in your application</li>
                       <li>• Configure it with your Project ID and API Key</li>
                       <li>• Start sending logs to monitor your application</li>
                     </ul>

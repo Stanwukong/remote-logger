@@ -38,9 +38,9 @@ export function SummaryWidget({
 
   const getTrendColor = () => {
     if (variant === "destructive") {
-      return trend === "down" ? "text-green-600" : "text-red-600"
+      return trend === "down" ? "text-status-ok" : "text-status-danger"
     }
-    return trend === "up" ? "text-green-600" : trend === "down" ? "text-red-600" : "text-muted-foreground"
+    return trend === "up" ? "text-status-ok" : trend === "down" ? "text-status-danger" : "text-muted-foreground"
   }
 
   return (
@@ -51,7 +51,7 @@ export function SummaryWidget({
           className={cn(
             "h-4 w-4",
             variant === "destructive" && "text-destructive",
-            variant === "warning" && "text-yellow-600",
+            variant === "warning" && "text-status-warn",
           )}
         />
       </CardHeader>

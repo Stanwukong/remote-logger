@@ -50,26 +50,26 @@ export function InteractiveDemo() {
   const getLevelIcon = (level: string) => {
     switch (level) {
       case "error":
-        return <AlertTriangle className="w-4 h-4 text-red-500" />
+        return <AlertTriangle className="w-4 h-4 text-status-danger" />
       case "warn":
-        return <AlertTriangle className="w-4 h-4 text-yellow-500" />
+        return <AlertTriangle className="w-4 h-4 text-status-warn" />
       case "info":
-        return <Info className="w-4 h-4 text-blue-500" />
+        return <Info className="w-4 h-4 text-data-info" />
       default:
-        return <CheckCircle2 className="w-4 h-4 text-green-500" />
+        return <CheckCircle2 className="w-4 h-4 text-status-ok" />
     }
   }
 
   const getLevelColor = (level: string) => {
     switch (level) {
       case "error":
-        return "border-l-red-500"
+        return "border-l-status-danger"
       case "warn":
-        return "border-l-yellow-500"
+        return "border-l-status-warn"
       case "info":
-        return "border-l-blue-500"
+        return "border-l-data-info"
       default:
-        return "border-l-green-500"
+        return "border-l-status-ok"
     }
   }
 

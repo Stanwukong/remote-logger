@@ -23,7 +23,7 @@ export default function DashboardLayout({
           <AppSidebar />
           <div className="flex-1 flex flex-col">
             <TopBar onCommandOpen={() => setCommandOpen(true)} />
-            <main className="flex-1 p-6 bg-muted/20">{children}</main>
+            <main className="flex-1 p-6 bg-bg-base">{children}</main>
           </div>
         </div>
         <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} />

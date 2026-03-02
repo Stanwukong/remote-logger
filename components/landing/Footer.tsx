@@ -1,106 +1,123 @@
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Activity, Github, Twitter, MessageSquare } from "lucide-react";
+import Link from "next/link";
+import { Github, Twitter } from "lucide-react";
 
 const footerSections = [
   {
     title: "Product",
     links: [
-      { href: "#features", label: "Features" },
-      { href: "#pricing", label: "Pricing" },
+      { href: "/dashboard", label: "Dashboard" },
+      { href: "/logs", label: "Log Explorer" },
+      { href: "/alerts", label: "Alerts" },
       { href: "/sdk", label: "SDK" },
-      { href: "/integrations", label: "Integrations" },
-      { href: "/changelog", label: "Changelog" },
+      { href: "#pricing", label: "Pricing" },
     ],
   },
   {
     title: "Resources",
     links: [
       { href: "/docs", label: "Documentation" },
-      { href: "/guides", label: "Guides" },
-      { href: "/blog", label: "Blog" },
-      { href: "/community", label: "Community" },
-      { href: "/status", label: "Status" },
+      { href: "/sdk", label: "SDK Reference" },
+      { href: "/docs", label: "Changelog" },
+      { href: "/docs", label: "Status Page" },
     ],
   },
   {
     title: "Company",
     links: [
-      { href: "/about", label: "About" },
-      { href: "/careers", label: "Careers" },
-      { href: "/contact", label: "Contact" },
-      { href: "/privacy", label: "Privacy" },
-      { href: "/terms", label: "Terms" },
+      { href: "/docs", label: "About" },
+      { href: "/docs", label: "Privacy" },
+      { href: "/docs", label: "Terms" },
+      { href: "/docs", label: "Security" },
+      { href: "/docs", label: "Contact" },
     ],
   },
 ];
 
 export function Footer() {
   return (
-    <footer className="border-t border-border/40 py-16">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-          {/* Company Info */}
+    <footer className="bg-bg-void border-t border-border-faint">
+      <div className="max-w-[1280px] mx-auto px-6 py-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+          {/* Brand column */}
           <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <Activity className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <span className="font-semibold text-lg">LogHive</span>
-            </div>
-            <p className="text-muted-foreground text-sm">
-              Where your logs swarm into{" "}
-              <span className="font-semibold hover:text-black dark:hover:text-white hover:cursor-pointer">
-                Insight
+            <Link href="/" className="flex items-center gap-2.5">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 28 28"
+                fill="none"
+                className="text-signal"
+              >
+                <path
+                  d="M4 20L4 16L8 12L12 18L18 8L22 14L24 10"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <circle cx="4" cy="20" r="2" fill="currentColor" />
+                <circle cx="24" cy="10" r="2" fill="currentColor" />
+              </svg>
+              <span className="font-display font-semibold text-lg text-text-primary tracking-[-0.02em]">
+                monita
               </span>
-              .
+            </Link>
+            <p className="text-sm text-text-muted leading-relaxed">
+              The Developer&apos;s Logging Companion
             </p>
-            <div className="flex space-x-4">
-              <Button variant="ghost" size="icon">
-                <Github className="w-4 h-4" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Twitter className="w-4 h-4" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <MessageSquare className="w-4 h-4" />
-              </Button>
+            <div className="flex items-center gap-3">
+              <a
+                href="https://github.com"
+                className="text-text-muted hover:text-text-primary transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub"
+              >
+                <Github className="w-5 h-5" />
+              </a>
+              <a
+                href="https://twitter.com"
+                className="text-text-muted hover:text-text-primary transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Twitter"
+              >
+                <Twitter className="w-5 h-5" />
+              </a>
             </div>
           </div>
 
-          <div className="flex justify-between w-full items-center">
-            {/* Footer Sections */}
-            {footerSections.map((section) => (
-              <div key={section.title}>
-                <h3 className="font-semibold mb-4">{section.title}</h3>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  {section.links.map((link) => (
-                    <li key={link.href}>
-                      <a
-                        href={link.href}
-                        className="hover:text-foreground transition-colors"
-                      >
-                        {link.label}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
+          {/* Link columns */}
+          {footerSections.map((section) => (
+            <div key={section.title}>
+              <h3 className="font-display font-semibold text-sm text-text-primary mb-4">
+                {section.title}
+              </h3>
+              <ul className="space-y-2.5">
+                {section.links.map((link) => (
+                  <li key={link.label}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-text-muted hover:text-text-primary transition-colors duration-150"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
-        <Separator className="mb-8" />
-
-        <div className="flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">
-          <p>© 2025 LogHive. All rights reserved.</p>
-          <div className="flex items-center space-x-4 mt-4 md:mt-0">
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
-              <span>Under construction</span>
-            </div>
-            <span>•</span>
-            <span>Built with ❤️ for developers</span>
+        {/* Bottom bar */}
+        <div className="border-t border-border-faint pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-text-muted">
+          <p>&copy; 2025 Monita. All rights reserved.</p>
+          <div className="flex items-center gap-4">
+            <span>GDPR Ready</span>
+            <span>&bull;</span>
+            <span>SOC 2</span>
+            <span>&bull;</span>
+            <span>99.9% SLA</span>
           </div>
         </div>
       </div>

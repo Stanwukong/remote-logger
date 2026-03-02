@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import { ApiResponse } from "./auth.service";
 
 const BASE_URL =
-  process.env.NODE_ENV !== "production" ? "http://localhost:5000/api/v1" : process.env.NEXT_PUBLIC_API_BASE_URL 
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api/v1";
 
 /**
  * Helper function to get a cookie value by name.
@@ -44,7 +44,7 @@ apiClient.interceptors.request.use(
     // Get the auth token from cookies instead of localStorage
     const token = getCookie("authToken");
     if (token) {
-      config.headers.Authorization = `${token}`;
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },

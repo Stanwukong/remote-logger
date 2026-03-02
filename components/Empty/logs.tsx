@@ -36,19 +36,19 @@ const EmptyLogsPage = () => {
             <p className="mb-3">The logs explorer will help you:</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
               <div className="flex items-center space-x-2">
-                <Search className="w-4 h-4 text-blue-500" />
+                <Search className="w-4 h-4 text-data-info" />
                 <span>Search through log messages</span>
               </div>
               <div className="flex items-center space-x-2">
-                <Filter className="w-4 h-4 text-green-500" />
+                <Filter className="w-4 h-4 text-status-ok" />
                 <span>Filter by level and service</span>
               </div>
               <div className="flex items-center space-x-2">
-                <Calendar className="w-4 h-4 text-purple-500" />
+                <Calendar className="w-4 h-4 text-data-purple" />
                 <span>Filter by date ranges</span>
               </div>
               <div className="flex items-center space-x-2">
-                <Download className="w-4 h-4 text-orange-500" />
+                <Download className="w-4 h-4 text-status-warn" />
                 <span>Export logs for analysis</span>
               </div>
             </div>
@@ -88,7 +88,7 @@ const EmptyLogsPage = () => {
           {/* Mock log entries */}
           <div className="space-y-3 opacity-50">
             <div className="flex items-start space-x-3 p-3 border rounded-lg">
-              <div className="w-2 h-2 bg-red-500 rounded-full mt-2"></div>
+              <div className="w-2 h-2 bg-level-error rounded-full mt-2"></div>
               <div className="flex-1">
                 <div className="flex items-center space-x-2 mb-1">
                   <Badge variant="destructive" className="text-xs">
@@ -105,7 +105,7 @@ const EmptyLogsPage = () => {
             </div>
 
             <div className="flex items-start space-x-3 p-3 border rounded-lg">
-              <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
+              <div className="w-2 h-2 bg-level-warn rounded-full mt-2"></div>
               <div className="flex-1">
                 <div className="flex items-center space-x-2 mb-1">
                   <Badge variant="secondary" className="text-xs">
@@ -122,7 +122,7 @@ const EmptyLogsPage = () => {
             </div>
 
             <div className="flex items-start space-x-3 p-3 border rounded-lg">
-              <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+              <div className="w-2 h-2 bg-level-info rounded-full mt-2"></div>
               <div className="flex-1">
                 <div className="flex items-center space-x-2 mb-1">
                   <Badge variant="outline" className="text-xs">

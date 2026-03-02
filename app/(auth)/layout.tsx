@@ -10,7 +10,7 @@ export default function AuthLayout({
     <header>
       <div className="flex flex-col min-h-screen w-full">
         <Header/>
-        <main className="flex-1 p-6 bg-muted/20">{children}</main>
+        <main className="flex-1 p-6 bg-bg-base">{children}</main>
       </div>
     </header>
   );

@@ -74,10 +74,10 @@ export function AlertsTabContent({
                       <div
                         className={`w-3 h-3 rounded-full ${
                           alert.severity === "critical"
-                            ? "bg-red-500"
+                            ? "bg-status-danger"
                             : alert.severity === "warning"
-                            ? "bg-yellow-500"
-                            : "bg-blue-500"
+                            ? "bg-status-warn"
+                            : "bg-data-info"
                         }`}
                       />
                       <div>
@@ -110,21 +110,21 @@ export function AlertsTabContent({
               <div className="flex items-center justify-between">
                 <span className="text-sm">Critical</span>
                 <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-red-500 rounded-full" />
+                  <div className="w-2 h-2 bg-status-danger rounded-full" />
                   <span className="font-semibold">{alertSummary.critical}</span>
                 </div>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm">Warning</span>
                 <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-yellow-500 rounded-full" />
+                  <div className="w-2 h-2 bg-status-warn rounded-full" />
                   <span className="font-semibold">{alertSummary.warning}</span>
                 </div>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm">Info</span>
                 <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                  <div className="w-2 h-2 bg-data-info rounded-full" />
                   <span className="font-semibold">{alertSummary.info}</span>
                 </div>
               </div>

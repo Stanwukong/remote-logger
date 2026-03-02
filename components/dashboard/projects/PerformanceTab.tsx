@@ -24,15 +24,15 @@ function CoreWebVitalCard({ title, description, goodPercentage, threshold }: Cor
         <Progress value={goodPercentage} className="h-2" />
         <div className="grid grid-cols-3 gap-2 text-xs">
           <div className="text-center">
-            <div className="w-3 h-3 bg-green-500 rounded-full mx-auto mb-1" />
+            <div className="w-3 h-3 bg-status-ok rounded-full mx-auto mb-1" />
             <span>Good</span>
           </div>
           <div className="text-center">
-            <div className="w-3 h-3 bg-yellow-500 rounded-full mx-auto mb-1" />
+            <div className="w-3 h-3 bg-status-warn rounded-full mx-auto mb-1" />
             <span>Needs Work</span>
           </div>
           <div className="text-center">
-            <div className="w-3 h-3 bg-red-500 rounded-full mx-auto mb-1" />
+            <div className="w-3 h-3 bg-status-danger rounded-full mx-auto mb-1" />
             <span>Poor</span>
           </div>
         </div>

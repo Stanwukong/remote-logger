@@ -3,103 +3,214 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ============================================================================
+   OBSERVATORY DESIGN SYSTEM — Monita
+   "A precision instrument pointed at a vast, complex sky"
+   ============================================================================ */
+
+/* Light mode fallback — kept functional but dark is the default */
 :root {
-  --background: oklch(0.9900 0 0);
-  --foreground: oklch(0 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0 0 0);
-  --popover: oklch(0.9900 0 0);
-  --popover-foreground: oklch(0 0 0);
-  --primary: oklch(0 0 0);
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.9400 0 0);
-  --secondary-foreground: oklch(0 0 0);
-  --muted: oklch(0.9700 0 0);
-  --muted-foreground: oklch(0.4400 0 0);
-  --accent: oklch(0.9400 0 0);
-  --accent-foreground: oklch(0 0 0);
-  --destructive: oklch(0.6300 0.1900 23.0300);
-  --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.9200 0 0);
-  --input: oklch(0.9400 0 0);
-  --ring: oklch(0 0 0);
-  --chart-1: oklch(0.8100 0.1700 75.3500);
-  --chart-2: oklch(0.5500 0.2200 264.5300);
-  --chart-3: oklch(0.7200 0 0);
-  --chart-4: oklch(0.9200 0 0);
-  --chart-5: oklch(0.5600 0 0);
-  --sidebar: oklch(0.9900 0 0);
-  --sidebar-foreground: oklch(0 0 0);
-  --sidebar-primary: oklch(0 0 0);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.9400 0 0);
-  --sidebar-accent-foreground: oklch(0 0 0);
-  --sidebar-border: oklch(0.9400 0 0);
-  --sidebar-ring: oklch(0 0 0);
-  --font-sans: Geist, sans-serif;
+  --background: #f8fafc;
+  --foreground: #0b1220;
+  --card: #ffffff;
+  --card-foreground: #0b1220;
+  --popover: #ffffff;
+  --popover-foreground: #0b1220;
+  --primary: #00b368;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0b1220;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #f1f5f9;
+  --accent-foreground: #0b1220;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #00b368;
+  --chart-1: #00b368;
+  --chart-2: #4d8ef8;
+  --chart-3: #f59e0b;
+  --chart-4: #ef4444;
+  --chart-5: #6fa3ff;
+  --sidebar: #f8fafc;
+  --sidebar-foreground: #0b1220;
+  --sidebar-primary: #00b368;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: #0b1220;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #00b368;
+
+  --font-sans: var(--font-body), "DM Sans", sans-serif;
   --font-serif: Georgia, serif;
-  --font-mono: Geist Mono, monospace;
+  --font-mono: var(--font-code), "Geist Mono", "Fira Code", monospace;
+
   --radius: 0.5rem;
-  --shadow-2xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.09);
-  --shadow-xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.09);
-  --shadow-sm: 0px 1px 2px 0px hsl(0 0% 0% / 0.18), 0px 1px 2px -1px hsl(0 0% 0% / 0.18);
-  --shadow: 0px 1px 2px 0px hsl(0 0% 0% / 0.18), 0px 1px 2px -1px hsl(0 0% 0% / 0.18);
-  --shadow-md: 0px 1px 2px 0px hsl(0 0% 0% / 0.18), 0px 2px 4px -1px hsl(0 0% 0% / 0.18);
-  --shadow-lg: 0px 1px 2px 0px hsl(0 0% 0% / 0.18), 0px 4px 6px -1px hsl(0 0% 0% / 0.18);
-  --shadow-xl: 0px 1px 2px 0px hsl(0 0% 0% / 0.18), 0px 8px 10px -1px hsl(0 0% 0% / 0.18);
-  --shadow-2xl: 0px 1px 2px 0px hsl(0 0% 0% / 0.45);
+
+  --shadow-2xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
 }
 
+/* ============================================================================
+   DARK MODE — The Observatory
+   Layered navy-dark, never flat black. Every color earns its place.
+   ============================================================================ */
 .dark {
-  --background: oklch(0 0 0);
-  --foreground: oklch(1 0 0);
-  --card: oklch(0.1400 0 0);
-  --card-foreground: oklch(1 0 0);
-  --popover: oklch(0.1800 0 0);
-  --popover-foreground: oklch(1 0 0);
-  --primary: oklch(1 0 0);
-  --primary-foreground: oklch(0 0 0);
-  --secondary: oklch(0.2500 0 0);
-  --secondary-foreground: oklch(1 0 0);
-  --muted: oklch(0.2300 0 0);
-  --muted-foreground: oklch(0.7200 0 0);
-  --accent: oklch(0.3200 0 0);
-  --accent-foreground: oklch(1 0 0);
-  --destructive: oklch(0.6900 0.2000 23.9100);
-  --destructive-foreground: oklch(0 0 0);
-  --border: oklch(0.2600 0 0);
-  --input: oklch(0.3200 0 0);
-  --ring: oklch(0.7200 0 0);
-  --chart-1: oklch(0.8100 0.1700 75.3500);
-  --chart-2: oklch(0.5800 0.2100 260.8400);
-  --chart-3: oklch(0.5600 0 0);
-  --chart-4: oklch(0.4400 0 0);
-  --chart-5: oklch(0.9200 0 0);
-  --sidebar: oklch(0.1800 0 0);
-  --sidebar-foreground: oklch(1 0 0);
-  --sidebar-primary: oklch(1 0 0);
-  --sidebar-primary-foreground: oklch(0 0 0);
-  --sidebar-accent: oklch(0.3200 0 0);
-  --sidebar-accent-foreground: oklch(1 0 0);
-  --sidebar-border: oklch(0.3200 0 0);
-  --sidebar-ring: oklch(0.7200 0 0);
-  --font-sans: Geist, sans-serif;
+  /* Core shadcn mappings → Observatory palette */
+  --background: #0b1220;
+  --foreground: #e8f0fe;
+  --card: #111c2e;
+  --card-foreground: #e8f0fe;
+  --popover: #1d2a3f;
+  --popover-foreground: #e8f0fe;
+  --primary: #00d97e;
+  --primary-foreground: #060b14;
+  --secondary: #172236;
+  --secondary-foreground: #e8f0fe;
+  --muted: #172236;
+  --muted-foreground: #4e6484;
+  --accent: #172236;
+  --accent-foreground: #e8f0fe;
+  --destructive: #ef4444;
+  --destructive-foreground: #e8f0fe;
+  --border: #243352;
+  --input: #1a2640;
+  --ring: #00d97e;
+
+  /* Chart colors — Observatory signal palette */
+  --chart-1: #00d97e;
+  --chart-2: #4d8ef8;
+  --chart-3: #f59e0b;
+  --chart-4: #ef4444;
+  --chart-5: #6fa3ff;
+
+  /* Sidebar — deepest void layer */
+  --sidebar: #060b14;
+  --sidebar-foreground: #e8f0fe;
+  --sidebar-primary: #00d97e;
+  --sidebar-primary-foreground: #060b14;
+  --sidebar-accent: #172236;
+  --sidebar-accent-foreground: #e8f0fe;
+  --sidebar-border: #1a2640;
+  --sidebar-ring: #00d97e;
+
+  /* Font stacks */
+  --font-sans: var(--font-body), "DM Sans", sans-serif;
   --font-serif: Georgia, serif;
-  --font-mono: Geist Mono, monospace;
+  --font-mono: var(--font-code), "Geist Mono", "Fira Code", monospace;
+
   --radius: 0.5rem;
-  --shadow-2xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.09);
-  --shadow-xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.09);
-  --shadow-sm: 0px 1px 2px 0px hsl(0 0% 0% / 0.18), 0px 1px 2px -1px hsl(0 0% 0% / 0.18);
-  --shadow: 0px 1px 2px 0px hsl(0 0% 0% / 0.18), 0px 1px 2px -1px hsl(0 0% 0% / 0.18);
-  --shadow-md: 0px 1px 2px 0px hsl(0 0% 0% / 0.18), 0px 2px 4px -1px hsl(0 0% 0% / 0.18);
-  --shadow-lg: 0px 1px 2px 0px hsl(0 0% 0% / 0.18), 0px 4px 6px -1px hsl(0 0% 0% / 0.18);
-  --shadow-xl: 0px 1px 2px 0px hsl(0 0% 0% / 0.18), 0px 8px 10px -1px hsl(0 0% 0% / 0.18);
-  --shadow-2xl: 0px 1px 2px 0px hsl(0 0% 0% / 0.45);
+
+  /* Shadows — deeper for dark mode */
+  --shadow-2xs: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px -1px rgba(0, 0, 0, 0.3);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px -1px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.35), 0 2px 4px -2px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.45), 0 8px 10px -6px rgba(0, 0, 0, 0.45);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+
+  /* =========================================================================
+     OBSERVATORY EXTENSION TOKENS
+     ========================================================================= */
+
+  /* Background layers — depth, never flat */
+  --bg-void: #060b14;
+  --bg-base: #0b1220;
+  --bg-surface: #111c2e;
+  --bg-elevated: #172236;
+  --bg-overlay: #1d2a3f;
+
+  /* Borders — subtle, never harsh */
+  --border-faint: #1a2640;
+  --border-subtle: #243352;
+  --border-accent: #2d4266;
+
+  /* Signal Green — the heartbeat */
+  --signal: #00d97e;
+  --signal-glow: #00d97e26;
+  --signal-muted: #00d97e15;
+  --signal-bright: #22f598;
+
+  /* Electric Blue — data, information */
+  --data: #4d8ef8;
+  --data-muted: #4d8ef820;
+  --data-bright: #6fa3ff;
+
+  /* Status colors */
+  --status-warn: #f59e0b;
+  --status-danger: #ef4444;
+  --status-fatal: #c0392b;
+  --status-ok: #00d97e;
+
+  /* Log level palette */
+  --level-trace: #3d4d60;
+  --level-debug: #4d6a8a;
+  --level-info: #4d8ef8;
+  --level-warn: #f59e0b;
+  --level-error: #ef4444;
+  --level-fatal: #c0392b;
+
+  /* Text hierarchy */
+  --text-primary: #e8f0fe;
+  --text-secondary: #8da4c4;
+  --text-muted: #4e6484;
+  --text-code: #b0f0d6;
+
+  /* Glow effects */
+  --glow-signal: 0 0 30px #00d97e30, 0 0 60px #00d97e15;
+  --glow-signal-sm: 0 0 12px #00d97e40;
+  --glow-data: 0 0 30px #4d8ef830, 0 0 60px #4d8ef815;
+  --glow-danger: 0 0 30px #ef444430, 0 0 60px #ef444415;
+
+  /* Card shadows — depth layering */
+  --shadow-card: 0 4px 24px #00000040, 0 1px 4px #00000060;
+  --shadow-float: 0 20px 60px #00000060, 0 8px 24px #00000040;
+  --shadow-lift: 0 40px 80px #00000080, 0 16px 40px #00000060;
+
+  /* Inner glow for active borders */
+  --border-glow: inset 0 1px 0 #ffffff10;
+
+  /* Syntax highlighting */
+  --syntax-keyword: #c792ea;
+  --syntax-string: #b0f0d6;
+  --syntax-number: #f78c6c;
+  --syntax-comment: #4e6484;
+  --syntax-function: #82aaff;
+  --syntax-type: #ffcb6b;
+  --syntax-property: #e8f0fe;
+  --syntax-operator: #89ddff;
+
+  /* Motion system */
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-snap: cubic-bezier(0.2, 0, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+
+  --dur-instant: 80ms;
+  --dur-fast: 150ms;
+  --dur-normal: 250ms;
+  --dur-slow: 400ms;
+  --dur-xslow: 700ms;
+  --dur-scene: 1200ms;
 }
 
+/* ============================================================================
+   TAILWIND THEME — Register all Observatory tokens as utilities
+   ============================================================================ */
 @theme inline {
+  /* Core shadcn color mappings */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -133,15 +244,70 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
+  /* Observatory background layers — bg-bg-void, bg-bg-base, etc. */
+  --color-bg-void: var(--bg-void, #060b14);
+  --color-bg-base: var(--bg-base, #0b1220);
+  --color-bg-surface: var(--bg-surface, #111c2e);
+  --color-bg-elevated: var(--bg-elevated, #172236);
+  --color-bg-overlay: var(--bg-overlay, #1d2a3f);
+
+  /* Observatory borders — border-border-faint, border-border-subtle, etc. */
+  --color-border-faint: var(--border-faint, #1a2640);
+  --color-border-subtle: var(--border-subtle, #243352);
+  --color-border-accent: var(--border-accent, #2d4266);
+
+  /* Signal system — text-signal, bg-signal, etc. */
+  --color-signal: var(--signal, #00d97e);
+  --color-signal-bright: var(--signal-bright, #22f598);
+  --color-signal-muted: var(--signal-muted, #00d97e15);
+
+  /* Data / info blue — text-data, bg-data, etc. */
+  --color-data: var(--data, #4d8ef8);
+  --color-data-bright: var(--data-bright, #6fa3ff);
+  --color-data-muted: var(--data-muted, #4d8ef820);
+
+  /* Status colors — text-status-warn, bg-status-danger, etc. */
+  --color-status-warn: var(--status-warn, #f59e0b);
+  --color-status-danger: var(--status-danger, #ef4444);
+  --color-status-fatal: var(--status-fatal, #c0392b);
+  --color-status-ok: var(--status-ok, #00d97e);
+
+  /* Log level colors — text-level-error, bg-level-warn, etc. */
+  --color-level-trace: var(--level-trace, #3d4d60);
+  --color-level-debug: var(--level-debug, #4d6a8a);
+  --color-level-info: var(--level-info, #4d8ef8);
+  --color-level-warn: var(--level-warn, #f59e0b);
+  --color-level-error: var(--level-error, #ef4444);
+  --color-level-fatal: var(--level-fatal, #c0392b);
+
+  /* Text hierarchy — text-text-primary, text-text-secondary, etc. */
+  --color-text-primary: var(--text-primary, #e8f0fe);
+  --color-text-secondary: var(--text-secondary, #8da4c4);
+  --color-text-muted: var(--text-muted, #4e6484);
+  --color-text-code: var(--text-code, #b0f0d6);
+
+  /* Syntax highlighting colors */
+  --color-syntax-keyword: var(--syntax-keyword, #c792ea);
+  --color-syntax-string: var(--syntax-string, #b0f0d6);
+  --color-syntax-number: var(--syntax-number, #f78c6c);
+  --color-syntax-comment: var(--syntax-comment, #4e6484);
+  --color-syntax-function: var(--syntax-function, #82aaff);
+  --color-syntax-type: var(--syntax-type, #ffcb6b);
+  --color-syntax-property: var(--syntax-property, #e8f0fe);
+  --color-syntax-operator: var(--syntax-operator, #89ddff);
+
+  /* Font stacks */
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
   --font-serif: var(--font-serif);
 
+  /* Border radii */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 
+  /* Shadow scale */
   --shadow-2xs: var(--shadow-2xs);
   --shadow-xs: var(--shadow-xs);
   --shadow-sm: var(--shadow-sm);
@@ -161,11 +327,24 @@
   }
 }
 
+/* Font utility classes */
+.font-display {
+  font-family: var(--font-display), "Syne", sans-serif;
+}
+
+.font-body {
+  font-family: var(--font-body), "DM Sans", sans-serif;
+}
+
+.font-code {
+  font-family: var(--font-code), "Geist Mono", "Fira Code", monospace;
+}
+
 .font-mono {
   font-family: var(--font-mono);
 }
 
-
+/* Scrollbar hide utility */
 .scrollbar-hide {
   scrollbar-width: none;
   -ms-overflow-style: none;

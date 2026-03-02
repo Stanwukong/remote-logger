@@ -124,7 +124,7 @@ export default function SignUpPage() {
         <Badge variant={"secondary"} className="mb-4">
           Create Account
         </Badge>
-        <h1 className="text-3xl font-bold tracking-tight">Join LogHive</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Join Monita</h1>
         <p className="text-muted-foreground">
           Start monitoring your applications in minutes. No credit card required
         </p>
@@ -137,7 +137,7 @@ export default function SignUpPage() {
             Create your account
           </CardTitle>
           <CardDescription className="text-center">
-            Get started with your free LogHive account
+            Get started with your free Monita account
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -250,7 +250,7 @@ export default function SignUpPage() {
                       <div className="flex gap-2 items-center">
                         <Building className="text-muted-foreground w-4 h-4" />
                         <Input
-                          placeholder="LogHive Inc."
+                          placeholder="Monita Inc."
                           {...field}
                           disabled={isLoading}
                         />
@@ -391,7 +391,7 @@ export default function SignUpPage() {
       <div className="grid grid-cols-1 gap-4 text-center">
         <div className="space-y-2">
           <h3 className="font-medium text-sm">
-            What you get with LogHive:
+            What you get with Monita:
           </h3>
           <div className="pl-10 grid grid-cols-2 gap-4 text-xs text-muted-foreground">
             <div className="flex items-center space-x-2">

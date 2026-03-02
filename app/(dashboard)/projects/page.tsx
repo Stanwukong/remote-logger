@@ -69,19 +69,19 @@ export default function ProjectsPage() {
               <p className="mb-3">Each project includes:</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left">
                 <div className="flex items-center space-x-2">
-                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                  <div className="w-1.5 h-1.5 bg-data-info rounded-full"></div>
                   <span>Unique API key</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                  <div className="w-1.5 h-1.5 bg-status-ok rounded-full"></div>
                   <span>Real-time monitoring</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
+                  <div className="w-1.5 h-1.5 bg-data-purple rounded-full"></div>
                   <span>Error tracking</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
+                  <div className="w-1.5 h-1.5 bg-status-warn rounded-full"></div>
                   <span>Performance analytics</span>
                 </div>
               </div>
@@ -93,8 +93,8 @@ export default function ProjectsPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card className="border-dashed border-2 border-muted-foreground/25">
             <CardHeader>
-              <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center mb-2">
-                <Plus className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <div className="w-10 h-10 bg-data-info/15 rounded-lg flex items-center justify-center mb-2">
+                <Plus className="w-5 h-5 text-data-info" />
               </div>
               <CardTitle className="text-lg">1. Create Project</CardTitle>
               <CardDescription>Set up a new project with a name and description</CardDescription>
@@ -103,8 +103,8 @@ export default function ProjectsPage() {
 
           <Card className="border-dashed border-2 border-muted-foreground/25">
             <CardHeader>
-              <div className="w-10 h-10 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center mb-2">
-                <Settings className="w-5 h-5 text-green-600 dark:text-green-400" />
+              <div className="w-10 h-10 bg-status-ok/15 rounded-lg flex items-center justify-center mb-2">
+                <Settings className="w-5 h-5 text-status-ok" />
               </div>
               <CardTitle className="text-lg">2. Install SDK</CardTitle>
               <CardDescription>Integrate our SDK into your application using the API key</CardDescription>
@@ -168,7 +168,7 @@ export default function ProjectsPage() {
                   <CardDescription className="text-sm">{project.description || "No description"}</CardDescription>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <div className={`w-2 h-2 rounded-full ${project.isActive ? "bg-green-500" : "bg-gray-400"}`} />
+                  <div className={`w-2 h-2 rounded-full ${project.isActive ? "bg-status-ok" : "bg-text-muted"}`} />
                   <Badge variant={project.isActive ? "default" : "secondary"} className="text-xs">
                     {project.isActive ? "Active" : "Inactive"}
                   </Badge>
@@ -183,10 +183,10 @@ export default function ProjectsPage() {
                   <div
                     className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
                       project.metrics.healthScore >= 80
-                        ? "bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400"
+                        ? "bg-status-ok/15 text-status-ok"
                         : project.metrics.healthScore >= 60
-                          ? "bg-yellow-100 text-yellow-600 dark:bg-yellow-900/20 dark:text-yellow-400"
-                          : "bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400"
+                          ? "bg-level-warn/15 text-level-warn"
+                          : "bg-status-danger/15 text-status-danger"
                     }`}
                   >
                     {project.metrics.healthScore}

@@ -1,24 +1,28 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Syne, DM_Sans } from "next/font/google";
+import { GeistMono } from "geist/font/mono";
 import "./globals.css";
+import "./globals-animations.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/next";
 
-const inter = Inter({
-  variable: "--font-inter",
+const syne = Syne({
+  variable: "--font-display",
   subsets: ["latin"],
+  weight: ["700", "800"],
 });
 
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-mono",
+const dmSans = DM_Sans({
+  variable: "--font-body",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "LogHive - Where logs swarm into insight.",
+  title: "Monita - Your app is trying to tell you something.",
   description:
-    "Visualize real-time logs, track error insights, and configure alert rules for your projects.",
+    "Stop guessing what's breaking in production. Real-time logging, error tracking, and performance monitoring for modern applications.",
 };
 
 export default function RootLayout({
@@ -29,19 +33,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased scrollbar-hide`}
+        className={`${syne.variable} ${dmSans.variable} ${GeistMono.variable} font-body antialiased scrollbar-hide`}
       >
         <ThemeProvider
           attribute={"class"}
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="dark"
+          enableSystem={false}
           disableTransitionOnChange
         >
-          
           {children}
-          <Toaster richColors position="top-left" expand={true}/>
+          <Toaster richColors position="top-left" expand={true} />
         </ThemeProvider>
-        <Analytics/>
+        <Analytics />
       </body>
     </html>
   );

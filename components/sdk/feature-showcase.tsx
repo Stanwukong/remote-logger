@@ -48,7 +48,7 @@ export function FeatureShowcase() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center space-x-2">
-                <Search className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 flex-shrink-0" />
+                <Search className="w-4 h-4 sm:w-5 sm:h-5 text-data-info flex-shrink-0" />
                 <span className="text-sm sm:text-base">Advanced Search</span>
               </CardTitle>
               <CardDescription className="text-xs sm:text-sm">
@@ -94,7 +94,7 @@ export function FeatureShowcase() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center space-x-2">
-                <Filter className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0" />
+                <Filter className="w-4 h-4 sm:w-5 sm:h-5 text-status-ok flex-shrink-0" />
                 <span className="text-sm sm:text-base">Smart Filtering</span>
               </CardTitle>
               <CardDescription className="text-xs sm:text-sm">
@@ -128,7 +128,7 @@ export function FeatureShowcase() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center space-x-2">
-                <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0" />
+                <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-status-warn flex-shrink-0" />
                 <span className="text-sm sm:text-base">Intelligent Alerts</span>
               </CardTitle>
               <CardDescription className="text-xs sm:text-sm">
@@ -168,7 +168,7 @@ notifications:
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center space-x-2">
-                <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 flex-shrink-0" />
+                <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-data-purple flex-shrink-0" />
                 <span className="text-sm sm:text-base">Multi-Channel Notifications</span>
               </CardTitle>
               <CardDescription className="text-xs sm:text-sm">
@@ -178,8 +178,8 @@ notifications:
             <CardContent className="pt-0">
               <div className="space-y-3 sm:space-y-4">
                 <div className="flex items-center space-x-3 p-2 sm:p-3 border rounded-lg">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <span className="text-green-500 font-bold text-xs sm:text-sm">S</span>
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-status-ok/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <span className="text-status-ok font-bold text-xs sm:text-sm">S</span>
                   </div>
                   <div className="min-w-0 flex-1">
                     <h4 className="font-semibold text-xs sm:text-sm">Slack Integration</h4>
@@ -189,8 +189,8 @@ notifications:
                   </div>
                 </div>
                 <div className="flex items-center space-x-3 p-2 sm:p-3 border rounded-lg">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <span className="text-blue-500 font-bold text-xs sm:text-sm">@</span>
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-data-info/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <span className="text-data-info font-bold text-xs sm:text-sm">@</span>
                   </div>
                   <div className="min-w-0 flex-1">
                     <h4 className="font-semibold text-xs sm:text-sm">
@@ -202,8 +202,8 @@ notifications:
                   </div>
                 </div>
                 <div className="flex items-center space-x-3 p-2 sm:p-3 border rounded-lg">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <span className="text-orange-500 font-bold text-xs sm:text-sm">W</span>
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-status-warn/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <span className="text-status-warn font-bold text-xs sm:text-sm">W</span>
                   </div>
                   <div className="min-w-0 flex-1">
                     <h4 className="font-semibold text-xs sm:text-sm">Webhooks</h4>
@@ -223,7 +223,7 @@ notifications:
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center space-x-2">
-                <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 flex-shrink-0" />
+                <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5 text-data-info flex-shrink-0" />
                 <span className="text-sm sm:text-base">Real-time Analytics</span>
               </CardTitle>
               <CardDescription className="text-xs sm:text-sm">
@@ -234,13 +234,13 @@ notifications:
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-3 sm:gap-4">
                   <div className="text-center p-2 sm:p-3 bg-muted/30 rounded-lg">
-                    <div className="text-lg sm:text-2xl font-bold text-blue-500">1.2M</div>
+                    <div className="text-lg sm:text-2xl font-bold text-data-info">1.2M</div>
                     <div className="text-xs text-muted-foreground">
                       Logs Today
                     </div>
                   </div>
                   <div className="text-center p-2 sm:p-3 bg-muted/30 rounded-lg">
-                    <div className="text-lg sm:text-2xl font-bold text-red-500">23</div>
+                    <div className="text-lg sm:text-2xl font-bold text-status-danger">23</div>
                     <div className="text-xs text-muted-foreground">
                       Active Errors
                     </div>
@@ -251,7 +251,7 @@ notifications:
                     (height, index) => (
                       <div
                         key={index}
-                        className="bg-blue-500/60 rounded-t flex-1"
+                        className="bg-data-info/60 rounded-t flex-1"
                         style={{ height: `${height}%` }}
                       />
                     )
@@ -268,7 +268,7 @@ notifications:
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center space-x-2">
-                <Database className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0" />
+                <Database className="w-4 h-4 sm:w-5 sm:h-5 text-status-ok flex-shrink-0" />
                 <span className="text-sm sm:text-base">Custom Dashboards</span>
               </CardTitle>
               <CardDescription className="text-xs sm:text-sm">
@@ -326,7 +326,7 @@ notifications:
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-3 sm:gap-4">
                   <div className="text-center p-2 sm:p-3 bg-muted/30 rounded-lg">
-                    <div className="text-lg sm:text-2xl font-bold text-green-500">
+                    <div className="text-lg sm:text-2xl font-bold text-status-ok">
                       {"<50ms"}
                     </div>
                     <div className="text-xs text-muted-foreground">
@@ -334,7 +334,7 @@ notifications:
                     </div>
                   </div>
                   <div className="text-center p-2 sm:p-3 bg-muted/30 rounded-lg">
-                    <div className="text-lg sm:text-2xl font-bold text-blue-500">10M+</div>
+                    <div className="text-lg sm:text-2xl font-bold text-data-info">10M+</div>
                     <div className="text-xs text-muted-foreground">
                       Logs/Second
                     </div>
@@ -343,15 +343,15 @@ notifications:
                 <div className="space-y-2">
                   <div className="flex justify-between text-xs sm:text-sm">
                     <span>Batch Processing</span>
-                    <span className="text-green-500">Optimized</span>
+                    <span className="text-status-ok">Optimized</span>
                   </div>
                   <div className="flex justify-between text-xs sm:text-sm">
                     <span>Compression</span>
-                    <span className="text-green-500">Enabled</span>
+                    <span className="text-status-ok">Enabled</span>
                   </div>
                   <div className="flex justify-between text-xs sm:text-sm">
                     <span>Auto-scaling</span>
-                    <span className="text-green-500">Active</span>
+                    <span className="text-status-ok">Active</span>
                   </div>
                 </div>
               </div>
@@ -361,7 +361,7 @@ notifications:
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center space-x-2">
-                <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-red-500 flex-shrink-0" />
+                <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-status-danger flex-shrink-0" />
                 <span className="text-sm sm:text-base">Enterprise Security</span>
               </CardTitle>
               <CardDescription className="text-xs sm:text-sm">
@@ -371,27 +371,27 @@ notifications:
             <CardContent className="pt-0">
               <div className="space-y-3">
                 <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0" />
+                  <div className="w-2 h-2 bg-status-ok rounded-full flex-shrink-0" />
                   <span className="text-xs sm:text-sm leading-relaxed">AES-256 encryption at rest</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0" />
+                  <div className="w-2 h-2 bg-status-ok rounded-full flex-shrink-0" />
                   <span className="text-xs sm:text-sm leading-relaxed">TLS 1.3 encryption in transit</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0" />
+                  <div className="w-2 h-2 bg-status-ok rounded-full flex-shrink-0" />
                   <span className="text-xs sm:text-sm leading-relaxed">SOC 2 Type II certified</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0" />
+                  <div className="w-2 h-2 bg-status-ok rounded-full flex-shrink-0" />
                   <span className="text-xs sm:text-sm leading-relaxed">GDPR & CCPA compliant</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0" />
+                  <div className="w-2 h-2 bg-status-ok rounded-full flex-shrink-0" />
                   <span className="text-xs sm:text-sm leading-relaxed">Role-based access control</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0" />
+                  <div className="w-2 h-2 bg-status-ok rounded-full flex-shrink-0" />
                   <span className="text-xs sm:text-sm leading-relaxed">
                     Audit logs & compliance reports
                   </span>

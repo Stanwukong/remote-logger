@@ -71,10 +71,10 @@ const MetricCard = ({
   variant?: "default" | "success" | "warning" | "destructive";
 }) => {
   const colorClasses = {
-    default: "text-blue-600",
-    success: "text-green-600",
-    warning: "text-yellow-600",
-    destructive: "text-red-600",
+    default: "text-data-info",
+    success: "text-status-ok",
+    warning: "text-status-warn",
+    destructive: "text-status-danger",
   };
 
   const TrendIcon =
@@ -109,9 +109,9 @@ const HealthIndicator = ({
   status: string;
 }) => {
   const getHealthColor = (score: number) => {
-    if (score >= 80) return "bg-green-500";
-    if (score >= 60) return "bg-yellow-500";
-    return "bg-red-500";
+    if (score >= 80) return "bg-status-ok";
+    if (score >= 60) return "bg-status-warn";
+    return "bg-status-danger";
   };
 
   const getHealthVariant = (score: number) => {
@@ -446,7 +446,7 @@ export default function ProjectDashboard() {
                         className="flex items-center justify-between p-3 border rounded-lg"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                          <div className="w-3 h-3 bg-data-info rounded-full"></div>
                           <div>
                             <p className="font-medium text-sm">{service._id}</p>
                             <p className="text-xs text-muted-foreground">
@@ -538,18 +538,18 @@ export default function ProjectDashboard() {
                     {analytics.errors.analysis.map((error, index) => {
                       const config = {
                         error: {
-                          color: "text-red-600",
-                          bg: "bg-red-50 border-red-200",
+                          color: "text-status-danger",
+                          bg: "bg-status-danger/10 border-status-danger/30",
                           icon: XCircle,
                         },
                         warn: {
-                          color: "text-yellow-600",
-                          bg: "bg-yellow-50 border-yellow-200",
+                          color: "text-status-warn",
+                          bg: "bg-level-warn/10 border-level-warn/30",
                           icon: AlertCircle,
                         },
                         fatal: {
-                          color: "text-red-800",
-                          bg: "bg-red-100 border-red-300",
+                          color: "text-status-danger",
+                          bg: "bg-status-danger/15 border-status-danger/40",
                           icon: XCircle,
                         },
                       }[error._id.level] || {
@@ -605,10 +605,10 @@ export default function ProjectDashboard() {
                     {analytics.errors.topErrors.map((error) => (
                       <div
                         key={error._id}
-                        className="p-4 border rounded-lg bg-red-50 border-red-200"
+                        className="p-4 border rounded-lg bg-status-danger/10 border-status-danger/30"
                       >
                         <div className="flex items-start justify-between mb-3">
-                          <h4 className="font-medium text-sm text-red-800">
+                          <h4 className="font-medium text-sm text-status-danger">
                             {error._id}
                           </h4>
                           <Badge variant="destructive" className="text-xs">
@@ -719,7 +719,7 @@ export default function ProjectDashboard() {
                       <ul className="space-y-1 text-sm text-muted-foreground">
                         {analytics.usage.insights.map((insight, index) => (
                           <li key={index} className="flex items-start gap-2">
-                            <div className="w-1 h-1 bg-blue-500 rounded-full mt-2 shrink-0"></div>
+                            <div className="w-1 h-1 bg-data-info rounded-full mt-2 shrink-0"></div>
                             {insight}
                           </li>
                         ))}
@@ -784,10 +784,10 @@ export default function ProjectDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="p-4 bg-data-info/10 border border-data-info/30 rounded-lg">
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="font-medium text-sm">Peak Activity</h4>
-                        <Badge variant="outline" className="text-blue-600">
+                        <Badge variant="outline" className="text-data-info">
                           16:00 Wed
                         </Badge>
                       </div>
@@ -801,7 +801,7 @@ export default function ProjectDashboard() {
                         key={index}
                         className="flex items-start gap-2 text-sm"
                       >
-                        <Info className="h-4 w-4 text-blue-500 shrink-0 mt-0.5" />
+                        <Info className="h-4 w-4 text-data-info shrink-0 mt-0.5" />
                         <span className="text-muted-foreground">{insight}</span>
                       </div>
                     ))}

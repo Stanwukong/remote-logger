@@ -88,7 +88,7 @@ export default function LoginPage() {
         </Badge>
         <h1 className="text-3xl font-bold tracking-tight">Welcome back</h1>
         <p className="text-muted-foreground">
-          Sign in to your LogHive account to continue monitoring your
+          Sign in to your Monita account to continue monitoring your
           applications.
         </p>
       </div>

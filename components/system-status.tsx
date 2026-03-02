@@ -2,6 +2,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ExternalLink } from "lucide-react"
+import { SignalDot } from "@/components/shared/SignalDot"
 
 export function SystemStatus() {
   const systemStatus = {
@@ -12,17 +13,17 @@ export function SystemStatus() {
 
   if (systemStatus.overall === "operational") {
     return (
-      <Alert className="flex items-center border-green-200 bg-green-50/50 dark:bg-green-950/20">
-        <span className="h-3 w-3 rounded-full bg-green-400 animate-pulse mr-4"/>
+      <Alert className="flex items-center border-status-ok/30 bg-status-ok/5">
+        <SignalDot status="ok" size="md" pulse className="mr-4" />
         <AlertDescription className="flex items-cente w-full justify-between">
           <div className="flex items-center space-x-4">
             <span>All systems operational</span>
-            <Badge variant="outline" className="text-green-600 border-green-200">
+            <Badge variant="outline" className="text-status-ok border-status-ok/30">
               {systemStatus.uptime} uptime
             </Badge>
             <span className="text-sm text-muted-foreground">Last incident: {systemStatus.lastIncident}</span>
           </div>
-          <Button variant="ghost" size="sm" className="text-green-600 hover:text-green-700">
+          <Button variant="ghost" size="sm" className="text-status-ok hover:text-signal-bright">
             <ExternalLink className="w-4 h-4 mr-2" />
             Status Page
           </Button>
@@ -32,8 +33,8 @@ export function SystemStatus() {
   }
 
   return (
-    <Alert variant="destructive" className="flex items-center border-red-200 bg-red-50/10">
-      <span className="h-3 w-3 rounded-full bg-red-400 animate-pulse mr-4"/>
+    <Alert variant="destructive" className="flex items-center border-status-danger/30 bg-status-danger/5">
+      <SignalDot status="danger" size="md" pulse className="mr-4" />
       <AlertDescription className="flex items-center w-full justify-between">
         <div className="flex items-center space-x-4">
           <span>System experiencing issues</span>

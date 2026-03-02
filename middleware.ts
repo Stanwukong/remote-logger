@@ -28,13 +28,12 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (token) {
-    if (isAuthPath) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
-    }
-
-    return NextResponse.next();
+  // 5. User is authenticated — redirect away from auth pages
+  if (isAuthPath) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
+
+  return NextResponse.next();
 }
 
 /**

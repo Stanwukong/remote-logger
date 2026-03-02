@@ -29,7 +29,7 @@ function StatCard({ title, value, trend }: StatCardProps) {
       <CardContent>
         <div className="text-xl md:text-2xl font-bold">{value}</div>
         <div className={`flex items-center space-x-1 text-xs ${
-          trend.color === "green" ? "text-green-600" : "text-red-600"
+          trend.color === "green" ? "text-status-ok" : "text-status-danger"
         }`}>
           <TrendIcon className="h-3 w-3" />
           <span>{trend.value}</span>

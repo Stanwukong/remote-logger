@@ -60,8 +60,10 @@ export interface ChartDataPoint {
 
 export interface LogFilters {
   level?: LogEntry['level'] | 'all';
+  levels?: LogEntry['level'][]; // Support multiple levels
   source?: string;
   service?: string;
+  services?: string[]; // Support multiple services
   startDate?: string;
   endDate?: string;
   search?: string;

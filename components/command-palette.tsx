@@ -427,7 +427,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                       {project.environment}
                     </Badge>
                     {project.isActive ? (
-                      <div className="w-2 h-2 bg-green-500 rounded-full" />
+                      <div className="w-2 h-2 bg-status-ok rounded-full" />
                     ) : (
                       <div className="w-2 h-2 bg-gray-400 rounded-full" />
                     )}

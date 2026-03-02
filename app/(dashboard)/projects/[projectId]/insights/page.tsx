@@ -99,7 +99,7 @@ export default function ProjectInsightsPage() {
             <p className="text-sm font-medium text-muted-foreground">
               Error Rate
             </p>
-            <p className="text-3xl font-bold mt-2 text-red-600">
+            <p className="text-3xl font-bold mt-2 text-status-danger">
               {insights.summary.errorRate.toFixed(2)}%
             </p>
           </CardContent>
@@ -109,7 +109,7 @@ export default function ProjectInsightsPage() {
             <p className="text-sm font-medium text-muted-foreground">
               Warning Rate
             </p>
-            <p className="text-3xl font-bold mt-2 text-yellow-600">
+            <p className="text-3xl font-bold mt-2 text-status-warn">
               {insights.summary.warningRate.toFixed(2)}%
             </p>
           </CardContent>
@@ -171,7 +171,7 @@ export default function ProjectInsightsPage() {
                 </CardHeader>
                 {rec.actionable && (
                   <CardContent>
-                    <Badge variant="outline" className="text-green-600">
+                    <Badge variant="outline" className="text-status-ok">
                       Actionable
                     </Badge>
                   </CardContent>
@@ -190,12 +190,12 @@ export default function ProjectInsightsPage() {
             </Card>
           ) : (
             insights.anomalies.map((anomaly, index) => (
-              <Card key={index} className="border-l-4 border-l-orange-500">
+              <Card key={index} className="border-l-4 border-l-status-warn">
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <AlertTriangle className="w-5 h-5 text-orange-500" />
+                        <AlertTriangle className="w-5 h-5 text-status-warn" />
                         <CardTitle className="text-lg capitalize">
                           {anomaly.type}
                         </CardTitle>

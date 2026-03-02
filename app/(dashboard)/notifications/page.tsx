@@ -107,14 +107,14 @@ function NotificationCard({
   const getTypeColor = (type: string) => {
     switch (type) {
       case "error":
-        return "border-red-500 bg-red-50";
+        return "border-status-danger bg-status-danger/10";
       case "warning":
-        return "border-yellow-500 bg-yellow-50";
+        return "border-status-warn bg-status-warn/10";
       case "success":
-        return "border-green-500 bg-green-50";
+        return "border-status-ok bg-status-ok/10";
       case "info":
       default:
-        return "border-blue-500 bg-blue-50";
+        return "border-data-info bg-data-info/10";
     }
   };
 
