@@ -265,150 +265,183 @@ Update existing shadcn/ui components to use Observatory tokens:
 
 **Goal**: Apply Observatory design to all dashboard pages. Polish core features.
 
-### 2.1 Dashboard Layout Redesign
+### 2.1 Dashboard Layout Redesign ✅ **COMPLETE**
 
-**Duration**: 3-4 days
+**Completed**: March 4, 2026 (as part of Phase 2.8)
 
-- [ ] Rebuild sidebar with Observatory design:
-  - `--bg-base` background, `--border-subtle` right border
-  - Signal green active indicators
-  - Project list with SignalDot health indicators
-  - Collapsible with smooth animation
-  - User menu at bottom with avatar
-- [ ] Rebuild top bar:
-  - Breadcrumb navigation
-  - Global search trigger (Cmd+K badge)
-  - Notification bell with unread count badge
-  - Theme toggle (dark/light/system)
-- [ ] Command palette rebuild: Observatory styling, Geist Mono for code results
-- [ ] Toast styling: Observatory colors and typography
+- [x] Sidebar: Observatory tokens, `border-border-subtle`, signal green active link highlighting, SignalDot project health, collapsible
+- [x] Top bar: Breadcrumbs with Observatory colors, command palette trigger (Cmd+K), notification bell with unread badge, theme toggle
+- [x] Command palette: Observatory dark styling, SignalDot for project status, keyboard shortcuts with `bg-bg-elevated`
+- [ ] Toast styling: Observatory colors and typography (deferred)
 
-**Files to modify**:
+**Files modified**:
 ```
 components/app-sidebar.tsx         ← Observatory sidebar
 components/top-bar.tsx             ← Observatory top bar
 components/command-palette.tsx     ← Observatory command palette
+components/theme-toggle.tsx        ← Observatory text colors, tooltip
 ```
 
-### 2.2 Main Dashboard (`/dashboard`)
+### 2.2 Main Dashboard (`/dashboard`) ✅ **COMPLETE**
 
-**Duration**: 3-4 days
+**Completed**: March 4, 2026
 
-- [ ] System status banner: Observatory styling with signal dot
-- [ ] Key metrics grid: Observatory cards with glow effects on hover
+- [x] System status banner: Observatory styling with signal dot
+- [x] Key metrics grid: Observatory cards with glow effects on hover
   - Total Logs: large number, Geist Mono, trend arrow
   - Error Rate: red tint card when elevated
   - Success Rate: signal green tint
   - Team Members: neutral
-- [ ] Health status widget: SVG ring with Observatory colors
-- [ ] Dashboard tabs: Overview, Errors, Performance, Usage
-  - Each tab progressively loaded
-- [ ] Charts: Recharts with Observatory color palette
+- [x] Health status widget: Observatory colors with status tokens
+- [x] Dashboard tabs: Overview, Errors, Performance, Usage
+  - Each tab with Observatory signal-green active indicator
+- [x] Charts: Recharts with Observatory color palette
   - Line charts: signal green stroke, subtle fill
   - Bar charts: layered blues and greens
   - Area charts: gradient fills with low opacity
-- [ ] Empty state: Observatory-styled getting started guide
+- [x] Empty state: Observatory-styled getting started guide
 
-### 2.3 Log Explorer Redesign (`/logs`)
+**Files created (3)**:
+```
+components/dashboard/errors-tab-content.tsx
+components/dashboard/performance-tab-content.tsx
+components/dashboard/usage-tab-content.tsx
+```
 
-**Duration**: 5-7 days
+**Files modified (7)**:
+```
+app/(dashboard)/dashboard/page.tsx            ← Wired up tabs, removed console.logs
+components/dashboard/dashboard-header.tsx      ← Observatory tokens, time range selector
+components/dashboard/dashboard-tabs.tsx        ← 4 tabs, Observatory styling
+components/dashboard/overview-tab-content.tsx  ← Recharts with Observatory theme
+components/summary-widget.tsx                  ← Glow effects, font-mono, variant accents
+components/ui/health-status-widget.tsx         ← Observatory status tokens
+components/Empty/dashboard.tsx                 ← Observatory empty state
+```
 
-- [ ] Split-pane layout: log list (left) + detail panel (right)
-- [ ] Filter bar redesign:
-  - Project selector (dropdown with search)
-  - Time range picker (preset + custom)
-  - Log level multi-select (color-coded badges)
-  - Service/environment filters (dynamic chips)
-  - Full-text search with Geist Mono
-  - Clear all / Reset button
-- [ ] Log list items:
-  - Level badge with `--level-*` colors
-  - Timestamp (relative, absolute on hover)
-  - Message in Geist Mono (truncated)
-  - Service and environment tags
-  - Event type icon
-- [ ] Log detail panel:
-  - Full message (Geist Mono)
-  - Stack trace with syntax highlighting (Observatory syntax colors)
-  - Context/metadata as expandable JSON tree
-  - Error details in structured layout
-  - Timing metrics
-  - User agent parsed display
-- [ ] Keyboard navigation: j/k (next/prev), enter (detail), / (search), esc (close detail)
-- [ ] Live tail mode: WebSocket streaming with auto-scroll, pause button
-- [ ] Pagination: page numbers, items per page selector
-- [ ] Saved searches dropdown (when backend supports it)
+### 2.3 Log Explorer Redesign (`/logs`) ✅ **COMPLETE**
 
-### 2.4 Alert Management Redesign (`/alerts`)
+- [x] Split-pane layout: log list (left) + detail panel (right)
+- [x] Filter bar redesign: project selector, time range picker, log level multi-select, service/environment filters, full-text search, clear all
+- [x] Log list items: level badge with `--level-*` colors, relative timestamps, Geist Mono messages, service/environment tags
+- [x] Log detail panel: full message, stack trace via TerminalBlock, expandable JSON tree, error details, timing metrics
+- [x] Keyboard navigation: j/k (next/prev), enter (detail), / (search), esc (close detail)
+- [x] Live tail mode: WebSocket streaming with auto-scroll, pause button
+- [x] Pagination: page numbers, items per page selector
 
-**Duration**: 4-5 days
+### 2.4 Alert Management Redesign (`/alerts`) ✅ **COMPLETE**
 
-- [ ] Alert stats cards: Observatory styling with severity-colored accents
-- [ ] Filter bar: search, severity, project, date range — Observatory design
-- [ ] Tab filters: All | Active | Acknowledged | Snoozed | Resolved — with counts
-- [ ] Alert list items:
-  - Severity-colored left border (not just badge)
-  - Status badge with signal dot
-  - Title, message, metadata
-  - Time (relative), project, environment, count
-  - Tags
-  - Action dropdown with Observatory styling
-- [ ] Bulk action bar: selection count, action buttons
-- [ ] Create alert modal: multi-step form with condition builder
-- [ ] Alert detail modal: Observatory card with timeline, triggering log, rule info
-- [ ] Alert rule management page (sub-page or modal)
+- [x] Alert stats cards: Observatory styling with severity-colored accents
+- [x] Filter bar: search, severity, project, date range — Observatory design
+- [x] Tab filters: All | Active | Acknowledged | Snoozed | Resolved — with counts
+- [x] Alert list items: severity-colored left border, status badge, SignalDot, metadata, tags, action dropdown
+- [x] Bulk action bar: selection count, action buttons
+- [x] Alert detail modal: Observatory card with timeline, triggering log, rule info
+- [x] Split-pane integration with LogExplorerSplitPane
 
-### 2.5 Project Dashboard Redesign (`/projects/[projectId]`)
+### 2.5 Project Dashboard Redesign (`/projects/[projectId]`) ✅ **COMPLETE**
 
-**Duration**: 4-5 days
+**Completed**: March 3, 2026
 
-- [ ] Project header: name, status signal dot, ID (copyable), actions
-- [ ] Quick stats: Observatory metric cards
-- [ ] Tabbed content with Observatory styling:
-  - Overview: Health ring (SVG), service breakdown, environment stats
-  - Errors: Error timeline chart, top errors ranking, severity distribution
-  - Performance: Response times, p95/p99, slow endpoints, page loads
-  - Usage: API key management, rate limits, SDK config
-  - Recommendations: AI-generated action items (when available)
-- [ ] Interactive charts with hover tooltips and click drill-down
-- [ ] Recharts theme: Observatory colors
+- [x] Decomposed monolithic 930-line page into 10 modular components
+- [x] Project header: name, SignalDot status (pulsing green/static danger), copyable ID, back-nav, actions
+- [x] Quick stats: ObservatoryMetricCard components with variant coloring (default/success/warning/danger)
+- [x] Tabbed content with Observatory styling:
+  - Overview: HealthRing SVG, error rate progress, team section, service breakdown, environment stats
+  - Errors: Severity-based analysis cards, top errors with "View in Logs" links
+  - Performance: 3 metric cards, performance insights, response time LineChart
+  - Usage: TerminalBlock API key display, rate limiting, tags, regenerate button
+  - Recommendations: Priority badges, categorized action items with SignalDot bullets
+- [x] Recharts theme: centralized `lib/charts/observatory-theme.ts` with CSS variable colors
+- [x] Null guards on all analytics data access (prevents crashes on partial API responses)
+- [x] Projects list page (`/projects`): Observatory tokens, SignalDot, signal button variant, `bg-data-purple/15`
+- [x] Bug fixes: inverted isActive, removed console.logs, removed dead code
 
-### 2.6 Project Settings Redesign (`/projects/[projectId]/settings`)
+**Files created (10)**:
+```
+lib/charts/observatory-theme.ts
+components/dashboard/projects/detail/index.ts
+components/dashboard/projects/detail/ObservatoryMetricCard.tsx
+components/dashboard/projects/detail/HealthRing.tsx
+components/dashboard/projects/detail/ProjectDashboardHeader.tsx
+components/dashboard/projects/detail/OverviewTab.tsx
+components/dashboard/projects/detail/ErrorsTabContent.tsx
+components/dashboard/projects/detail/PerformanceTabContent.tsx
+components/dashboard/projects/detail/UsageTabContent.tsx
+components/dashboard/projects/detail/RecommendationsTabContent.tsx
+```
 
-**Duration**: 3-4 days
+**Files modified (3)**:
+```
+app/(dashboard)/projects/[projectId]/page.tsx  ← rewritten as ~170-line orchestrator
+app/(dashboard)/projects/page.tsx              ← Observatory token migration
+components/dashboard/projects/utils.tsx        ← CHART_COLORS updated to CSS vars
+```
 
-- [ ] Tabbed layout: General, Team, API & Security, SDK Config, Integrations, Advanced
-- [ ] General: Inline editing for name/description, archive toggle, delete with confirmation
-- [ ] Team: Member list with role badges, add member form, role change dropdown
-- [ ] API & Security: Masked API key with show/copy/regenerate, rate limit inputs
-- [ ] SDK Config: Remote configuration form matching backend SDKConfig model
-- [ ] Integrations: Channel configuration cards (Slack, Email, Webhook)
-- [ ] Advanced: Data retention, export, ownership transfer
+### 2.6 Project Settings Redesign (`/projects/[projectId]/settings`) ✅ **COMPLETE**
 
-### 2.7 Auth Pages Redesign
+**Completed**: March 4, 2026
 
-**Duration**: 2-3 days
+- [x] Tabbed layout: General, Team, API & Security, SDK Config, Integrations, Advanced (with icons)
+- [x] General: Inline editing for name/description, active toggle with useUpdateProject mutation, toast feedback
+- [x] Team: Member list with role badges (Owner=signal, Admin=data-info, Viewer=muted), invite button, remove member
+- [x] API & Security: Masked API key with show/copy/regenerate (useRegenerateApiKey), rate limit inputs with useUpdateRateLimit
+- [x] SDK Config: Remote configuration form matching backend SDKConfig model (existing SDKConfigSettings component)
+- [x] Integrations: Observatory-styled channel cards (Slack, Discord, Email, Webhook) with SignalDot status
+- [x] Advanced: Archive (useArchiveProject/useRestoreProject), transfer, delete (useDeleteProject with confirm + redirect)
 
-- [ ] Login: Observatory dark styling, Syne headline, DM Sans body
-  - Form with Observatory inputs
-  - Security features sidebar
-  - OAuth buttons (GitHub, Google) when backend supports
-- [ ] Signup: Two-column layout
-  - Password strength indicator with Observatory colors
-  - Benefits column with signal green checkmarks
-- [ ] Forgot password: Simple centered form
-- [ ] All auth pages: consistent layout, subtle constellation background
+**Files modified (1)**:
+```
+app/(dashboard)/projects/[projectId]/settings/page.tsx ← Full Observatory redesign, all mutations connected
+```
 
-### 2.8 Notification Center (`/notifications`)
+### 2.7 Auth Pages Redesign ✅ **COMPLETE**
 
-**Duration**: 1-2 days
+**Completed**: March 4, 2026
 
-- [ ] Notification list: Observatory cards, grouped by day
-- [ ] Type icons with severity colors
-- [ ] Unread indicator (signal dot or bold styling)
-- [ ] Mark as read (individual + all)
-- [ ] Bell icon in top bar with unread badge
-- [ ] Real-time notification delivery via WebSocket
+- [x] Login: Observatory dark styling, Syne headline, DM Sans body, signal button variant, security features sidebar
+- [x] Signup: Observatory styling, password strength indicator with Observatory CSS variables, benefits section with signal green checkmarks
+- [x] Forgot password: Observatory centered form, passwordResetRequest API call enabled
+- [x] Reset password: NEW page (`reset-password/[token]/page.tsx`) — password strength, auto-redirect on success
+- [x] Session expiry: 401 interceptor in config.ts clears cookies, shows toast, redirects to login
+- [x] Backend: Password reset flow (crypto token, SHA-256, NotificationService SMTP email)
+
+**Files created (1)**:
+```
+app/(auth)/reset-password/[token]/page.tsx
+```
+
+**Files modified (7)**:
+```
+app/(auth)/login/page.tsx              ← Observatory redesign
+app/(auth)/signup/page.tsx             ← Observatory redesign
+app/(auth)/forgot-password/page.tsx    ← Observatory redesign + API call enabled
+middleware.ts                          ← Added /forgot-password and /reset-password to public paths
+lib/schemas/auth.ts                    ← Added resetPasswordSchema
+services/auth.service.ts               ← Fixed payload field name
+services/config.ts                     ← Session expiry 401 interceptor
+```
+
+### 2.8 Navigation & Global UI ✅ **COMPLETE**
+
+**Completed**: March 4, 2026
+
+- [x] Sidebar: Observatory tokens, pathname-based active link highlighting (signal green), SignalDot for project status, null guards on analytics, environment badge
+- [x] Top bar: Search input replaced with command palette trigger button, Observatory tokens, notification dropdown with Observatory colors, cleanup of unused imports/variables
+- [x] Command palette: Observatory tokens (text-text-muted, bg-bg-elevated), SignalDot for project active dots, removed unused imports (Star, Filter, Zap) and state (selectedTimeRange)
+- [x] Notifications page: Emojis replaced with lucide icons (AlertOctagon, AlertTriangle, CheckCircle2, Info), Observatory status colors, SignalDot for unread indicator, signal button for "Mark All as Read"
+- [x] Theme toggle: Observatory text colors, Tooltip wrapper
+- [x] Bell icon in top bar with unread badge (bg-status-danger)
+- [x] Breadcrumbs with Observatory text-text-muted/text-text-primary colors
+
+**Files modified (5)**:
+```
+components/app-sidebar.tsx             ← Observatory tokens, active links, SignalDot
+components/top-bar.tsx                 ← Observatory tokens, command palette trigger, cleanup
+components/command-palette.tsx         ← Observatory tokens, SignalDot, cleanup
+components/theme-toggle.tsx            ← Observatory text colors, tooltip
+app/(dashboard)/notifications/page.tsx ← Lucide icons, Observatory tokens, SignalDot
+```
 
 ---
 
@@ -427,18 +460,209 @@ components/command-palette.tsx     ← Observatory command palette
 
 ### 3.2 Custom Dashboards
 
-- [ ] Dashboard builder page: drag-and-drop grid
-- [ ] Widget types: metric card, line chart, bar chart, table, pie chart, log feed
-- [ ] Widget configuration: data source, filters, time range
-- [ ] Save/load dashboard layouts
-- [ ] Share dashboard via link
+**Backend Ready**: `/api/v1/custom-dashboards` — Full CRUD + widget management
+
+- [ ] Dashboard builder page: drag-and-drop grid (react-grid-layout)
+- [ ] Widget types: metric card (`counter`), line chart (`chart`), bar chart, table, log feed (`log-stream`), alert list (`alert-list`)
+- [ ] Widget configuration panel: data source, filters, time range, chart type, refresh interval
+- [ ] Save/load dashboard layouts (PUT `/:dashboardId/layout`)
+- [ ] Add/update/remove individual widgets (POST/PUT/DELETE `/:dashboardId/widgets/:widgetId`)
+- [ ] Share dashboard via link (isShared flag)
+- [ ] Duplicate dashboard (POST `/:dashboardId/duplicate`)
+- [ ] API service: `services/customDashboard.service.ts`
+- [ ] React Query hooks: `hooks/customDashboard.hook.ts`
+
+**Backend Endpoints Available**:
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/custom-dashboards` | List user's dashboards |
+| POST | `/custom-dashboards` | Create dashboard |
+| GET | `/custom-dashboards/:id` | Get single dashboard |
+| PUT | `/custom-dashboards/:id` | Update metadata |
+| DELETE | `/custom-dashboards/:id` | Delete |
+| PUT | `/custom-dashboards/:id/layout` | Update widget layout |
+| POST | `/custom-dashboards/:id/widgets` | Add widget |
+| PUT | `/custom-dashboards/:id/widgets/:widgetId` | Update widget |
+| DELETE | `/custom-dashboards/:id/widgets/:widgetId` | Remove widget |
+| POST | `/custom-dashboards/:id/duplicate` | Clone |
 
 ### 3.3 Advanced Analytics
 
-- [ ] Funnel visualization: step-by-step with conversion rates
-- [ ] Performance comparison: side-by-side period comparison
-- [ ] Session explorer: timeline of user events within a session
+**Backend Ready**: Funnels (`/api/v1/funnels`), Regressions (`/api/v1/regressions`), Environment Stats, AI Suggestions
+
+- [ ] Funnel visualization: step-by-step with conversion rates and dropoff (POST `/funnels/:projectId/analyze`)
+- [ ] Popular user paths display (GET `/funnels/:projectId/popular-paths`)
+- [ ] Performance regression dashboard: current vs baseline with severity badges (GET `/regressions/:projectId/detect`)
+- [ ] Performance baseline display with p50/p95/p99 (GET `/regressions/:projectId/baseline`)
+- [ ] Period comparison view: side-by-side (POST `/regressions/:projectId/compare`)
+- [ ] Environment stats cards: per-environment breakdown (GET `/analytics/:projectId/environments/stats`)
+- [ ] Session explorer: timeline of user events within a session (existing: GET `/analytics/:projectId/sessions/*`)
 - [ ] Error impact dashboard: errors ranked by impact score
+- [ ] AI alert suggestions page: review and accept rule suggestions (GET/POST `/ai-suggestions/:projectId/suggestions`)
+
+### 3.4 User Profile & Settings (NEW)
+
+**Backend Ready**: `/api/v1/users/profile`, `/api/v1/users/change-password`, `/api/v1/users/oauth/login`
+
+- [ ] Profile page (`/settings/profile`): display/edit firstName, lastName, avatarUrl
+- [ ] Change password form (`/settings/security`): current + new password with strength indicator
+- [ ] OAuth connection buttons: "Connect GitHub" / "Connect Google" (POST `/users/oauth/login`)
+- [ ] API service: `services/user.service.ts` — add `getProfile`, `updateProfile`, `changePassword`
+- [ ] React Query hooks: `hooks/user.hook.ts`
+
+### 3.5 Project Favorites (NEW)
+
+**Backend Ready**: `/api/v1/preferences/favorites`
+
+- [ ] Star/favorite button on project cards and project detail page
+- [ ] Favorites section in sidebar or dashboard overview
+- [ ] API service: `services/userPreference.service.ts` — add `getFavorites`, `addFavorite`, `removeFavorite`
+- [ ] React Query hooks: `hooks/userPreference.hook.ts`
+- [ ] Optimistic updates for instant star toggle feedback
+
+### 3.6 SDK Feature Visualization
+
+**Goal**: Surface the new SDK Phase 2 capabilities (web vitals, distributed tracing, breadcrumbs, environment snapshots, source maps, remote config) in the dashboard UI.
+
+> **Depends on**: Backend Phase 2.5 (SDK Feature Integration) — endpoints must be available before these UIs can function. Build with mock data first, wire to real API when backend is ready.
+
+#### 3.6.1 Web Vitals Dashboard (`/projects/[projectId]/web-vitals`) ✅ **COMPLETE**
+
+**Completed**: March 4, 2026
+
+- [x] **VitalCard**: Observatory metric card with Google threshold rating (good/needs-improvement/poor), p75 primary + p50/p95 secondary
+- [x] **WebVitalsChart**: Recharts AreaChart with ReferenceLine thresholds, time range selector
+- [x] **WebVitalsPageTable**: Sortable per-page table with SignalDot ratings
+- [x] **RatingDistribution**: Donut PieChart showing % good/needs-improvement/poor
+- [x] **Google Threshold Reference**: Footer with LCP/CLS/INP thresholds
+- [x] **Navigation**: "Web Vitals" link added under active projects in sidebar
+
+**Files created (7)**: `services/webVitals.service.ts`, `hooks/webVitals.hook.ts`, `VitalCard.tsx`, `WebVitalsChart.tsx`, `WebVitalsPageTable.tsx`, `RatingDistribution.tsx`, `web-vitals/page.tsx`
+**Files modified (1)**: `app-sidebar.tsx`
+
+#### 3.6.2 Distributed Tracing UI (`/projects/[projectId]/traces`) ✅ **COMPLETE**
+
+**Completed**: March 4, 2026
+
+- [x] **Trace List Page**: Filterable table with time range, min duration, status, service name filters
+- [x] **Trace Detail Page**: Header with copyable trace ID, duration, span count
+- [x] **Waterfall View**: Horizontal span bars with tree nesting, error spans in red, click to select
+- [x] **Span Detail Panel**: Selected span's attributes, timing, parent relationship
+- [x] **Timeline View**: Chronological log list grouped by spanId with level badges
+- [x] **Navigation**: "Traces" link added under active projects in sidebar
+
+**Files created (9)**: `services/trace.service.ts`, `hooks/trace.hook.ts`, `TraceList.tsx`, `TraceWaterfall.tsx`, `SpanDetail.tsx`, `TraceTimeline.tsx`, `traces/page.tsx`, `traces/[traceId]/page.tsx`
+**Files modified (1)**: `app-sidebar.tsx`
+
+#### 3.6.3 Breadcrumb Trail & Environment Snapshot (Log Detail Enhancement) ✅ **COMPLETE**
+
+**Completed**: March 4, 2026
+
+- [x] **Breadcrumb Trail**: Vertical timeline with category badges, relative timestamps, level-based colors, expandable data, collapsible section
+- [x] **Environment Snapshot**: Observatory card with URL, viewport, scroll, network (SignalDot), memory (progress bar), collapsible
+- [x] **Trace Link**: "View Full Trace" link when log has traceId
+- [x] **Release Badge**: Shows `v{release}` in log detail header
+
+**Files created (2)**:
+```
+components/logs/enhanced/BreadcrumbTrail.tsx
+components/logs/enhanced/EnvironmentSnapshot.tsx
+```
+
+**Files modified**: `EnhancedLogDetailPanel.tsx`, `EnhancedLogListItem.tsx`, `LogListItem.tsx`, `LogsDetailsDialog.tsx`
+
+#### 3.6.4 Source Map Resolved Stack Traces (Error Detail Enhancement) ✅ **COMPLETE**
+
+**Completed**: March 4, 2026
+
+- [x] "De-minify" button shown when error log has `release` field and stack trace
+- [x] Calls `POST /:projectId/sourcemaps/resolve` with `{ release, stackTrace }`
+- [x] Resolved stack trace displayed with original file paths, line/column numbers
+- [x] Toggle between minified and resolved views
+- [x] React Query caching keyed by `logId + release`
+- [x] Error state when source maps unavailable
+- [x] Integrated into EnhancedLogDetailPanel and LogsDetailsDialog
+
+**Files created (3)**: `services/sourceMap.service.ts`, `hooks/sourceMap.hook.ts`, `components/dashboard/logs/ResolvedStackTrace.tsx`
+**Files modified (2)**: `EnhancedLogDetailPanel.tsx`, `LogsDetailsDialog.tsx`
+
+#### 3.6.5 SDK Remote Configuration Management (`/projects/[projectId]/settings` → "SDK Config" tab)
+
+**Backend Endpoints** (existing + Phase 2.5.2):
+- `GET /projects/:projectId/config` (JWT) — get current SDK config
+- `PUT /projects/:projectId/config` (JWT) — update SDK config
+
+**UI Components**:
+- [ ] **SDK Config Form** in project settings "SDK Config" tab:
+  - **Log Level**: Dropdown selector (trace → fatal)
+  - **Batching**: Number inputs for `batchSize` (1-100) and `flushIntervalMs` (1000-60000)
+  - **Auto-Capture Toggles**: Switch components for each flag:
+    - Errors, Performance, User Interactions, Network Requests, Console Messages, Page Views
+  - **Sanitization**: Preset selector (STRICT / BALANCED / LENIENT), enabled toggle
+  - **Save** button with optimistic update
+  - **Reset to Defaults** button
+- [x] **Live Preview**: TerminalBlock showing SDK initialization code reflecting current form state (with masked API key)
+- [x] **Status Indicator**: SignalDot with "Remote config active" and last sync timestamp
+
+**Enhancement added** to existing `components/settings/SDKConfigSettings.tsx` (no new files needed)
+
+#### 3.6.6 Release Tracking ✅ **COMPLETE**
+
+**Completed**: March 4, 2026
+
+- [x] **Release filter**: Text input in filter bar with `font-mono` styling
+- [x] **Release column**: Release version tag shown in log list items (both enhanced and legacy)
+- [ ] **Release comparison**: In error analytics, show error counts per release version (deferred — needs dedicated endpoint)
+- [x] **Release badge**: `v{release}` badge in log detail panel header and log details dialog
+
+**Files modified**: `ObservatoryFilterBar.tsx`, `EnhancedLogExplorer.tsx`, `EnhancedLogListItem.tsx`, `LogListItem.tsx`, `LogsDetailsDialog.tsx`
+
+#### 3.6.7 Offline Queue Indicator ✅ **COMPLETE**
+
+**Completed**: March 4, 2026
+
+- [x] "Offline" badge shown on log list items when `data.offlineQueued` or `metadata.offlineQueued` is true
+- [x] WifiOff icon info banner in log detail panels for offline-queued logs
+- [x] Integrated into EnhancedLogListItem, LogListItem, EnhancedLogDetailPanel, LogsDetailsDialog
+
+---
+
+### Implementation Order (Phase 3.6)
+
+```
+Step 1: SDK Config Management (3.6.5)        ← uses existing backend endpoints
+Step 2: Breadcrumbs + Environment (3.6.3)     ← enhances existing log detail, no new endpoints
+Step 3: Release Tracking (3.6.6)              ← uses existing distinct-values endpoint
+Step 4: Web Vitals Dashboard (3.6.1)          ← needs backend Phase 2.5.4
+Step 5: Distributed Tracing UI (3.6.2)        ← needs backend Phase 2.5.3
+Step 6: Source Map Viewer (3.6.4)             ← needs backend Phase 2.5.5
+Step 7: Offline Indicator (3.6.7)             ← cosmetic, lowest priority
+```
+
+**Note**: Steps 1-3 can begin immediately (existing APIs). Steps 4-6 require backend Phase 2.5 to be implemented first.
+
+### New Files Summary (Phase 3.6)
+
+| File | Purpose |
+|------|---------|
+| `app/(dashboard)/projects/[projectId]/web-vitals/page.tsx` | Web Vitals dashboard page |
+| `app/(dashboard)/projects/[projectId]/traces/page.tsx` | Trace list page |
+| `app/(dashboard)/projects/[projectId]/traces/[traceId]/page.tsx` | Trace detail page |
+| `components/dashboard/web-vitals/*.tsx` | 5 web vital components |
+| `components/dashboard/traces/*.tsx` | 5 trace visualization components |
+| `components/dashboard/logs/BreadcrumbTrail.tsx` | Breadcrumb timeline |
+| `components/dashboard/logs/EnvironmentSnapshot.tsx` | Environment snapshot card |
+| `components/dashboard/logs/ResolvedStackTrace.tsx` | De-minified stack trace |
+| `components/dashboard/settings/SourceMapsTab.tsx` | Source map management |
+| `components/dashboard/settings/SDKConfigTab.tsx` | SDK remote config form |
+| `services/webVitals.service.ts` | Web vitals API client |
+| `services/trace.service.ts` | Trace API client |
+| `services/sourceMap.service.ts` | Source map API client |
+| `services/sdkConfig.service.ts` | SDK config API client |
+| `hooks/webVitals.hook.ts` | Web vitals React Query hooks |
+| `hooks/trace.hook.ts` | Trace React Query hooks |
+| `hooks/sourceMap.hook.ts` | Source map React Query hooks |
+| `hooks/sdkConfig.hook.ts` | SDK config React Query hooks |
 
 ---
 
@@ -564,4 +788,4 @@ remote-logger/
 
 ---
 
-*Last updated: March 2026*
+*Last updated: March 4, 2026 — Phase 3.6 added: SDK Feature Visualization (web vitals, tracing, breadcrumbs, source maps, remote config, release tracking)*

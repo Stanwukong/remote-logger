@@ -68,8 +68,6 @@ export const useDashboardData = () => {
   const overviewData = overviewQuery.data?.data as DashboardOverview;
   const performanceData = performanceQuery.data;
 
-  console.log(performanceData)
-
   const healthStatus = overviewData ? mapDashboardToHealthStatus(overviewData) : null;
   const metrics = overviewData ? mapDashboardToMetrics(overviewData) : [];
   

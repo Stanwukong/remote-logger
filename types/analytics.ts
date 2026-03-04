@@ -21,6 +21,11 @@ export interface LogEntry {
   url?: string
   responseTime?: string
   referrer?: string
+  correlationId?: string
+  sessionId?: string
+  metadata?: Record<string, any>
+  release?: string
+  traceId?: string
 }
 
 export interface Project {
@@ -70,6 +75,7 @@ export interface LogFilters {
   tags?: string[];
   limit?: number;
   offset?: number;
+  release?: string;
 }
 
 export interface LogSummary {

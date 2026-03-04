@@ -207,6 +207,195 @@ export const logService = {
       handleApiError(error);
     }
   },
+
+  // Export logs to CSV or JSON
+  exportLogs: async (
+    projectId: string,
+    format: "csv" | "json",
+    filters: LogFilters = {}
+  ) => {
+    try {
+      const response = await apiClient.post(
+        `/${projectId}/logs/export`,
+        {
+          format,
+          ...filters,
+        },
+        {
+          responseType: "blob",
+        }
+      );
+
+      // Create download link
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `logs-${projectId}-${new Date().toISOString().split("T")[0]}.${format}`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      return true;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  // Batch create logs
+  batchCreateLogs: async (projectId: string, logs: any[]) => {
+    try {
+      const response = await apiClient.post<ApiResponse>(
+        `/${projectId}/logs/batch`,
+        { logs }
+      );
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to batch create logs",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return response.data.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  // Structured query search
+  structuredSearch: async (
+    projectId: string,
+    query: string,
+    page: number = 1,
+    limit: number = 100
+  ) => {
+    try {
+      const response = await apiClient.post<ApiResponse>(
+        `/${projectId}/logs/search`,
+        { query, page, limit }
+      );
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to execute structured search",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return {
+        logs: response.data.data || [],
+        meta: response.data.meta,
+      };
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  // Saved Searches
+  getSavedSearches: async (projectId: string) => {
+    try {
+      const response = await apiClient.get<ApiResponse>(
+        `/projects/${projectId}/saved-searches`
+      );
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to fetch saved searches",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return response.data.data || [];
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  getDefaultSavedSearch: async (projectId: string) => {
+    try {
+      const response = await apiClient.get<ApiResponse>(
+        `/projects/${projectId}/saved-searches/default`
+      );
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to fetch default saved search",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return response.data.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  createSavedSearch: async (projectId: string, data: any) => {
+    try {
+      const response = await apiClient.post<ApiResponse>(
+        `/projects/${projectId}/saved-searches`,
+        data
+      );
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to create saved search",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return response.data.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  updateSavedSearch: async (projectId: string, searchId: string, data: any) => {
+    try {
+      const response = await apiClient.put<ApiResponse>(
+        `/projects/${projectId}/saved-searches/${searchId}`,
+        data
+      );
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to update saved search",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return response.data.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  deleteSavedSearch: async (projectId: string, searchId: string) => {
+    try {
+      const response = await apiClient.delete<ApiResponse>(
+        `/projects/${projectId}/saved-searches/${searchId}`
+      );
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to delete saved search",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return response.data.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
 };
 
 
@@ -219,3 +408,11 @@ export const getLogTrends = logService.getLogTrends;
 export const getDistinctValues = logService.getDistinctValues;
 export const getUniqueErrors = logService.getUniqueErrors;
 export const deleteLogs = logService.deleteLogs;
+export const exportLogs = logService.exportLogs;
+export const batchCreateLogs = logService.batchCreateLogs;
+export const structuredSearch = logService.structuredSearch;
+export const getSavedSearches = logService.getSavedSearches;
+export const getDefaultSavedSearch = logService.getDefaultSavedSearch;
+export const createSavedSearch = logService.createSavedSearch;
+export const updateSavedSearch = logService.updateSavedSearch;
+export const deleteSavedSearch = logService.deleteSavedSearch;

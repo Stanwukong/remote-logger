@@ -138,7 +138,7 @@ export const authService = {
     try {
       const response = await apiClient.post<ApiResponse>(
         '/users/reset-password',
-        { token, password: newPassword}
+        { token, newPassword }
       )
 
       if (response.data.status === "error") {

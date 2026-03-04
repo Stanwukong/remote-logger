@@ -55,8 +55,21 @@ apiClient.interceptors.response.use(
   (response: AxiosResponse<ApiResponse>) => response,
   (error: AxiosError<ApiResponse>) => {
     if (error.response?.status === 401) {
-      removeCookie("authToken");
-      // TODO: redirect the user to login page 
+      const url = error.config?.url || "";
+      // Don't redirect for auth endpoints (login/signup naturally return 401 on bad credentials)
+      const isAuthEndpoint =
+        url.includes("/users/login") || url.includes("/users/signup");
+
+      if (!isAuthEndpoint) {
+        removeCookie("authToken");
+        if (typeof window !== "undefined") {
+          // Use dynamic import to avoid bundling toast in non-browser contexts
+          import("sonner").then(({ toast }) => {
+            toast.error("Session expired. Please sign in again.");
+          });
+          window.location.href = "/login";
+        }
+      }
     }
     return Promise.reject(error);
   }

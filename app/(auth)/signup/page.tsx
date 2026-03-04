@@ -57,33 +57,17 @@ export default function SignUpPage() {
     },
   });
 
-  // const handleSocialSignup = async (provider: string) => {
-  //   setIsLoading(true);
-
-  //   // Simulate social signup
-  //   await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  //   toast(`Creating account with ${provider}`);
-
-  //   router.push("/dashboard");
-  // };
-
   const onSubmit = async (values: z.infer<typeof signUpSchema>) => {
     setIsLoading(true);
 
     try {
-      const res = await signupUser(values);
-
-      console.log(res)
-
+      await signupUser(values);
       toast.success("Account created successfully!");
       router.push("/dashboard");
     } catch (error) {
-      toast.error(`Account creation failed. Please try again.`);
-      console.error(error)
+      toast.error("Account creation failed. Please try again.");
     }
 
-    console.log(values);
     setIsLoading(false);
   };
 
@@ -107,10 +91,10 @@ export default function SignUpPage() {
   };
 
   const getStrengthColor = (strength: number) => {
-    if (strength < 25) return "#A61C3C";
-    if (strength < 50) return "#F18805";
-    if (strength < 75) return "#FFC145";
-    return "#06D6A0";
+    if (strength < 25) return "var(--status-danger)";
+    if (strength < 50) return "var(--status-warn)";
+    if (strength < 75) return "var(--status-warn)";
+    return "var(--signal)";
   };
 
   const handlePasswordChange = (value: string) => {
@@ -121,60 +105,31 @@ export default function SignUpPage() {
     <div className="w-full max-w-md mx-auto my-12 space-y-8">
       {/* Welcome Message */}
       <div className="text-center space-y-2">
-        <Badge variant={"secondary"} className="mb-4">
+        <Badge
+          variant="outline"
+          className="mb-4 bg-signal/10 text-signal border-signal/30"
+        >
           Create Account
         </Badge>
-        <h1 className="text-3xl font-bold tracking-tight">Join Monita</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-3xl font-display font-bold tracking-tight text-text-primary">
+          Join Monita
+        </h1>
+        <p className="text-text-secondary">
           Start monitoring your applications in minutes. No credit card required
         </p>
       </div>
 
       {/* Signup Card */}
-      <Card className="border-border/50 shadow-lg">
+      <Card className="bg-bg-surface border-border-subtle shadow-lg">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center">
+          <CardTitle className="text-2xl text-center text-text-primary">
             Create your account
           </CardTitle>
-          <CardDescription className="text-center">
+          <CardDescription className="text-center text-text-secondary">
             Get started with your free Monita account
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-
-          {/* Social Signup Buttons */}
-          {/* <div className="space-y-3">
-            <Button
-              variant={"outline"}
-              className="w-full bg-transparent"
-              onClick={() => handleSocialSignup("github")}
-              disabled={isLoading}
-            >
-              <Github className="w-4 h-4 mr-2" />
-              Continue with GitHub
-            </Button>
-            <Button
-              variant={"outline"}
-              className="w-full bg-transparent"
-              onClick={() => handleSocialSignup("google")}
-              disabled={isLoading}
-            >
-              <Mail className="w-4 h-4 mr-2" />
-              Continue with Google
-            </Button>
-          </div>
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <Separator className="w-full" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
-                Or continue with email
-              </span>
-            </div>
-          </div> */}
-
           {/* Signup Form */}
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -185,12 +140,15 @@ export default function SignUpPage() {
                   name="firstName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>First Name</FormLabel>
+                      <FormLabel className="text-text-secondary">
+                        First Name
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Femi"
                           {...field}
                           disabled={isLoading}
+                          className="bg-bg-base border-border-subtle"
                         />
                       </FormControl>
                       <FormMessage />
@@ -202,12 +160,15 @@ export default function SignUpPage() {
                   name="lastName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Last Name</FormLabel>
+                      <FormLabel className="text-text-secondary">
+                        Last Name
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Ajanaku"
                           {...field}
                           disabled={isLoading}
+                          className="bg-bg-base border-border-subtle"
                         />
                       </FormControl>
                       <FormMessage />
@@ -222,13 +183,14 @@ export default function SignUpPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel className="text-text-secondary">Email</FormLabel>
                     <FormControl>
                       <Input
                         type="email"
                         placeholder="femi@example.com"
                         {...field}
                         disabled={isLoading}
+                        className="bg-bg-base border-border-subtle"
                       />
                     </FormControl>
                     <FormMessage />
@@ -242,17 +204,18 @@ export default function SignUpPage() {
                 name="company"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
+                    <FormLabel className="text-text-secondary">
                       Company{" "}
-                      <span className="text-muted-foreground">(optional)</span>
+                      <span className="text-text-muted">(optional)</span>
                     </FormLabel>
                     <FormControl>
                       <div className="flex gap-2 items-center">
-                        <Building className="text-muted-foreground w-4 h-4" />
+                        <Building className="text-text-muted w-4 h-4" />
                         <Input
                           placeholder="Monita Inc."
                           {...field}
                           disabled={isLoading}
+                          className="bg-bg-base border-border-subtle"
                         />
                       </div>
                     </FormControl>
@@ -267,7 +230,9 @@ export default function SignUpPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel className="text-text-secondary">
+                      Password
+                    </FormLabel>
                     <FormControl>
                       <div className="flex gap-2">
                         <Input
@@ -279,18 +244,19 @@ export default function SignUpPage() {
                           }}
                           type={showPassword ? "text" : "password"}
                           disabled={isLoading}
+                          className="bg-bg-base border-border-subtle"
                         />
                         <Button
                           type="button"
-                          variant={"ghost"}
-                          size={"sm"}
+                          variant="ghost"
+                          size="sm"
                           className="hover:bg-transparent"
                           onClick={() => setShowPassword((prev) => !prev)}
                         >
                           {showPassword ? (
-                            <EyeOff className="h-4 w-4 text-muted-foreground" />
+                            <EyeOff className="h-4 w-4 text-text-muted" />
                           ) : (
-                            <Eye className="h-4 w-4 text-muted-foreground" />
+                            <Eye className="h-4 w-4 text-text-muted" />
                           )}
                         </Button>
                       </div>
@@ -304,10 +270,10 @@ export default function SignUpPage() {
               {password && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs text-text-muted">
                       Password Strength
                     </span>
-                    <span className="text-xs font-medium">
+                    <span className="text-xs font-medium text-text-secondary">
                       {getStrengthLabel(passwordStrength)}
                     </span>
                   </div>
@@ -325,7 +291,9 @@ export default function SignUpPage() {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
+                    <FormLabel className="text-text-secondary">
+                      Confirm Password
+                    </FormLabel>
                     <FormControl>
                       <div className="flex gap-2">
                         <Input
@@ -333,20 +301,21 @@ export default function SignUpPage() {
                           {...field}
                           type={showConfirmPassword ? "text" : "password"}
                           disabled={isLoading}
+                          className="bg-bg-base border-border-subtle"
                         />
                         <Button
                           type="button"
-                          variant={"ghost"}
-                          size={"sm"}
+                          variant="ghost"
+                          size="sm"
                           className="hover:bg-transparent"
                           onClick={() =>
                             setShowConfirmPassword((prev) => !prev)
                           }
                         >
                           {showConfirmPassword ? (
-                            <EyeOff className="h-4 w-4 text-muted-foreground" />
+                            <EyeOff className="h-4 w-4 text-text-muted" />
                           ) : (
-                            <Eye className="h-4 w-4 text-muted-foreground" />
+                            <Eye className="h-4 w-4 text-text-muted" />
                           )}
                         </Button>
                       </div>
@@ -356,7 +325,12 @@ export default function SignUpPage() {
                 )}
               />
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button
+                type="submit"
+                variant="signal"
+                className="w-full"
+                disabled={isLoading}
+              >
                 {isLoading ? (
                   <>
                     <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
@@ -374,12 +348,12 @@ export default function SignUpPage() {
 
           {/* Login Link */}
           <div className="text-center text-sm">
-            <span className="text-muted-foreground">
+            <span className="text-text-muted">
               Already have an account?{" "}
             </span>
             <Link
               href="/login"
-              className="text-primary hover:underline font-medium"
+              className="text-signal hover:text-signal-bright font-medium transition-colors"
             >
               Sign in
             </Link>
@@ -390,24 +364,24 @@ export default function SignUpPage() {
       {/* Benefits */}
       <div className="grid grid-cols-1 gap-4 text-center">
         <div className="space-y-2">
-          <h3 className="font-medium text-sm">
+          <h3 className="font-medium text-sm text-text-primary">
             What you get with Monita:
           </h3>
-          <div className="pl-10 grid grid-cols-2 gap-4 text-xs text-muted-foreground">
+          <div className="pl-10 grid grid-cols-2 gap-4 text-xs text-text-muted">
             <div className="flex items-center space-x-2">
-              <Check className="w-3 h-3 text-green-500" />
+              <Check className="w-3 h-3 text-signal" />
               <span>10,000 free logs/month</span>
             </div>
             <div className="flex items-center space-x-2">
-              <Check className="w-3 h-3 text-green-500" />
+              <Check className="w-3 h-3 text-signal" />
               <span>Real-time monitoring</span>
             </div>
             <div className="flex items-center space-x-2">
-              <Check className="w-3 h-3 text-green-500" />
+              <Check className="w-3 h-3 text-signal" />
               <span>Advanced search & filtering</span>
             </div>
             <div className="flex items-center space-x-2">
-              <Check className="w-3 h-3 text-green-500" />
+              <Check className="w-3 h-3 text-signal" />
               <span>Email & Slack alerts</span>
             </div>
           </div>
@@ -417,11 +391,11 @@ export default function SignUpPage() {
       {/* Security Features */}
       <div className="grid grid-cols-2 gap-4 text-center">
         <div className="space-y-2">
-          <div className="w-8 h-8 bg-green-500/10 rounded-lg flex items-center justify-center mx-auto">
-            <Shield className="w-4 h-4 text-green-500" />
+          <div className="w-8 h-8 bg-signal/10 rounded-lg flex items-center justify-center mx-auto">
+            <Shield className="w-4 h-4 text-signal" />
           </div>
-          <p className="text-xs text-muted-foreground">
-            <span className="font-medium text-foreground">
+          <p className="text-xs text-text-muted">
+            <span className="font-medium text-text-primary">
               Enterprise Security
             </span>
             <br />
@@ -429,11 +403,11 @@ export default function SignUpPage() {
           </p>
         </div>
         <div className="space-y-2">
-          <div className="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center mx-auto">
-            <Zap className="w-4 h-4 text-blue-500" />
+          <div className="w-8 h-8 bg-data-info/10 rounded-lg flex items-center justify-center mx-auto">
+            <Zap className="w-4 h-4 text-data-info" />
           </div>
-          <p className="text-xs text-muted-foreground">
-            <span className="font-medium text-foreground">Quick Setup</span>
+          <p className="text-xs text-text-muted">
+            <span className="font-medium text-text-primary">Quick Setup</span>
             <br />
             Start logging in 2 minutes
           </p>

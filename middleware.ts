@@ -10,12 +10,15 @@ import type { NextRequest } from "next/server";
  * token (or session) and redirects them accordingly.
  */
 export async function middleware(request: NextRequest) {
-  const publicPaths = ["/", "/login", "/signup", "/sdk"];
+  const publicPaths = ["/", "/login", "/signup", "/sdk", "/forgot-password"];
   const authPaths = ["/login", "/signup"];
 
+  const pathname = request.nextUrl.pathname;
+
   // 2. Check if the current path is a public path or auth path.
-  const isPublicPath = publicPaths.includes(request.nextUrl.pathname);
-  const isAuthPath = authPaths.includes(request.nextUrl.pathname);
+  const isPublicPath =
+    publicPaths.includes(pathname) || pathname.startsWith("/reset-password");
+  const isAuthPath = authPaths.includes(pathname);
 
   // 3. Get the authentication token from cookies.
   const token = request.cookies.get("authToken");

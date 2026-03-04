@@ -98,12 +98,12 @@ export function useIntersectionObserver(
 
 // Constants for styling and configuration
 export const CHART_COLORS = {
-  primary: 'hsl(var(--primary))',
-  destructive: 'hsl(var(--destructive))',
-  warning: '#f59e0b',
-  success: '#10b981',
-  info: '#3b82f6',
-  muted: 'hsl(var(--muted-foreground))'
+  primary: 'var(--signal)',
+  destructive: 'var(--status-danger)',
+  warning: 'var(--status-warn)',
+  success: 'var(--status-ok)',
+  info: 'var(--data)',
+  muted: 'var(--text-muted)',
 }
 
 export const BREAKPOINTS = {

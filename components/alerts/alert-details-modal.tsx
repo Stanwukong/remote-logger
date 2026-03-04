@@ -20,13 +20,15 @@ import {
   Webhook,
   ExternalLink,
 } from "lucide-react"
-import { Alert } from "@/app/(dashboard)/alerts/page"
+// Legacy component — replaced by AlertDetailPanel/AlertDetailModal (enhanced)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Alert = any;
 
 interface AlertDetailsModalProps {
   alert: Alert | null
   open: boolean
   onOpenChange: (open: boolean) => void
-  onStatusChange: (alertId: string, newStatus: Alert["status"]) => void
+  onStatusChange: (alertId: string, newStatus: string) => void
 }
 
 export function AlertDetailsModal({ alert, open, onOpenChange, onStatusChange }: AlertDetailsModalProps) {

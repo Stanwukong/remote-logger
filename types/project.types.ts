@@ -31,6 +31,7 @@ export type Project = {
   project: {
     _id: string;
     name: string;
+    description?: string;
     apiKey: string;
     ownerId: {
       _id: string;
@@ -143,6 +144,7 @@ export type ProjectCreateData = {
 export type ProjectUpdateData = {
   name?: string;
   description?: string;
+  isActive?: boolean;
   tags?: ProjectTag[];
   rateLimit?: {
     maxRequests: number;

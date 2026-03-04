@@ -1,7 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-
 "use client";
+
 import {
   Sidebar,
   SidebarContent,
@@ -13,64 +11,66 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
 import {
   Activity,
   BarChart3,
   Folder,
+  GitBranch,
   Settings,
   Code,
   HelpCircle,
   Search,
   AlertTriangle,
   Loader2,
+  LogOut,
 } from "lucide-react";
 import Link from "next/link";
-import { Badge  } from "@/components/ui/badge";
+import { usePathname, useRouter } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
 import { SignalDot } from "@/components/shared/SignalDot";
-import { LogOut } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { authService } from "@/services/auth.service";
 import { useProjects } from "@/hooks/project.hooks";
 import { Project } from "@/types/project.types";
-
-// Navigation items will be created dynamically to include project count
+import { useUserAlertStats } from "@/hooks/alerts.hook";
 
 // Helper function to get project status based on analytics
-const getProjectStatus = (project: Project): string => {
-  if (!project.analytics) return "inactive";
-  
-  const { errorRate } = project.analytics.overview;
-  const responseTimeHealth = project.analytics.responseTime.current.health;
-  const performanceHealth = project.analytics.performance.health;
-  const errorHealth = project.analytics.errors.health;
-  
-  if (errorRate > 0.1 || responseTimeHealth === "critical" || performanceHealth === "critical" || errorHealth === "critical") {
-    return "critical";
-  }
-  if (errorRate > 0.05 || responseTimeHealth === "poor" || performanceHealth === "poor" || errorHealth === "poor") {
-    return "warning";
-  }
-  if (responseTimeHealth === "excellent" && performanceHealth === "excellent" && errorHealth === "excellent") {
-    return "excellent";
-  }
-  
-  return "good";
-};
+const getProjectStatus = (project: Project): "ok" | "warn" | "danger" | "info" => {
+  if (!project.analytics) return "info";
 
-// Helper function to get status badge variant
-const getStatusBadgeVariant = (status: string) => {
-  switch (status) {
-    case "critical":
-      return "destructive";
-    case "warning":
-      return "secondary";
-    case "excellent":
-      return "default";
-    default:
-      return "outline";
+  const errorRate = project.analytics.overview?.errorRate ?? 0;
+  const responseTimeHealth = project.analytics.responseTime?.current?.health;
+  const performanceHealth = project.analytics.performance?.health;
+  const errorHealth = project.analytics.errors?.health;
+
+  if (
+    errorRate > 0.1 ||
+    responseTimeHealth === "critical" ||
+    performanceHealth === "critical" ||
+    errorHealth === "critical"
+  ) {
+    return "danger";
   }
+  if (
+    errorRate > 0.05 ||
+    responseTimeHealth === "poor" ||
+    performanceHealth === "poor" ||
+    errorHealth === "poor"
+  ) {
+    return "warn";
+  }
+  if (
+    responseTimeHealth === "excellent" &&
+    performanceHealth === "excellent" &&
+    errorHealth === "excellent"
+  ) {
+    return "ok";
+  }
+
+  return "ok";
 };
 
 const resourceItems = [
@@ -93,18 +93,26 @@ const resourceItems = [
 
 export function AppSidebar() {
   const router = useRouter();
-  
+  const pathname = usePathname();
+
   // Fetch recent projects from database
-  const { data: projectsResponse, isLoading, error } = useProjects({ 
-    includeInactive: false 
+  const {
+    data: projectsResponse,
+    isLoading,
+    error,
+  } = useProjects({
+    includeInactive: false,
   });
 
-  
+  // Fetch user alert statistics
+  const { data: alertStats } = useUserAlertStats();
+
   // Get recent projects (last 5 active projects)
   const recentProjects = projectsResponse?.data?.slice(0, 5) || [];
 
-  console.log(recentProjects)
-  
+  // Calculate active alert count
+  const activeAlertCount = alertStats?.data?.active || 0;
+
   // Create navigation items with dynamic project count
   const navigationItems = [
     {
@@ -116,27 +124,34 @@ export function AppSidebar() {
       title: "Projects",
       url: "/projects",
       icon: Folder,
-      badge: projectsResponse?.data?.length?.toString() || "0"
+      badge: projectsResponse?.data?.length?.toString() || "0",
     },
     {
       title: "Logs Explorer",
       url: "/logs",
-      icon: Search
+      icon: Search,
     },
     {
       title: "Alerts",
       url: "/alerts",
       icon: AlertTriangle,
-      badge: "3",
-      badgeVariants: "destructive" as const
-    }
+      badge: activeAlertCount > 0 ? activeAlertCount.toString() : undefined,
+      badgeVariant: "destructive" as const,
+    },
   ];
+
+  // Check if a navigation item is active
+  const isActive = (url: string) => {
+    if (url === "/dashboard") return pathname === "/dashboard";
+    return pathname.startsWith(url);
+  };
 
   const clearAllCookies = () => {
     const cookies = document.cookie.split(";");
     for (const cookie of cookies) {
       const eqPos = cookie.indexOf("=");
-      const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+      const name =
+        eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
       document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
     }
   };
@@ -153,8 +168,8 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar className="border-r border-border/40">
-      <SidebarHeader className="border-b border-border/40">
+    <Sidebar className="border-r border-border-subtle">
+      <SidebarHeader className="border-b border-border-subtle">
         <div className="flex items-center space-x-2.5">
           <svg
             width="28"
@@ -174,35 +189,50 @@ export function AppSidebar() {
             <circle cx="24" cy="10" r="2" fill="currentColor" />
           </svg>
           <div>
-            <h2 className="font-display font-semibold text-lg tracking-[-0.02em]">Monita</h2>
-            <p className="text-xs text-muted-foreground">Developer Console</p>
+            <h2 className="font-display font-semibold text-lg tracking-[-0.02em]">
+              Monita
+            </h2>
+            <p className="text-xs text-text-muted">Developer Console</p>
           </div>
         </div>
       </SidebarHeader>
 
       <SidebarContent className="overflow-x-clip">
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-text-muted uppercase text-[11px] tracking-wider font-display">
+            Navigation
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navigationItems.map((item) =>  (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link href={item.url}>
-                      <item.icon className="w-4 h-4" />
-                      <span>{item.title}</span>
-                      {item.badge && (
-                        <Badge 
-                          variant={item.badgeVariants || "secondary"} 
-                          className="ml-auto text-xs"
-                        >
-                          {item.badge}
-                        </Badge>
-                      )}
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {navigationItems.map((item) => {
+                const active = isActive(item.url);
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={active}
+                      className={
+                        active
+                          ? "bg-signal/10 text-signal font-medium border-l-2 border-signal"
+                          : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated/50"
+                      }
+                    >
+                      <Link href={item.url}>
+                        <item.icon className="w-4 h-4" />
+                        <span>{item.title}</span>
+                        {item.badge && (
+                          <Badge
+                            variant={item.badgeVariant || "secondary"}
+                            className="ml-auto text-xs"
+                          >
+                            {item.badge}
+                          </Badge>
+                        )}
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -210,7 +240,9 @@ export function AppSidebar() {
         <SidebarSeparator />
 
         <SidebarGroup>
-          <SidebarGroupLabel>Recent Projects</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-text-muted uppercase text-[11px] tracking-wider font-display">
+            Recent Projects
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {isLoading ? (
@@ -223,7 +255,7 @@ export function AppSidebar() {
               ) : error ? (
                 <SidebarMenuItem>
                   <SidebarMenuButton disabled>
-                    <AlertTriangle className="w-4 h-4 text-destructive" />
+                    <AlertTriangle className="w-4 h-4 text-status-danger" />
                     <span>Failed to load</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -237,20 +269,72 @@ export function AppSidebar() {
               ) : (
                 recentProjects.map((project) => {
                   const status = getProjectStatus(project);
+                  const projectActive = pathname.startsWith(`/projects/${project._id}`);
+                  const exactActive = pathname === `/projects/${project._id}`;
+                  const webVitalsActive = pathname === `/projects/${project._id}/web-vitals`;
+                  const tracesActive = pathname.startsWith(`/projects/${project._id}/traces`);
                   return (
                     <SidebarMenuItem key={project._id}>
-                      <SidebarMenuButton asChild>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={exactActive}
+                        className={
+                          exactActive
+                            ? "bg-signal/10 text-signal font-medium border-l-2 border-signal"
+                            : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated/50"
+                        }
+                      >
                         <Link href={`/projects/${project._id}`}>
-                          <Activity className="w-4 h-4" />
+                          <SignalDot
+                            status={status}
+                            size="sm"
+                            pulse={status !== "info"}
+                          />
                           <span className="truncate">{project.name}</span>
-                          <Badge 
-                            variant={getStatusBadgeVariant(status) as any} 
-                            className="ml-auto text-xs"
+                          <Badge
+                            variant="outline"
+                            className="ml-auto text-[10px] text-text-muted"
                           >
-                            {status}
+                            {project.environment}
                           </Badge>
                         </Link>
                       </SidebarMenuButton>
+                      {projectActive && (
+                        <SidebarMenuSub>
+                          <SidebarMenuSubItem>
+                            <SidebarMenuSubButton
+                              asChild
+                              isActive={webVitalsActive}
+                              className={
+                                webVitalsActive
+                                  ? "text-signal font-medium"
+                                  : "text-text-muted hover:text-text-primary"
+                              }
+                            >
+                              <Link href={`/projects/${project._id}/web-vitals`}>
+                                <Activity className="w-3.5 h-3.5" />
+                                <span>Web Vitals</span>
+                              </Link>
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSubItem>
+                          <SidebarMenuSubItem>
+                            <SidebarMenuSubButton
+                              asChild
+                              isActive={tracesActive}
+                              className={
+                                tracesActive
+                                  ? "text-signal font-medium"
+                                  : "text-text-muted hover:text-text-primary"
+                              }
+                            >
+                              <Link href={`/projects/${project._id}/traces`}>
+                                <GitBranch className="w-3.5 h-3.5" />
+                                <span>Traces</span>
+                              </Link>
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSubItem>
+                        </SidebarMenuSub>
+                      )}
                     </SidebarMenuItem>
                   );
                 })
@@ -262,33 +346,46 @@ export function AppSidebar() {
         <SidebarSeparator />
 
         <SidebarGroup>
-          <SidebarGroupLabel>Resources</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-text-muted uppercase text-[11px] tracking-wider font-display">
+            Resources
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {resourceItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link href={item.url}>
-                      <item.icon className="w-4 h-4" />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {resourceItems.map((item) => {
+                const active = isActive(item.url);
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={active}
+                      className={
+                        active
+                          ? "bg-signal/10 text-signal font-medium border-l-2 border-signal"
+                          : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated/50"
+                      }
+                    >
+                      <Link href={item.url}>
+                        <item.icon className="w-4 h-4" />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-border/40 p-4">
+      <SidebarFooter className="border-t border-border-subtle p-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+          <div className="flex items-center space-x-2 text-sm text-text-muted">
             <SignalDot status="ok" size="sm" pulse />
             <span>All systems operational</span>
           </div>
           <button
             onClick={handleLogout}
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+            className="inline-flex items-center gap-2 text-sm text-text-muted hover:text-text-primary transition-colors"
             aria-label="Logout"
           >
             <LogOut className="w-4 h-4" />

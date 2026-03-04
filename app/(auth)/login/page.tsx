@@ -48,32 +48,15 @@ export default function LoginPage() {
     },
   });
 
-  // const handleSocialSignup = async (provider: string) => {
-  //   setIsLoading(true);
-
-  //   // Simulate social signup
-  //   await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  //   toast(`Creating account with ${provider}`);
-
-  //   router.push("/dashboard");
-  // };
-
   const onSubmit = async (values: z.infer<typeof signInSchema>) => {
     setIsLoading(true);
 
     try {
-      const res = await signinUser(values.email, values.password);
-
-      console.log(res)
-
-      
+      await signinUser(values.email, values.password);
       router.push("/dashboard");
       toast.success("Login successful.");
-      
     } catch (error) {
-      toast.error(`Login failed. Please try again.`);
-      console.error(error)
+      toast.error("Login failed. Please try again.");
     }
 
     setIsLoading(false);
@@ -83,58 +66,32 @@ export default function LoginPage() {
     <div className="w-full max-w-md mx-auto my-12 space-y-8">
       {/* Welcome Message */}
       <div className="text-center space-y-2">
-        <Badge variant={"secondary"} className="mb-4">
-          Create Account
+        <Badge
+          variant="outline"
+          className="mb-4 bg-signal/10 text-signal border-signal/30"
+        >
+          Welcome Back
         </Badge>
-        <h1 className="text-3xl font-bold tracking-tight">Welcome back</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-3xl font-display font-bold tracking-tight text-text-primary">
+          Welcome back
+        </h1>
+        <p className="text-text-secondary">
           Sign in to your Monita account to continue monitoring your
           applications.
         </p>
       </div>
 
-      {/* Signup Card */}
-      <Card className="border-border/50 shadow-lg">
+      {/* Login Card */}
+      <Card className="bg-bg-surface border-border-subtle shadow-lg">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center">Sign In</CardTitle>
-          <CardDescription className="text-center">
+          <CardTitle className="text-2xl text-center text-text-primary">
+            Sign In
+          </CardTitle>
+          <CardDescription className="text-center text-text-secondary">
             Enter your credentials to access your dashboard
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Social Signup Buttons */}
-          {/* <div className="space-y-3">
-            <Button
-              variant={"outline"}
-              className="w-full bg-transparent"
-              onClick={() => handleSocialSignup("Github")}
-              disabled={isLoading}
-            >
-              <Github className="w-4 h-4 mr-2" />
-              Continue with GitHub
-            </Button>
-            <Button
-              variant={"outline"}
-              className="w-full bg-transparent"
-              onClick={() => handleSocialSignup("Google")}
-              disabled={isLoading}
-            >
-              <Mail className="w-4 h-4 mr-2" />
-              Continue with Google
-            </Button>
-          </div>
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <Separator className="w-full" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
-                Or continue with email
-              </span>
-            </div>
-          </div> */}
-
           {/* Login Form */}
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -144,13 +101,14 @@ export default function LoginPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel className="text-text-secondary">Email</FormLabel>
                     <FormControl>
                       <Input
                         type="email"
                         placeholder="femi@example.com"
                         {...field}
                         disabled={isLoading}
+                        className="bg-bg-base border-border-subtle"
                       />
                     </FormControl>
                     <FormMessage />
@@ -165,10 +123,12 @@ export default function LoginPage() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="flex justify-between">
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel className="text-text-secondary">
+                        Password
+                      </FormLabel>
                       <Link
-                        href={"/forgot-password"}
-                        className="font-semibold text-sm"
+                        href="/forgot-password"
+                        className="font-semibold text-sm text-signal hover:text-signal-bright transition-colors"
                       >
                         Forgot password?
                       </Link>
@@ -181,18 +141,19 @@ export default function LoginPage() {
                           {...field}
                           type={showPassword ? "text" : "password"}
                           disabled={isLoading}
+                          className="bg-bg-base border-border-subtle"
                         />
                         <Button
                           type="button"
-                          variant={"ghost"}
-                          size={"sm"}
+                          variant="ghost"
+                          size="sm"
                           className="hover:bg-transparent"
                           onClick={() => setShowPassword((prev) => !prev)}
                         >
                           {showPassword ? (
-                            <EyeOff className="h-4 w-4 text-muted-foreground" />
+                            <EyeOff className="h-4 w-4 text-text-muted" />
                           ) : (
-                            <Eye className="h-4 w-4 text-muted-foreground" />
+                            <Eye className="h-4 w-4 text-text-muted" />
                           )}
                         </Button>
                       </div>
@@ -202,7 +163,12 @@ export default function LoginPage() {
                 )}
               />
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button
+                type="submit"
+                variant="signal"
+                className="w-full"
+                disabled={isLoading}
+              >
                 {isLoading ? (
                   <>
                     <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
@@ -220,12 +186,12 @@ export default function LoginPage() {
 
           {/* Sign Up Link */}
           <div className="text-center text-sm">
-            <span className="text-muted-foreground">
+            <span className="text-text-muted">
               Don&apos;t have an account?{" "}
             </span>
             <Link
               href="/signup"
-              className="text-primary hover:underline font-medium"
+              className="text-signal hover:text-signal-bright font-medium transition-colors"
             >
               Sign up for free
             </Link>
@@ -236,11 +202,11 @@ export default function LoginPage() {
       {/* Security Features */}
       <div className="grid grid-cols-2 gap-4 text-center">
         <div className="space-y-2">
-          <div className="w-8 h-8 bg-green-500/10 rounded-lg flex items-center justify-center mx-auto">
-            <Shield className="w-4 h-4 text-green-500" />
+          <div className="w-8 h-8 bg-signal/10 rounded-lg flex items-center justify-center mx-auto">
+            <Shield className="w-4 h-4 text-signal" />
           </div>
-          <p className="text-xs text-muted-foreground">
-            <span className="font-medium text-foreground">
+          <p className="text-xs text-text-muted">
+            <span className="font-medium text-text-primary">
               Secure Login
             </span>
             <br />
@@ -248,11 +214,11 @@ export default function LoginPage() {
           </p>
         </div>
         <div className="space-y-2">
-          <div className="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center mx-auto">
-            <Zap className="w-4 h-4 text-blue-500" />
+          <div className="w-8 h-8 bg-data-info/10 rounded-lg flex items-center justify-center mx-auto">
+            <Zap className="w-4 h-4 text-data-info" />
           </div>
-          <p className="text-xs text-muted-foreground">
-            <span className="font-medium text-foreground">Fast Access</span>
+          <p className="text-xs text-text-muted">
+            <span className="font-medium text-text-primary">Fast Access</span>
             <br />
             Single sign-on ready
           </p>
