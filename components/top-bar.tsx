@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -25,7 +25,6 @@ import {
 import {
   Search,
   Bell,
-  Settings,
   Command,
   Calendar,
   Clock,
@@ -33,9 +32,18 @@ import {
   CheckCircle,
   Info,
   X,
+  Globe,
+  RefreshCw,
+  ChevronDown,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useWebsocket } from "@/hooks/useWebsocket";
+import { useLogHiveStore } from "@/store/loghive-store";
+import { useProjects } from "@/hooks/project.hooks";
+
+// ============================================
+// TYPES
+// ============================================
 
 interface TopBarProps {
   onCommandOpen: () => void;
@@ -53,29 +61,112 @@ interface Notification {
   timestamp: number;
 }
 
-interface TimeRange {
-  label: string;
-  value: string;
-  hours: number;
-}
+// ============================================
+// CONSTANTS
+// ============================================
 
-const TIME_RANGES: TimeRange[] = [
-  { label: "Last hour", value: "1h", hours: 1 },
-  { label: "Last 24 hours", value: "24h", hours: 24 },
-  { label: "Last 7 days", value: "7d", hours: 168 },
-  { label: "Last 30 days", value: "30d", hours: 720 },
-];
+const TIME_RANGES = [
+  { label: "Last hour", value: "1h" },
+  { label: "Last 6 hours", value: "6h" },
+  { label: "Last 24 hours", value: "24h" },
+  { label: "Last 7 days", value: "7d" },
+  { label: "Last 30 days", value: "30d" },
+] as const;
+
+const ENVIRONMENTS = [
+  { label: "All Environments", value: "all" },
+  { label: "Production", value: "production" },
+  { label: "Staging", value: "staging" },
+  { label: "Development", value: "development" },
+] as const;
+
+const REFRESH_INTERVALS = [
+  { label: "10 seconds", value: 10000 },
+  { label: "30 seconds", value: 30000 },
+  { label: "1 minute", value: 60000 },
+  { label: "5 minutes", value: 300000 },
+] as const;
+
+// ============================================
+// HELPERS
+// ============================================
+
+const isObjectId = (str: string) => /^[a-f\d]{24}$/i.test(str);
+
+const getTimeRangeLabel = (value: string) => {
+  return TIME_RANGES.find((range) => range.value === value)?.label || "Custom";
+};
+
+const getEnvironmentLabel = (value: string) => {
+  return (
+    ENVIRONMENTS.find((env) => env.value === value)?.label || "All Environments"
+  );
+};
+
+const formatRefreshInterval = (ms: number) => {
+  if (ms < 60000) return `${ms / 1000}s`;
+  return `${ms / 60000}m`;
+};
+
+const getNotificationIcon = (type: string) => {
+  switch (type) {
+    case "error":
+      return <AlertTriangle className="h-4 w-4 text-status-danger" />;
+    case "warning":
+      return <AlertTriangle className="h-4 w-4 text-status-warn" />;
+    case "success":
+      return <CheckCircle className="h-4 w-4 text-status-ok" />;
+    default:
+      return <Info className="h-4 w-4 text-data-info" />;
+  }
+};
+
+// ============================================
+// COMPONENT
+// ============================================
 
 export function TopBar({ onCommandOpen }: TopBarProps) {
   const pathname = usePathname();
   const router = useRouter();
+
+  // Local state
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [selectedTimeRange, setSelectedTimeRange] = useState("24h");
+
+  // Zustand store
+  const selectedTimeRange = useLogHiveStore((s) => s.selectedTimeRange);
+  const setTimeRange = useLogHiveStore((s) => s.setTimeRange);
+  const selectedEnvironment = useLogHiveStore((s) => s.selectedEnvironment);
+  const setSelectedEnvironment = useLogHiveStore(
+    (s) => s.setSelectedEnvironment
+  );
+  const autoRefreshEnabled = useLogHiveStore((s) => s.autoRefreshEnabled);
+  const autoRefreshInterval = useLogHiveStore((s) => s.autoRefreshInterval);
+  const toggleAutoRefresh = useLogHiveStore((s) => s.toggleAutoRefresh);
+  const setAutoRefreshInterval = useLogHiveStore(
+    (s) => s.setAutoRefreshInterval
+  );
+
+  // Projects for breadcrumb ObjectId resolution
+  const { data: projectsResponse } = useProjects();
 
   // WebSocket connection for real-time notifications
   const { lastMessage } = useWebsocket();
 
-  // Handle real-time notifications
+  // Build a lookup map from project IDs to names
+  const projectNameMap = useMemo(() => {
+    const map = new Map<string, string>();
+    const projects = projectsResponse?.data;
+    if (Array.isArray(projects)) {
+      for (const project of projects) {
+        if (project?._id && project?.name) {
+          map.set(project._id, project.name);
+        }
+      }
+    }
+    return map;
+  }, [projectsResponse]);
+
+  // Handle real-time notifications from WebSocket
   useEffect(() => {
     if (lastMessage) {
       try {
@@ -105,36 +196,35 @@ export function TopBar({ onCommandOpen }: TopBarProps) {
     }
   }, [lastMessage]);
 
-  // Generate breadcrumbs from pathname
-  const generateBreadcrumbs = () => {
+  // Generate breadcrumbs from pathname with ObjectId resolution
+  const breadcrumbs = useMemo(() => {
     const segments = pathname.split("/").filter(Boolean);
-    const breadcrumbs: { name: string; href: string; isLast: boolean }[] = [];
+    const items: { name: string; href: string; isLast: boolean }[] = [];
 
     for (let i = 0; i < segments.length; i++) {
       const segment = segments[i];
       const href = "/" + segments.slice(0, i + 1).join("/");
       const isLast = i === segments.length - 1;
 
-      // Format segment name
-      const name = segment
-        .split("-")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ");
+      let name: string;
+      if (isObjectId(segment)) {
+        name = projectNameMap.get(segment) || segment.slice(0, 8) + "...";
+      } else {
+        name = segment
+          .split("-")
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" ");
+      }
 
-      breadcrumbs.push({
-        name,
-        href,
-        isLast,
-      });
+      items.push({ name, href, isLast });
     }
 
-    return breadcrumbs;
-  };
+    return items;
+  }, [pathname, projectNameMap]);
 
-  const breadcrumbs = generateBreadcrumbs();
   const unreadCount = notifications.filter((n) => n.unread).length;
 
-  // Handle notification actions
+  // Notification handlers
   const handleNotificationClick = useCallback(
     (notification: Notification) => {
       setNotifications((prev) =>
@@ -159,30 +249,6 @@ export function TopBar({ onCommandOpen }: TopBarProps) {
   const clearNotification = useCallback((notificationId: string) => {
     setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
   }, []);
-
-  // Handle time range change
-  const handleTimeRangeChange = useCallback((timeRange: string) => {
-    setSelectedTimeRange(timeRange);
-  }, []);
-
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case "error":
-        return <AlertTriangle className="h-4 w-4 text-status-danger" />;
-      case "warning":
-        return <AlertTriangle className="h-4 w-4 text-status-warn" />;
-      case "success":
-        return <CheckCircle className="h-4 w-4 text-status-ok" />;
-      default:
-        return <Info className="h-4 w-4 text-data-info" />;
-    }
-  };
-
-  const getTimeRangeLabel = (value: string) => {
-    return (
-      TIME_RANGES.find((range) => range.value === value)?.label || "Last 24h"
-    );
-  };
 
   return (
     <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border-subtle bg-bg-base/95 backdrop-blur supports-[backdrop-filter]:bg-bg-base/60 px-4">
@@ -260,7 +326,7 @@ export function TopBar({ onCommandOpen }: TopBarProps) {
             {TIME_RANGES.map((range) => (
               <DropdownMenuItem
                 key={range.value}
-                onSelect={() => handleTimeRangeChange(range.value)}
+                onSelect={() => setTimeRange(range.value as any)}
                 className={
                   selectedTimeRange === range.value
                     ? "bg-signal/10 text-signal"
@@ -271,12 +337,114 @@ export function TopBar({ onCommandOpen }: TopBarProps) {
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={() => setTimeRange("custom")}
+              className={
+                selectedTimeRange === "custom"
+                  ? "bg-signal/10 text-signal"
+                  : ""
+              }
+            >
               <Calendar className="w-4 h-4 mr-2" />
               Custom range
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+
+        {/* Environment Filter */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="hidden md:flex text-text-secondary hover:text-text-primary"
+            >
+              <Globe className="w-4 h-4 mr-2" />
+              {getEnvironmentLabel(selectedEnvironment)}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            className="bg-bg-surface border-border-subtle"
+          >
+            <DropdownMenuLabel className="text-text-muted">
+              Environment
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {ENVIRONMENTS.map((env) => (
+              <DropdownMenuItem
+                key={env.value}
+                onSelect={() => setSelectedEnvironment(env.value)}
+                className={
+                  selectedEnvironment === env.value
+                    ? "bg-signal/10 text-signal"
+                    : ""
+                }
+              >
+                {env.label}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Auto-Refresh Toggle */}
+        <div className="hidden md:flex items-center">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleAutoRefresh}
+            className={
+              autoRefreshEnabled
+                ? "text-signal hover:text-signal"
+                : "text-text-secondary hover:text-text-primary"
+            }
+          >
+            <RefreshCw
+              className={`w-4 h-4 ${autoRefreshEnabled ? "animate-spin" : ""}`}
+              style={autoRefreshEnabled ? { animationDuration: "3s" } : undefined}
+            />
+            {autoRefreshEnabled && (
+              <span className="ml-1.5 text-xs">
+                {formatRefreshInterval(autoRefreshInterval)}
+              </span>
+            )}
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-5 px-0 text-text-muted hover:text-text-primary"
+              >
+                <ChevronDown className="w-3 h-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              className="bg-bg-surface border-border-subtle"
+            >
+              <DropdownMenuLabel className="text-text-muted">
+                Refresh Interval
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {REFRESH_INTERVALS.map((interval) => (
+                <DropdownMenuItem
+                  key={interval.value}
+                  onSelect={() => setAutoRefreshInterval(interval.value)}
+                  className={
+                    autoRefreshInterval === interval.value
+                      ? "bg-signal/10 text-signal"
+                      : ""
+                  }
+                >
+                  {interval.label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
+        <Separator orientation="vertical" className="h-4" />
 
         {/* Notifications */}
         <DropdownMenu>
@@ -381,15 +549,6 @@ export function TopBar({ onCommandOpen }: TopBarProps) {
         </DropdownMenu>
 
         <ThemeToggle />
-
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => router.push("/settings")}
-          className="text-text-secondary hover:text-text-primary"
-        >
-          <Settings className="w-4 h-4" />
-        </Button>
       </div>
     </header>
   );

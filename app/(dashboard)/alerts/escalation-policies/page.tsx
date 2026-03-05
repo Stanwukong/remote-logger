@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,8 +53,6 @@ import {
   useDeleteEscalationPolicy,
 } from "@/hooks/alerts.hook";
 import { EscalationLevel, EscalationPolicy } from "@/services/alert.service";
-import { AlertsNavigation } from "@/components/alerts/AlertsNavigation";
-import { SectionHeading } from "@/components/shared/SectionHeading";
 import { SignalDot } from "@/components/shared/SignalDot";
 
 const DEFAULT_LEVEL: EscalationLevel = {
@@ -68,107 +64,109 @@ const DEFAULT_LEVEL: EscalationLevel = {
 
 export default function EscalationPoliciesPage() {
   const { data: projectsData, isLoading: projectsLoading } = useProjects();
-  const projects = projectsData?.data || [];
+  const projects = useMemo(
+    () => (projectsData as any)?.data || [],
+    [projectsData]
+  );
   const [selectedProjectId, setSelectedProjectId] = useState("");
 
-  const effectiveProjectId = selectedProjectId || projects[0]?._id || "";
+  const effectiveProjectId =
+    selectedProjectId || projects[0]?._id || "";
 
   const { data: policiesData, isLoading: policiesLoading } =
     useEscalationPolicies(effectiveProjectId);
-  const policies = policiesData?.data || [];
+  const policies: EscalationPolicy[] = useMemo(
+    () => policiesData?.data || [],
+    [policiesData]
+  );
 
   const createMutation = useCreateEscalationPolicy();
   const updateMutation = useUpdateEscalationPolicy();
   const deleteMutation = useDeleteEscalationPolicy();
 
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [editingPolicy, setEditingPolicy] = useState<EscalationPolicy | null>(null);
-  const [deletingPolicyId, setDeletingPolicyId] = useState<string | null>(null);
+  const [editingPolicy, setEditingPolicy] =
+    useState<EscalationPolicy | null>(null);
+  const [deletingPolicyId, setDeletingPolicyId] = useState<string | null>(
+    null
+  );
 
-  // Set default project when loaded
-  if (!selectedProjectId && projects.length > 0) {
-    setSelectedProjectId(projects[0]._id);
-  }
+  const isLoading = projectsLoading || policiesLoading;
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)]">
-      <AlertsNavigation />
-
-      <div className="flex-1 overflow-y-auto p-6 space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <SectionHeading
-            headline="Escalation Policies"
-            sub="Configure multi-level notification escalation for unresolved alerts"
-            align="left"
-          />
-          <div className="flex items-center gap-3">
-            {/* Project Selector */}
-            <Select value={effectiveProjectId} onValueChange={setSelectedProjectId}>
-              <SelectTrigger className="w-[200px] bg-[var(--bg-surface)] border-[var(--border-subtle)]">
-                <SelectValue placeholder="Select project" />
-              </SelectTrigger>
-              <SelectContent>
-                {projects.map((p) => (
-                  <SelectItem key={p._id} value={p._id}>
-                    {p.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button
-              onClick={() => setShowCreateDialog(true)}
-              disabled={!effectiveProjectId}
-              className="bg-[var(--signal)] text-[var(--bg-void)] hover:bg-[var(--signal)]/90"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Create Policy
-            </Button>
-          </div>
+    <div className="p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div />
+        <div className="flex items-center gap-3">
+          <Select
+            value={effectiveProjectId}
+            onValueChange={setSelectedProjectId}
+          >
+            <SelectTrigger className="w-[200px] bg-bg-surface border-border-subtle">
+              <SelectValue placeholder="Select project" />
+            </SelectTrigger>
+            <SelectContent className="bg-bg-elevated border-border-subtle">
+              {projects.map((p: any) => (
+                <SelectItem key={p._id} value={p._id}>
+                  {p.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            onClick={() => setShowCreateDialog(true)}
+            disabled={!effectiveProjectId}
+            className="bg-signal text-bg-void hover:bg-signal/90"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Create Policy
+          </Button>
         </div>
-
-        {/* Content */}
-        {projectsLoading || policiesLoading ? (
-          <div className="flex items-center justify-center h-64">
-            <Loader2 className="h-8 w-8 animate-spin text-[var(--signal)]" />
-          </div>
-        ) : policies.length === 0 ? (
-          <Card className="border-[var(--border-subtle)] bg-[var(--bg-surface)] p-12 text-center">
-            <Shield className="h-12 w-12 mx-auto mb-4 text-[var(--text-tertiary)]" />
-            <h3 className="text-lg font-medium text-[var(--text-primary)] mb-2">
-              No escalation policies
-            </h3>
-            <p className="text-sm text-[var(--text-tertiary)] mb-6 max-w-md mx-auto">
-              Escalation policies automatically notify additional people when alerts
-              remain unacknowledged. Create your first policy to get started.
-            </p>
-            <Button
-              onClick={() => setShowCreateDialog(true)}
-              className="bg-[var(--signal)] text-[var(--bg-void)] hover:bg-[var(--signal)]/90"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Create Policy
-            </Button>
-          </Card>
-        ) : (
-          <div className="grid gap-4">
-            {policies.map((policy) => (
-              <PolicyCard
-                key={policy._id}
-                policy={policy}
-                onEdit={() => setEditingPolicy(policy)}
-                onDelete={() => setDeletingPolicyId(policy._id)}
-                onToggleActive={() => {
-                  updateMutation.mutate({
-                    id: policy._id,
-                    data: { isActive: !policy.isActive },
-                  });
-                }}
-              />
-            ))}
-          </div>
-        )}
       </div>
+
+      {/* Content */}
+      {isLoading ? (
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-signal" />
+        </div>
+      ) : policies.length === 0 ? (
+        <Card className="border-border-subtle bg-bg-surface p-12 text-center">
+          <Shield className="h-12 w-12 mx-auto mb-4 text-text-muted" />
+          <h3 className="text-lg font-display font-semibold text-text-primary mb-2">
+            No escalation policies
+          </h3>
+          <p className="text-sm text-text-muted mb-6 max-w-md mx-auto">
+            Configure escalation policies to automatically route alerts to the
+            right team members when they remain unacknowledged. Create your
+            first policy to get started.
+          </p>
+          <Button
+            onClick={() => setShowCreateDialog(true)}
+            className="bg-signal text-bg-void hover:bg-signal/90"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Create Policy
+          </Button>
+        </Card>
+      ) : (
+        <div className="grid gap-4">
+          {policies.map((policy) => (
+            <PolicyCard
+              key={policy._id}
+              policy={policy}
+              onEdit={() => setEditingPolicy(policy)}
+              onDelete={() => setDeletingPolicyId(policy._id)}
+              onToggleActive={() => {
+                updateMutation.mutate({
+                  id: policy._id,
+                  data: { isActive: !policy.isActive },
+                });
+              }}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Create/Edit Dialog */}
       {(showCreateDialog || editingPolicy) && (
@@ -186,9 +184,7 @@ export default function EscalationPoliciesPage() {
             if (editingPolicy) {
               updateMutation.mutate(
                 { id: editingPolicy._id, data },
-                {
-                  onSuccess: () => setEditingPolicy(null),
-                }
+                { onSuccess: () => setEditingPolicy(null) }
               );
             } else {
               createMutation.mutate(data as any, {
@@ -205,18 +201,18 @@ export default function EscalationPoliciesPage() {
         open={!!deletingPolicyId}
         onOpenChange={(open) => !open && setDeletingPolicyId(null)}
       >
-        <AlertDialogContent className="bg-[var(--bg-surface)] border-[var(--border-subtle)]">
+        <AlertDialogContent className="bg-bg-surface border-border-subtle">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-[var(--text-primary)]">
+            <AlertDialogTitle className="text-text-primary font-display">
               Delete Escalation Policy
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-[var(--text-tertiary)]">
-              This will permanently delete this escalation policy. Any rules using
-              it will no longer have an escalation path.
+            <AlertDialogDescription className="text-text-muted">
+              This will permanently delete this escalation policy. Any rules
+              using it will no longer have an escalation path.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="border-[var(--border-subtle)] text-[var(--text-secondary)]">
+            <AlertDialogCancel className="border-border-subtle text-text-secondary">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
@@ -228,7 +224,7 @@ export default function EscalationPoliciesPage() {
                   );
                 }
               }}
-              className="bg-[var(--status-danger)] text-white hover:bg-[var(--status-danger)]/90"
+              className="bg-status-danger text-white hover:bg-status-danger/90"
             >
               Delete
             </AlertDialogAction>
@@ -257,13 +253,13 @@ function PolicyCard({
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <Card className="border-[var(--border-subtle)] bg-[var(--bg-surface)] overflow-hidden">
+    <Card className="border-border-subtle bg-bg-surface overflow-hidden">
       <div className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setExpanded(!expanded)}
-              className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors"
+              className="text-text-muted hover:text-text-primary transition-colors"
             >
               {expanded ? (
                 <ChevronDown className="h-4 w-4" />
@@ -271,13 +267,13 @@ function PolicyCard({
                 <ChevronRight className="h-4 w-4" />
               )}
             </button>
-            <Shield className="h-5 w-5 text-[var(--data-purple)]" />
+            <Shield className="h-5 w-5 text-data-purple" />
             <div>
-              <h3 className="text-sm font-medium text-[var(--text-primary)]">
+              <h3 className="text-sm font-medium text-text-primary">
                 {policy.name}
               </h3>
               {policy.description && (
-                <p className="text-xs text-[var(--text-tertiary)] mt-0.5">
+                <p className="text-xs text-text-muted mt-0.5">
                   {policy.description}
                 </p>
               )}
@@ -287,13 +283,17 @@ function PolicyCard({
           <div className="flex items-center gap-3">
             <Badge
               variant="outline"
-              className="border-[var(--data-purple)]/30 text-[var(--data-purple)]"
+              className="border-data-purple/30 text-data-purple"
             >
-              {policy.levels.length} level{policy.levels.length > 1 ? "s" : ""}
+              {policy.levels.length} level
+              {policy.levels.length > 1 ? "s" : ""}
             </Badge>
             <div className="flex items-center gap-2">
-              <SignalDot status={policy.isActive ? "ok" : "info"} pulse={policy.isActive} />
-              <span className="text-xs text-[var(--text-tertiary)]">
+              <SignalDot
+                status={policy.isActive ? "ok" : "info"}
+                pulse={policy.isActive}
+              />
+              <span className="text-xs text-text-muted">
                 {policy.isActive ? "Active" : "Inactive"}
               </span>
               <Switch
@@ -305,7 +305,7 @@ function PolicyCard({
               variant="ghost"
               size="sm"
               onClick={onEdit}
-              className="text-[var(--text-tertiary)] hover:text-[var(--signal)]"
+              className="text-text-muted hover:text-signal"
             >
               <Edit2 className="h-3.5 w-3.5" />
             </Button>
@@ -313,7 +313,7 @@ function PolicyCard({
               variant="ghost"
               size="sm"
               onClick={onDelete}
-              className="text-[var(--text-tertiary)] hover:text-[var(--status-danger)]"
+              className="text-text-muted hover:text-status-danger"
             >
               <Trash2 className="h-3.5 w-3.5" />
             </Button>
@@ -328,28 +328,28 @@ function PolicyCard({
               .map((level, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-3 p-3 rounded-md bg-[var(--bg-base)] border border-[var(--border-subtle)]"
+                  className="flex items-center gap-3 p-3 rounded-md bg-bg-base border border-border-subtle"
                 >
                   <Badge
                     variant="outline"
-                    className="border-[var(--signal)]/30 text-[var(--signal)] font-mono text-xs shrink-0"
+                    className="border-signal/30 text-signal font-mono text-xs shrink-0"
                   >
                     L{level.level}
                   </Badge>
                   <div className="flex-1 text-sm">
-                    <span className="text-[var(--text-secondary)]">
+                    <span className="text-text-secondary">
                       After{" "}
-                      <span className="text-[var(--text-primary)] font-medium">
+                      <span className="text-text-primary font-medium">
                         {level.delayMinutes} min
                       </span>
                       , notify via{" "}
                     </span>
-                    <span className="text-[var(--text-primary)]">
+                    <span className="text-text-primary">
                       {level.notifyChannels.join(", ")}
                     </span>
                   </div>
                   {level.recipients.length > 0 && (
-                    <span className="text-xs text-[var(--text-tertiary)]">
+                    <span className="text-xs text-text-muted">
                       {level.recipients.length} recipient
                       {level.recipients.length > 1 ? "s" : ""}
                     </span>
@@ -383,12 +383,12 @@ function PolicyFormDialog({
   isPending: boolean;
 }) {
   const [name, setName] = useState(policy?.name || "");
-  const [description, setDescription] = useState(policy?.description || "");
+  const [description, setDescription] = useState(
+    policy?.description || ""
+  );
   const [isActive, setIsActive] = useState(policy?.isActive ?? true);
   const [levels, setLevels] = useState<EscalationLevel[]>(
-    policy?.levels?.length
-      ? [...policy.levels]
-      : [{ ...DEFAULT_LEVEL }]
+    policy?.levels?.length ? [...policy.levels] : [{ ...DEFAULT_LEVEL }]
   );
 
   const addLevel = () => {
@@ -396,7 +396,8 @@ function PolicyFormDialog({
       ...prev,
       {
         level: prev.length + 1,
-        delayMinutes: (prev[prev.length - 1]?.delayMinutes || 15) * 2,
+        delayMinutes:
+          (prev[prev.length - 1]?.delayMinutes || 15) * 2,
         notifyChannels: ["email"],
         recipients: [],
       },
@@ -412,13 +413,19 @@ function PolicyFormDialog({
     );
   };
 
-  const updateLevel = (index: number, updates: Partial<EscalationLevel>) => {
+  const updateLevel = (
+    index: number,
+    updates: Partial<EscalationLevel>
+  ) => {
     setLevels((prev) =>
       prev.map((l, i) => (i === index ? { ...l, ...updates } : l))
     );
   };
 
-  const toggleLevelChannel = (index: number, channel: "email" | "slack" | "webhook") => {
+  const toggleLevelChannel = (
+    index: number,
+    channel: "email" | "slack" | "webhook"
+  ) => {
     setLevels((prev) =>
       prev.map((l, i) => {
         if (i !== index) return l;
@@ -439,7 +446,7 @@ function PolicyFormDialog({
       projectId,
       levels: levels.map((l, i) => ({ ...l, level: i + 1 })),
       isActive,
-      createdBy: "", // Backend sets this from auth
+      createdBy: "",
     };
     if (description.trim()) data.description = description.trim();
 
@@ -448,43 +455,47 @@ function PolicyFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[85vh] overflow-y-auto bg-[var(--bg-surface)] border-[var(--border-subtle)] text-[var(--text-primary)]">
+      <DialogContent className="sm:max-w-[600px] max-h-[85vh] overflow-y-auto bg-bg-surface border-border-subtle text-text-primary">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 font-display">
-            <Shield className="h-5 w-5 text-[var(--data-purple)]" />
+            <Shield className="h-5 w-5 text-data-purple" />
             {policy ? "Edit" : "Create"} Escalation Policy
           </DialogTitle>
-          <DialogDescription className="text-[var(--text-tertiary)]">
-            Define escalation levels that activate when alerts go unacknowledged
+          <DialogDescription className="text-text-muted">
+            Define escalation levels that activate when alerts go
+            unacknowledged
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Name & Description */}
-          <div className="space-y-3 p-4 rounded-lg bg-[var(--bg-base)] border border-[var(--border-subtle)]">
+          {/* Name and Description */}
+          <div className="space-y-3 p-4 rounded-lg bg-bg-base border border-border-subtle">
             <div className="space-y-2">
-              <Label className="text-[var(--text-secondary)]">Policy Name</Label>
+              <Label className="text-text-secondary">Policy Name</Label>
               <Input
                 placeholder="e.g., Critical Alert Escalation"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="bg-[var(--bg-void)] border-[var(--border-subtle)] text-[var(--text-primary)]"
+                className="bg-bg-void border-border-subtle text-text-primary"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-[var(--text-secondary)]">Description</Label>
+              <Label className="text-text-secondary">Description</Label>
               <Textarea
                 placeholder="Describe when this policy should be used..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={2}
-                className="bg-[var(--bg-void)] border-[var(--border-subtle)] text-[var(--text-primary)] resize-none"
+                className="bg-bg-void border-border-subtle text-text-primary resize-none"
               />
             </div>
             <div className="flex items-center gap-3">
-              <Switch checked={isActive} onCheckedChange={setIsActive} />
-              <Label className="text-[var(--text-secondary)]">
+              <Switch
+                checked={isActive}
+                onCheckedChange={setIsActive}
+              />
+              <Label className="text-text-secondary">
                 {isActive ? "Active" : "Inactive"}
               </Label>
             </div>
@@ -493,7 +504,7 @@ function PolicyFormDialog({
           {/* Levels */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label className="text-[var(--text-secondary)] font-medium">
+              <Label className="text-text-secondary font-medium">
                 Escalation Levels
               </Label>
               <Button
@@ -501,7 +512,7 @@ function PolicyFormDialog({
                 variant="outline"
                 size="sm"
                 onClick={addLevel}
-                className="border-dashed border-[var(--border-subtle)] text-[var(--text-tertiary)] hover:text-[var(--signal)] hover:border-[var(--signal)]"
+                className="border-dashed border-border-subtle text-text-muted hover:text-signal hover:border-signal"
               >
                 <Plus className="h-3.5 w-3.5 mr-1" />
                 Add Level
@@ -511,12 +522,12 @@ function PolicyFormDialog({
             {levels.map((level, i) => (
               <div
                 key={i}
-                className="p-4 rounded-lg bg-[var(--bg-base)] border border-[var(--border-subtle)] space-y-3"
+                className="p-4 rounded-lg bg-bg-base border border-border-subtle space-y-3"
               >
                 <div className="flex items-center justify-between">
                   <Badge
                     variant="outline"
-                    className="border-[var(--signal)]/30 text-[var(--signal)] text-xs"
+                    className="border-signal/30 text-signal text-xs"
                   >
                     Level {i + 1}
                   </Badge>
@@ -524,7 +535,7 @@ function PolicyFormDialog({
                     <button
                       type="button"
                       onClick={() => removeLevel(i)}
-                      className="text-[var(--text-tertiary)] hover:text-[var(--status-danger)]"
+                      className="text-text-muted hover:text-status-danger"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>
@@ -533,7 +544,7 @@ function PolicyFormDialog({
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <Label className="text-xs text-[var(--text-tertiary)]">
+                    <Label className="text-xs text-text-muted">
                       Delay (minutes)
                     </Label>
                     <Input
@@ -542,14 +553,15 @@ function PolicyFormDialog({
                       value={level.delayMinutes}
                       onChange={(e) =>
                         updateLevel(i, {
-                          delayMinutes: parseInt(e.target.value) || 1,
+                          delayMinutes:
+                            parseInt(e.target.value) || 1,
                         })
                       }
-                      className="bg-[var(--bg-void)] border-[var(--border-subtle)] h-8 text-sm"
+                      className="bg-bg-void border-border-subtle h-8 text-sm"
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-xs text-[var(--text-tertiary)]">
+                    <Label className="text-xs text-text-muted">
                       Webhook URL
                     </Label>
                     <Input
@@ -557,17 +569,18 @@ function PolicyFormDialog({
                       value={level.webhookUrl || ""}
                       onChange={(e) =>
                         updateLevel(i, {
-                          webhookUrl: e.target.value || undefined,
+                          webhookUrl:
+                            e.target.value || undefined,
                         })
                       }
-                      className="bg-[var(--bg-void)] border-[var(--border-subtle)] h-8 text-sm font-mono"
+                      className="bg-bg-void border-border-subtle h-8 text-sm font-mono"
                     />
                   </div>
                 </div>
 
                 {/* Channels */}
                 <div className="space-y-1">
-                  <Label className="text-xs text-[var(--text-tertiary)]">
+                  <Label className="text-xs text-text-muted">
                     Notify Channels
                   </Label>
                   <div className="flex gap-2">
@@ -575,7 +588,11 @@ function PolicyFormDialog({
                       [
                         { id: "email", icon: Mail, label: "Email" },
                         { id: "slack", icon: Zap, label: "Slack" },
-                        { id: "webhook", icon: Globe, label: "Webhook" },
+                        {
+                          id: "webhook",
+                          icon: Globe,
+                          label: "Webhook",
+                        },
                       ] as const
                     ).map(({ id, icon: Icon, label }) => (
                       <button
@@ -584,8 +601,8 @@ function PolicyFormDialog({
                         onClick={() => toggleLevelChannel(i, id)}
                         className={`px-2.5 py-1 rounded text-xs font-medium flex items-center gap-1.5 border transition-colors ${
                           level.notifyChannels.includes(id)
-                            ? "bg-[var(--signal)]/10 border-[var(--signal)] text-[var(--signal)]"
-                            : "bg-[var(--bg-void)] border-[var(--border-subtle)] text-[var(--text-tertiary)] hover:border-[var(--signal)]"
+                            ? "bg-signal/10 border-signal text-signal"
+                            : "bg-bg-void border-border-subtle text-text-muted hover:border-signal"
                         }`}
                       >
                         <Icon className="h-3 w-3" />
@@ -597,7 +614,7 @@ function PolicyFormDialog({
 
                 {/* Recipients */}
                 <div className="space-y-1">
-                  <Label className="text-xs text-[var(--text-tertiary)]">
+                  <Label className="text-xs text-text-muted">
                     Recipients (comma-separated emails)
                   </Label>
                   <Input
@@ -611,7 +628,7 @@ function PolicyFormDialog({
                           .filter(Boolean),
                       })
                     }
-                    className="bg-[var(--bg-void)] border-[var(--border-subtle)] h-8 text-sm"
+                    className="bg-bg-void border-border-subtle h-8 text-sm"
                   />
                 </div>
               </div>
@@ -623,14 +640,14 @@ function PolicyFormDialog({
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="border-[var(--border-subtle)] text-[var(--text-secondary)]"
+              className="border-border-subtle text-text-secondary"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={isPending || !name.trim()}
-              className="bg-[var(--signal)] text-[var(--bg-void)] hover:bg-[var(--signal)]/90"
+              className="bg-signal text-bg-void hover:bg-signal/90"
             >
               {isPending ? (
                 <>

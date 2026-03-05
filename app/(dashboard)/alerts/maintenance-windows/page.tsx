@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -54,8 +52,6 @@ import {
   useEndMaintenanceWindowEarly,
 } from "@/hooks/alerts.hook";
 import { MaintenanceWindow } from "@/services/alert.service";
-import { AlertsNavigation } from "@/components/alerts/AlertsNavigation";
-import { SectionHeading } from "@/components/shared/SectionHeading";
 
 function isWindowActive(window: MaintenanceWindow): boolean {
   const now = new Date();
@@ -84,27 +80,35 @@ function formatDateTime(dateStr: string): string {
 }
 
 function formatDuration(start: string, end: string): string {
-  const ms = new Date(end).getTime() - new Date(start).getTime();
+  const ms =
+    new Date(end).getTime() - new Date(start).getTime();
   const hours = Math.floor(ms / (1000 * 60 * 60));
-  const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+  const minutes = Math.floor(
+    (ms % (1000 * 60 * 60)) / (1000 * 60)
+  );
   if (hours === 0) return `${minutes}m`;
   if (minutes === 0) return `${hours}h`;
   return `${hours}h ${minutes}m`;
 }
 
 export default function MaintenanceWindowsPage() {
-  const { data: projectsData, isLoading: projectsLoading } = useProjects();
-  const projects = projectsData?.data || [];
+  const { data: projectsData, isLoading: projectsLoading } =
+    useProjects();
+  const projects = useMemo(
+    () => (projectsData as any)?.data || [],
+    [projectsData]
+  );
   const [selectedProjectId, setSelectedProjectId] = useState("");
 
-  const effectiveProjectId = selectedProjectId || projects[0]?._id || "";
+  const effectiveProjectId =
+    selectedProjectId || projects[0]?._id || "";
 
-  const { data: windowsData, isLoading: windowsLoading } = useMaintenanceWindows(
-    effectiveProjectId,
-    undefined,
-    true
+  const { data: windowsData, isLoading: windowsLoading } =
+    useMaintenanceWindows(effectiveProjectId, undefined, true);
+  const windows: MaintenanceWindow[] = useMemo(
+    () => windowsData?.data || [],
+    [windowsData]
   );
-  const windows = windowsData?.data || [];
 
   const createMutation = useCreateMaintenanceWindow();
   const updateMutation = useUpdateMaintenanceWindow();
@@ -112,102 +116,104 @@ export default function MaintenanceWindowsPage() {
   const endEarlyMutation = useEndMaintenanceWindowEarly();
 
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [editingWindow, setEditingWindow] = useState<MaintenanceWindow | null>(null);
-  const [deletingWindowId, setDeletingWindowId] = useState<string | null>(null);
+  const [editingWindow, setEditingWindow] =
+    useState<MaintenanceWindow | null>(null);
+  const [deletingWindowId, setDeletingWindowId] = useState<
+    string | null
+  >(null);
 
-  // Set default project when loaded
-  if (!selectedProjectId && projects.length > 0) {
-    setSelectedProjectId(projects[0]._id);
-  }
+  const isLoading = projectsLoading || windowsLoading;
 
   // Sort: active first, then upcoming, then expired
-  const sortedWindows = [...windows].sort((a, b) => {
-    const aActive = isWindowActive(a);
-    const bActive = isWindowActive(b);
-    const aUpcoming = isWindowUpcoming(a);
-    const bUpcoming = isWindowUpcoming(b);
+  const sortedWindows = useMemo(() => {
+    return [...windows].sort((a, b) => {
+      const aActive = isWindowActive(a);
+      const bActive = isWindowActive(b);
+      const aUpcoming = isWindowUpcoming(a);
+      const bUpcoming = isWindowUpcoming(b);
 
-    if (aActive && !bActive) return -1;
-    if (!aActive && bActive) return 1;
-    if (aUpcoming && !bUpcoming) return -1;
-    if (!aUpcoming && bUpcoming) return 1;
-    return new Date(b.startTime).getTime() - new Date(a.startTime).getTime();
-  });
+      if (aActive && !bActive) return -1;
+      if (!aActive && bActive) return 1;
+      if (aUpcoming && !bUpcoming) return -1;
+      if (!aUpcoming && bUpcoming) return 1;
+      return (
+        new Date(b.startTime).getTime() -
+        new Date(a.startTime).getTime()
+      );
+    });
+  }, [windows]);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)]">
-      <AlertsNavigation />
-
-      <div className="flex-1 overflow-y-auto p-6 space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <SectionHeading
-            headline="Maintenance Windows"
-            sub="Schedule maintenance periods to suppress alerts during planned downtime"
-            align="left"
-          />
-          <div className="flex items-center gap-3">
-            <Select value={effectiveProjectId} onValueChange={setSelectedProjectId}>
-              <SelectTrigger className="w-[200px] bg-[var(--bg-surface)] border-[var(--border-subtle)]">
-                <SelectValue placeholder="Select project" />
-              </SelectTrigger>
-              <SelectContent>
-                {projects.map((p) => (
-                  <SelectItem key={p._id} value={p._id}>
-                    {p.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button
-              onClick={() => setShowCreateDialog(true)}
-              disabled={!effectiveProjectId}
-              className="bg-[var(--signal)] text-[var(--bg-void)] hover:bg-[var(--signal)]/90"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Schedule Window
-            </Button>
-          </div>
+    <div className="p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div />
+        <div className="flex items-center gap-3">
+          <Select
+            value={effectiveProjectId}
+            onValueChange={setSelectedProjectId}
+          >
+            <SelectTrigger className="w-[200px] bg-bg-surface border-border-subtle">
+              <SelectValue placeholder="Select project" />
+            </SelectTrigger>
+            <SelectContent className="bg-bg-elevated border-border-subtle">
+              {projects.map((p: any) => (
+                <SelectItem key={p._id} value={p._id}>
+                  {p.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            onClick={() => setShowCreateDialog(true)}
+            disabled={!effectiveProjectId}
+            className="bg-signal text-bg-void hover:bg-signal/90"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Schedule Window
+          </Button>
         </div>
-
-        {/* Content */}
-        {projectsLoading || windowsLoading ? (
-          <div className="flex items-center justify-center h-64">
-            <Loader2 className="h-8 w-8 animate-spin text-[var(--signal)]" />
-          </div>
-        ) : sortedWindows.length === 0 ? (
-          <Card className="border-[var(--border-subtle)] bg-[var(--bg-surface)] p-12 text-center">
-            <Wrench className="h-12 w-12 mx-auto mb-4 text-[var(--text-tertiary)]" />
-            <h3 className="text-lg font-medium text-[var(--text-primary)] mb-2">
-              No maintenance windows
-            </h3>
-            <p className="text-sm text-[var(--text-tertiary)] mb-6 max-w-md mx-auto">
-              Schedule maintenance windows to suppress alerts during deployments,
-              infrastructure changes, or planned downtime.
-            </p>
-            <Button
-              onClick={() => setShowCreateDialog(true)}
-              className="bg-[var(--signal)] text-[var(--bg-void)] hover:bg-[var(--signal)]/90"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Schedule Window
-            </Button>
-          </Card>
-        ) : (
-          <div className="grid gap-4">
-            {sortedWindows.map((window) => (
-              <WindowCard
-                key={window._id}
-                window={window}
-                onEdit={() => setEditingWindow(window)}
-                onDelete={() => setDeletingWindowId(window._id)}
-                onEndEarly={() => endEarlyMutation.mutate(window._id)}
-                isEndingEarly={endEarlyMutation.isPending}
-              />
-            ))}
-          </div>
-        )}
       </div>
+
+      {/* Content */}
+      {isLoading ? (
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-signal" />
+        </div>
+      ) : sortedWindows.length === 0 ? (
+        <Card className="border-border-subtle bg-bg-surface p-12 text-center">
+          <Wrench className="h-12 w-12 mx-auto mb-4 text-text-muted" />
+          <h3 className="text-lg font-display font-semibold text-text-primary mb-2">
+            No maintenance windows
+          </h3>
+          <p className="text-sm text-text-muted mb-6 max-w-md mx-auto">
+            Schedule maintenance windows to suppress alerts during
+            deployments, infrastructure changes, or planned downtime.
+          </p>
+          <Button
+            onClick={() => setShowCreateDialog(true)}
+            className="bg-signal text-bg-void hover:bg-signal/90"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Schedule Window
+          </Button>
+        </Card>
+      ) : (
+        <div className="grid gap-4">
+          {sortedWindows.map((window) => (
+            <WindowCard
+              key={window._id}
+              window={window}
+              onEdit={() => setEditingWindow(window)}
+              onDelete={() => setDeletingWindowId(window._id)}
+              onEndEarly={() =>
+                endEarlyMutation.mutate(window._id)
+              }
+              isEndingEarly={endEarlyMutation.isPending}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Create/Edit Dialog */}
       {(showCreateDialog || editingWindow) && (
@@ -219,41 +225,51 @@ export default function MaintenanceWindowsPage() {
               setEditingWindow(null);
             }
           }}
-          window={editingWindow}
+          editWindow={editingWindow}
           projectId={effectiveProjectId}
           onSubmit={(data) => {
             if (editingWindow) {
               updateMutation.mutate(
                 { id: editingWindow._id, data },
-                { onSuccess: () => setEditingWindow(null) }
+                {
+                  onSuccess: () =>
+                    setEditingWindow(null),
+                }
               );
             } else {
               createMutation.mutate(data as any, {
-                onSuccess: () => setShowCreateDialog(false),
+                onSuccess: () =>
+                  setShowCreateDialog(false),
               });
             }
           }}
-          isPending={createMutation.isPending || updateMutation.isPending}
+          isPending={
+            createMutation.isPending ||
+            updateMutation.isPending
+          }
         />
       )}
 
       {/* Delete Confirmation */}
       <AlertDialog
         open={!!deletingWindowId}
-        onOpenChange={(open) => !open && setDeletingWindowId(null)}
+        onOpenChange={(open) =>
+          !open && setDeletingWindowId(null)
+        }
       >
-        <AlertDialogContent className="bg-[var(--bg-surface)] border-[var(--border-subtle)]">
+        <AlertDialogContent className="bg-bg-surface border-border-subtle">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-[var(--text-primary)]">
+            <AlertDialogTitle className="text-text-primary font-display">
               Delete Maintenance Window
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-[var(--text-tertiary)]">
-              This will permanently delete this maintenance window. If it&apos;s
-              currently active, alerts will resume immediately.
+            <AlertDialogDescription className="text-text-muted">
+              This will permanently delete this maintenance window.
+              If it&apos;s currently active, alerts will resume
+              immediately.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="border-[var(--border-subtle)] text-[var(--text-secondary)]">
+            <AlertDialogCancel className="border-border-subtle text-text-secondary">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
@@ -261,11 +277,14 @@ export default function MaintenanceWindowsPage() {
                 if (deletingWindowId) {
                   deleteMutation.mutate(
                     { id: deletingWindowId },
-                    { onSuccess: () => setDeletingWindowId(null) }
+                    {
+                      onSuccess: () =>
+                        setDeletingWindowId(null),
+                    }
                   );
                 }
               }}
-              className="bg-[var(--status-danger)] text-white hover:bg-[var(--status-danger)]/90"
+              className="bg-status-danger text-white hover:bg-status-danger/90"
             >
               Delete
             </AlertDialogAction>
@@ -299,8 +318,8 @@ function WindowCard({
 
   return (
     <Card
-      className={`border-[var(--border-subtle)] bg-[var(--bg-surface)] overflow-hidden ${
-        active ? "border-[var(--signal)] ring-1 ring-[var(--signal)]/20" : ""
+      className={`border-border-subtle bg-bg-surface overflow-hidden ${
+        active ? "border-signal ring-1 ring-signal/20" : ""
       }`}
     >
       <div className="p-4">
@@ -310,30 +329,30 @@ function WindowCard({
               <Wrench
                 className={`h-5 w-5 ${
                   active
-                    ? "text-[var(--signal)]"
+                    ? "text-signal"
                     : expired
-                    ? "text-[var(--text-tertiary)]"
-                    : "text-[var(--data-info)]"
+                    ? "text-text-muted"
+                    : "text-data-info"
                 }`}
               />
               {active && (
-                <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-[var(--signal)] animate-pulse" />
+                <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-signal animate-pulse" />
               )}
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-medium text-[var(--text-primary)]">
+                <h3 className="text-sm font-medium text-text-primary">
                   {window.name}
                 </h3>
                 {active && (
-                  <Badge className="bg-[var(--signal)]/10 text-[var(--signal)] border-[var(--signal)]/30 text-xs">
+                  <Badge className="bg-signal/10 text-signal border-signal/30 text-xs">
                     Active Now
                   </Badge>
                 )}
                 {upcoming && (
                   <Badge
                     variant="outline"
-                    className="border-[var(--data-info)]/30 text-[var(--data-info)] text-xs"
+                    className="border-data-info/30 text-data-info text-xs"
                   >
                     Upcoming
                   </Badge>
@@ -341,7 +360,7 @@ function WindowCard({
                 {expired && (
                   <Badge
                     variant="outline"
-                    className="border-[var(--text-tertiary)]/30 text-[var(--text-tertiary)] text-xs"
+                    className="border-text-muted/30 text-text-muted text-xs"
                   >
                     Expired
                   </Badge>
@@ -349,14 +368,14 @@ function WindowCard({
                 {window.suppressAllAlerts && (
                   <Badge
                     variant="outline"
-                    className="border-[var(--status-warn)]/30 text-[var(--status-warn)] text-xs"
+                    className="border-status-warn/30 text-status-warn text-xs"
                   >
                     Suppress All
                   </Badge>
                 )}
               </div>
               {window.description && (
-                <p className="text-xs text-[var(--text-tertiary)] mt-0.5">
+                <p className="text-xs text-text-muted mt-0.5">
                   {window.description}
                 </p>
               )}
@@ -370,7 +389,7 @@ function WindowCard({
                 size="sm"
                 onClick={onEndEarly}
                 disabled={isEndingEarly}
-                className="border-[var(--status-warn)] text-[var(--status-warn)] hover:bg-[var(--status-warn)]/10"
+                className="border-status-warn text-status-warn hover:bg-status-warn/10"
               >
                 {isEndingEarly ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -385,7 +404,7 @@ function WindowCard({
                 variant="ghost"
                 size="sm"
                 onClick={onEdit}
-                className="text-[var(--text-tertiary)] hover:text-[var(--signal)]"
+                className="text-text-muted hover:text-signal"
               >
                 <Edit2 className="h-3.5 w-3.5" />
               </Button>
@@ -394,7 +413,7 @@ function WindowCard({
               variant="ghost"
               size="sm"
               onClick={onDelete}
-              className="text-[var(--text-tertiary)] hover:text-[var(--status-danger)]"
+              className="text-text-muted hover:text-status-danger"
             >
               <Trash2 className="h-3.5 w-3.5" />
             </Button>
@@ -402,31 +421,34 @@ function WindowCard({
         </div>
 
         {/* Details Row */}
-        <div className="mt-3 ml-8 flex flex-wrap items-center gap-4 text-xs text-[var(--text-tertiary)]">
+        <div className="mt-3 ml-8 flex flex-wrap items-center gap-4 text-xs text-text-muted">
           <span className="flex items-center gap-1">
             <Calendar className="h-3 w-3" />
-            {formatDateTime(window.startTime)} - {formatDateTime(window.endTime)}
+            {formatDateTime(window.startTime)} -{" "}
+            {formatDateTime(window.endTime)}
           </span>
           <span className="flex items-center gap-1">
             <Clock className="h-3 w-3" />
             {formatDuration(window.startTime, window.endTime)}
           </span>
           {window.reason && (
-            <span className="text-[var(--text-secondary)]">
+            <span className="text-text-secondary">
               Reason: {window.reason}
             </span>
           )}
         </div>
 
         {/* Affected Services/Environments */}
-        {((window.affectedServices && window.affectedServices.length > 0) ||
-          (window.affectedEnvironments && window.affectedEnvironments.length > 0)) && (
+        {((window.affectedServices &&
+          window.affectedServices.length > 0) ||
+          (window.affectedEnvironments &&
+            window.affectedEnvironments.length > 0)) && (
           <div className="mt-2 ml-8 flex flex-wrap gap-1.5">
             {window.affectedServices?.map((service) => (
               <Badge
                 key={service}
                 variant="outline"
-                className="text-xs border-[var(--border-subtle)] text-[var(--text-secondary)]"
+                className="text-xs border-border-subtle text-text-secondary"
               >
                 {service}
               </Badge>
@@ -435,7 +457,7 @@ function WindowCard({
               <Badge
                 key={env}
                 variant="outline"
-                className="text-xs border-[var(--data-info)]/30 text-[var(--data-info)]"
+                className="text-xs border-data-info/30 text-data-info"
               >
                 {env}
               </Badge>
@@ -454,14 +476,14 @@ function WindowCard({
 function WindowFormDialog({
   open,
   onOpenChange,
-  window: editWindow,
+  editWindow,
   projectId,
   onSubmit,
   isPending,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  window: MaintenanceWindow | null;
+  editWindow: MaintenanceWindow | null;
   projectId: string;
   onSubmit: (data: any) => void;
   isPending: boolean;
@@ -470,18 +492,30 @@ function WindowFormDialog({
   const defaultStart = new Date(now.getTime() + 60 * 60 * 1000)
     .toISOString()
     .slice(0, 16);
-  const defaultEnd = new Date(now.getTime() + 3 * 60 * 60 * 1000)
+  const defaultEnd = new Date(
+    now.getTime() + 3 * 60 * 60 * 1000
+  )
     .toISOString()
     .slice(0, 16);
 
   const [name, setName] = useState(editWindow?.name || "");
-  const [description, setDescription] = useState(editWindow?.description || "");
+  const [description, setDescription] = useState(
+    editWindow?.description || ""
+  );
   const [reason, setReason] = useState(editWindow?.reason || "");
   const [startTime, setStartTime] = useState(
-    editWindow?.startTime ? new Date(editWindow.startTime).toISOString().slice(0, 16) : defaultStart
+    editWindow?.startTime
+      ? new Date(editWindow.startTime)
+          .toISOString()
+          .slice(0, 16)
+      : defaultStart
   );
   const [endTime, setEndTime] = useState(
-    editWindow?.endTime ? new Date(editWindow.endTime).toISOString().slice(0, 16) : defaultEnd
+    editWindow?.endTime
+      ? new Date(editWindow.endTime)
+          .toISOString()
+          .slice(0, 16)
+      : defaultEnd
   );
   const [suppressAllAlerts, setSuppressAllAlerts] = useState(
     editWindow?.suppressAllAlerts ?? true
@@ -489,14 +523,17 @@ function WindowFormDialog({
   const [affectedServices, setAffectedServices] = useState(
     editWindow?.affectedServices?.join(", ") || ""
   );
-  const [affectedEnvironments, setAffectedEnvironments] = useState<string[]>(
-    editWindow?.affectedEnvironments || []
+  const [affectedEnvironments, setAffectedEnvironments] =
+    useState<string[]>(editWindow?.affectedEnvironments || []);
+  const [isActive, setIsActive] = useState(
+    editWindow?.isActive ?? true
   );
-  const [isActive, setIsActive] = useState(editWindow?.isActive ?? true);
 
   const toggleEnvironment = (env: string) => {
     setAffectedEnvironments((prev) =>
-      prev.includes(env) ? prev.filter((e) => e !== env) : [...prev, env]
+      prev.includes(env)
+        ? prev.filter((e) => e !== env)
+        : [...prev, env]
     );
   };
 
@@ -511,9 +548,10 @@ function WindowFormDialog({
       endTime: new Date(endTime).toISOString(),
       suppressAllAlerts,
       isActive,
-      createdBy: "", // Backend sets this
+      createdBy: "",
     };
-    if (description.trim()) data.description = description.trim();
+    if (description.trim())
+      data.description = description.trim();
     if (reason.trim()) data.reason = reason.trim();
     if (affectedServices.trim()) {
       data.affectedServices = affectedServices
@@ -530,80 +568,94 @@ function WindowFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[560px] max-h-[85vh] overflow-y-auto bg-[var(--bg-surface)] border-[var(--border-subtle)] text-[var(--text-primary)]">
+      <DialogContent className="sm:max-w-[560px] max-h-[85vh] overflow-y-auto bg-bg-surface border-border-subtle text-text-primary">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 font-display">
-            <Wrench className="h-5 w-5 text-[var(--data-info)]" />
-            {editWindow ? "Edit" : "Schedule"} Maintenance Window
+            <Wrench className="h-5 w-5 text-data-info" />
+            {editWindow ? "Edit" : "Schedule"} Maintenance
+            Window
           </DialogTitle>
-          <DialogDescription className="text-[var(--text-tertiary)]">
-            Alerts will be suppressed during the maintenance period
+          <DialogDescription className="text-text-muted">
+            Alerts will be suppressed during the maintenance
+            period
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Basic Info */}
-          <div className="space-y-3 p-4 rounded-lg bg-[var(--bg-base)] border border-[var(--border-subtle)]">
+          <div className="space-y-3 p-4 rounded-lg bg-bg-base border border-border-subtle">
             <div className="space-y-2">
-              <Label className="text-[var(--text-secondary)]">Window Name</Label>
+              <Label className="text-text-secondary">
+                Window Name
+              </Label>
               <Input
                 placeholder="e.g., Database Migration"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="bg-[var(--bg-void)] border-[var(--border-subtle)] text-[var(--text-primary)]"
+                className="bg-bg-void border-border-subtle text-text-primary"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-[var(--text-secondary)]">Description</Label>
+              <Label className="text-text-secondary">
+                Description
+              </Label>
               <Textarea
                 placeholder="Details about the maintenance..."
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={(e) =>
+                  setDescription(e.target.value)
+                }
                 rows={2}
-                className="bg-[var(--bg-void)] border-[var(--border-subtle)] text-[var(--text-primary)] resize-none"
+                className="bg-bg-void border-border-subtle text-text-primary resize-none"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-[var(--text-secondary)]">Reason</Label>
+              <Label className="text-text-secondary">
+                Reason
+              </Label>
               <Input
                 placeholder="e.g., Scheduled deployment, infrastructure upgrade"
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                className="bg-[var(--bg-void)] border-[var(--border-subtle)] text-[var(--text-primary)]"
+                className="bg-bg-void border-border-subtle text-text-primary"
               />
             </div>
           </div>
 
           {/* Schedule */}
-          <div className="space-y-3 p-4 rounded-lg bg-[var(--bg-base)] border border-[var(--border-subtle)]">
-            <Label className="text-[var(--text-secondary)] font-medium flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-[var(--signal)]" />
+          <div className="space-y-3 p-4 rounded-lg bg-bg-base border border-border-subtle">
+            <Label className="text-text-secondary font-medium flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-signal" />
               Schedule
             </Label>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <Label className="text-xs text-[var(--text-tertiary)]">
+                <Label className="text-xs text-text-muted">
                   Start Time
                 </Label>
                 <Input
                   type="datetime-local"
                   value={startTime}
-                  onChange={(e) => setStartTime(e.target.value)}
-                  className="bg-[var(--bg-void)] border-[var(--border-subtle)] text-[var(--text-primary)] h-9 text-sm"
+                  onChange={(e) =>
+                    setStartTime(e.target.value)
+                  }
+                  className="bg-bg-void border-border-subtle text-text-primary h-9 text-sm"
                   required
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs text-[var(--text-tertiary)]">
+                <Label className="text-xs text-text-muted">
                   End Time
                 </Label>
                 <Input
                   type="datetime-local"
                   value={endTime}
-                  onChange={(e) => setEndTime(e.target.value)}
+                  onChange={(e) =>
+                    setEndTime(e.target.value)
+                  }
                   min={startTime}
-                  className="bg-[var(--bg-void)] border-[var(--border-subtle)] text-[var(--text-primary)] h-9 text-sm"
+                  className="bg-bg-void border-border-subtle text-text-primary h-9 text-sm"
                   required
                 />
               </div>
@@ -611,56 +663,65 @@ function WindowFormDialog({
           </div>
 
           {/* Scope */}
-          <div className="space-y-3 p-4 rounded-lg bg-[var(--bg-base)] border border-[var(--border-subtle)]">
-            <Label className="text-[var(--text-secondary)] font-medium">Scope</Label>
+          <div className="space-y-3 p-4 rounded-lg bg-bg-base border border-border-subtle">
+            <Label className="text-text-secondary font-medium">
+              Scope
+            </Label>
 
             <div className="flex items-center gap-3">
               <Switch
                 checked={suppressAllAlerts}
                 onCheckedChange={setSuppressAllAlerts}
               />
-              <Label className="text-sm text-[var(--text-secondary)]">
+              <Label className="text-sm text-text-secondary">
                 Suppress all alerts during this window
               </Label>
             </div>
 
             <div className="space-y-1">
-              <Label className="text-xs text-[var(--text-tertiary)]">
+              <Label className="text-xs text-text-muted">
                 Affected Services (comma-separated)
               </Label>
               <Input
                 placeholder="api, database, auth-service"
                 value={affectedServices}
-                onChange={(e) => setAffectedServices(e.target.value)}
-                className="bg-[var(--bg-void)] border-[var(--border-subtle)] text-[var(--text-primary)] h-8 text-sm"
+                onChange={(e) =>
+                  setAffectedServices(e.target.value)
+                }
+                className="bg-bg-void border-border-subtle text-text-primary h-8 text-sm"
               />
             </div>
 
             <div className="space-y-1">
-              <Label className="text-xs text-[var(--text-tertiary)]">
+              <Label className="text-xs text-text-muted">
                 Affected Environments
               </Label>
               <div className="flex gap-2">
-                {["production", "staging", "development"].map((env) => (
-                  <button
-                    key={env}
-                    type="button"
-                    onClick={() => toggleEnvironment(env)}
-                    className={`px-3 py-1 rounded text-xs font-medium capitalize border transition-colors ${
-                      affectedEnvironments.includes(env)
-                        ? "bg-[var(--signal)]/10 border-[var(--signal)] text-[var(--signal)]"
-                        : "bg-[var(--bg-void)] border-[var(--border-subtle)] text-[var(--text-tertiary)] hover:border-[var(--signal)]"
-                    }`}
-                  >
-                    {env}
-                  </button>
-                ))}
+                {["production", "staging", "development"].map(
+                  (env) => (
+                    <button
+                      key={env}
+                      type="button"
+                      onClick={() => toggleEnvironment(env)}
+                      className={`px-3 py-1 rounded text-xs font-medium capitalize border transition-colors ${
+                        affectedEnvironments.includes(env)
+                          ? "bg-signal/10 border-signal text-signal"
+                          : "bg-bg-void border-border-subtle text-text-muted hover:border-signal"
+                      }`}
+                    >
+                      {env}
+                    </button>
+                  )
+                )}
               </div>
             </div>
 
-            <div className="flex items-center gap-3 pt-2 border-t border-[var(--border-subtle)]">
-              <Switch checked={isActive} onCheckedChange={setIsActive} />
-              <Label className="text-sm text-[var(--text-secondary)]">
+            <div className="flex items-center gap-3 pt-2 border-t border-border-subtle">
+              <Switch
+                checked={isActive}
+                onCheckedChange={setIsActive}
+              />
+              <Label className="text-sm text-text-secondary">
                 {isActive ? "Enabled" : "Disabled (draft)"}
               </Label>
             </div>
@@ -671,14 +732,19 @@ function WindowFormDialog({
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="border-[var(--border-subtle)] text-[var(--text-secondary)]"
+              className="border-border-subtle text-text-secondary"
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              disabled={isPending || !name.trim() || !startTime || !endTime}
-              className="bg-[var(--signal)] text-[var(--bg-void)] hover:bg-[var(--signal)]/90"
+              disabled={
+                isPending ||
+                !name.trim() ||
+                !startTime ||
+                !endTime
+              }
+              className="bg-signal text-bg-void hover:bg-signal/90"
             >
               {isPending ? (
                 <>

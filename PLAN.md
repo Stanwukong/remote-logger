@@ -445,265 +445,776 @@ app/(dashboard)/notifications/page.tsx ← Lucide icons, Observatory tokens, Sig
 
 ---
 
-## Phase 3: Intelligence UI
+## Phase 3: Complete Frontend Rewrite
 
-**Goal**: Build interfaces for AI insights and advanced analytics.
+**Goal**: Rewrite every dashboard page from scratch. The landing page (`/`) and SDK page (`/sdk`) are preserved. Every other page is redesigned with a clean architecture grounded in the actual data the backend serves. Every backend feature gets a UI.
 
-### 3.1 Insights Page (`/projects/[projectId]/insights`)
+**Why**: The backend exposes ~24 route files but only ~60% are surfaced in the current UI. Funnels, regressions, custom dashboards, AI suggestions, user preferences, environment analytics, session analytics, and source map management have no UI. The current frontend treats project context as optional, but the backend requires `projectId` for nearly every data endpoint. This rewrite fixes the architecture.
 
-- [ ] AI insight cards with sparkle/AI icon
-- [ ] Categorized insights: Errors, Performance, Usage, Recommendations
-- [ ] Each insight: title, description, severity indicator, action button
-- [ ] Natural language query bar at top
-- [ ] Loading state: thinking animation (subtle pulse)
-- [ ] Cache indicator (last generated, refresh button)
-
-### 3.2 Custom Dashboards
-
-**Backend Ready**: `/api/v1/custom-dashboards` — Full CRUD + widget management
-
-- [ ] Dashboard builder page: drag-and-drop grid (react-grid-layout)
-- [ ] Widget types: metric card (`counter`), line chart (`chart`), bar chart, table, log feed (`log-stream`), alert list (`alert-list`)
-- [ ] Widget configuration panel: data source, filters, time range, chart type, refresh interval
-- [ ] Save/load dashboard layouts (PUT `/:dashboardId/layout`)
-- [ ] Add/update/remove individual widgets (POST/PUT/DELETE `/:dashboardId/widgets/:widgetId`)
-- [ ] Share dashboard via link (isShared flag)
-- [ ] Duplicate dashboard (POST `/:dashboardId/duplicate`)
-- [ ] API service: `services/customDashboard.service.ts`
-- [ ] React Query hooks: `hooks/customDashboard.hook.ts`
-
-**Backend Endpoints Available**:
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/custom-dashboards` | List user's dashboards |
-| POST | `/custom-dashboards` | Create dashboard |
-| GET | `/custom-dashboards/:id` | Get single dashboard |
-| PUT | `/custom-dashboards/:id` | Update metadata |
-| DELETE | `/custom-dashboards/:id` | Delete |
-| PUT | `/custom-dashboards/:id/layout` | Update widget layout |
-| POST | `/custom-dashboards/:id/widgets` | Add widget |
-| PUT | `/custom-dashboards/:id/widgets/:widgetId` | Update widget |
-| DELETE | `/custom-dashboards/:id/widgets/:widgetId` | Remove widget |
-| POST | `/custom-dashboards/:id/duplicate` | Clone |
-
-### 3.3 Advanced Analytics
-
-**Backend Ready**: Funnels (`/api/v1/funnels`), Regressions (`/api/v1/regressions`), Environment Stats, AI Suggestions
-
-- [ ] Funnel visualization: step-by-step with conversion rates and dropoff (POST `/funnels/:projectId/analyze`)
-- [ ] Popular user paths display (GET `/funnels/:projectId/popular-paths`)
-- [ ] Performance regression dashboard: current vs baseline with severity badges (GET `/regressions/:projectId/detect`)
-- [ ] Performance baseline display with p50/p95/p99 (GET `/regressions/:projectId/baseline`)
-- [ ] Period comparison view: side-by-side (POST `/regressions/:projectId/compare`)
-- [ ] Environment stats cards: per-environment breakdown (GET `/analytics/:projectId/environments/stats`)
-- [ ] Session explorer: timeline of user events within a session (existing: GET `/analytics/:projectId/sessions/*`)
-- [ ] Error impact dashboard: errors ranked by impact score
-- [ ] AI alert suggestions page: review and accept rule suggestions (GET/POST `/ai-suggestions/:projectId/suggestions`)
-
-### 3.4 User Profile & Settings (NEW)
-
-**Backend Ready**: `/api/v1/users/profile`, `/api/v1/users/change-password`, `/api/v1/users/oauth/login`
-
-- [ ] Profile page (`/settings/profile`): display/edit firstName, lastName, avatarUrl
-- [ ] Change password form (`/settings/security`): current + new password with strength indicator
-- [ ] OAuth connection buttons: "Connect GitHub" / "Connect Google" (POST `/users/oauth/login`)
-- [ ] API service: `services/user.service.ts` — add `getProfile`, `updateProfile`, `changePassword`
-- [ ] React Query hooks: `hooks/user.hook.ts`
-
-### 3.5 Project Favorites (NEW)
-
-**Backend Ready**: `/api/v1/preferences/favorites`
-
-- [ ] Star/favorite button on project cards and project detail page
-- [ ] Favorites section in sidebar or dashboard overview
-- [ ] API service: `services/userPreference.service.ts` — add `getFavorites`, `addFavorite`, `removeFavorite`
-- [ ] React Query hooks: `hooks/userPreference.hook.ts`
-- [ ] Optimistic updates for instant star toggle feedback
-
-### 3.6 SDK Feature Visualization
-
-**Goal**: Surface the new SDK Phase 2 capabilities (web vitals, distributed tracing, breadcrumbs, environment snapshots, source maps, remote config) in the dashboard UI.
-
-> **Depends on**: Backend Phase 2.5 (SDK Feature Integration) — endpoints must be available before these UIs can function. Build with mock data first, wire to real API when backend is ready.
-
-#### 3.6.1 Web Vitals Dashboard (`/projects/[projectId]/web-vitals`) ✅ **COMPLETE**
-
-**Completed**: March 4, 2026
-
-- [x] **VitalCard**: Observatory metric card with Google threshold rating (good/needs-improvement/poor), p75 primary + p50/p95 secondary
-- [x] **WebVitalsChart**: Recharts AreaChart with ReferenceLine thresholds, time range selector
-- [x] **WebVitalsPageTable**: Sortable per-page table with SignalDot ratings
-- [x] **RatingDistribution**: Donut PieChart showing % good/needs-improvement/poor
-- [x] **Google Threshold Reference**: Footer with LCP/CLS/INP thresholds
-- [x] **Navigation**: "Web Vitals" link added under active projects in sidebar
-
-**Files created (7)**: `services/webVitals.service.ts`, `hooks/webVitals.hook.ts`, `VitalCard.tsx`, `WebVitalsChart.tsx`, `WebVitalsPageTable.tsx`, `RatingDistribution.tsx`, `web-vitals/page.tsx`
-**Files modified (1)**: `app-sidebar.tsx`
-
-#### 3.6.2 Distributed Tracing UI (`/projects/[projectId]/traces`) ✅ **COMPLETE**
-
-**Completed**: March 4, 2026
-
-- [x] **Trace List Page**: Filterable table with time range, min duration, status, service name filters
-- [x] **Trace Detail Page**: Header with copyable trace ID, duration, span count
-- [x] **Waterfall View**: Horizontal span bars with tree nesting, error spans in red, click to select
-- [x] **Span Detail Panel**: Selected span's attributes, timing, parent relationship
-- [x] **Timeline View**: Chronological log list grouped by spanId with level badges
-- [x] **Navigation**: "Traces" link added under active projects in sidebar
-
-**Files created (9)**: `services/trace.service.ts`, `hooks/trace.hook.ts`, `TraceList.tsx`, `TraceWaterfall.tsx`, `SpanDetail.tsx`, `TraceTimeline.tsx`, `traces/page.tsx`, `traces/[traceId]/page.tsx`
-**Files modified (1)**: `app-sidebar.tsx`
-
-#### 3.6.3 Breadcrumb Trail & Environment Snapshot (Log Detail Enhancement) ✅ **COMPLETE**
-
-**Completed**: March 4, 2026
-
-- [x] **Breadcrumb Trail**: Vertical timeline with category badges, relative timestamps, level-based colors, expandable data, collapsible section
-- [x] **Environment Snapshot**: Observatory card with URL, viewport, scroll, network (SignalDot), memory (progress bar), collapsible
-- [x] **Trace Link**: "View Full Trace" link when log has traceId
-- [x] **Release Badge**: Shows `v{release}` in log detail header
-
-**Files created (2)**:
-```
-components/logs/enhanced/BreadcrumbTrail.tsx
-components/logs/enhanced/EnvironmentSnapshot.tsx
-```
-
-**Files modified**: `EnhancedLogDetailPanel.tsx`, `EnhancedLogListItem.tsx`, `LogListItem.tsx`, `LogsDetailsDialog.tsx`
-
-#### 3.6.4 Source Map Resolved Stack Traces (Error Detail Enhancement) ✅ **COMPLETE**
-
-**Completed**: March 4, 2026
-
-- [x] "De-minify" button shown when error log has `release` field and stack trace
-- [x] Calls `POST /:projectId/sourcemaps/resolve` with `{ release, stackTrace }`
-- [x] Resolved stack trace displayed with original file paths, line/column numbers
-- [x] Toggle between minified and resolved views
-- [x] React Query caching keyed by `logId + release`
-- [x] Error state when source maps unavailable
-- [x] Integrated into EnhancedLogDetailPanel and LogsDetailsDialog
-
-**Files created (3)**: `services/sourceMap.service.ts`, `hooks/sourceMap.hook.ts`, `components/dashboard/logs/ResolvedStackTrace.tsx`
-**Files modified (2)**: `EnhancedLogDetailPanel.tsx`, `LogsDetailsDialog.tsx`
-
-#### 3.6.5 SDK Remote Configuration Management (`/projects/[projectId]/settings` → "SDK Config" tab)
-
-**Backend Endpoints** (existing + Phase 2.5.2):
-- `GET /projects/:projectId/config` (JWT) — get current SDK config
-- `PUT /projects/:projectId/config` (JWT) — update SDK config
-
-**UI Components**:
-- [ ] **SDK Config Form** in project settings "SDK Config" tab:
-  - **Log Level**: Dropdown selector (trace → fatal)
-  - **Batching**: Number inputs for `batchSize` (1-100) and `flushIntervalMs` (1000-60000)
-  - **Auto-Capture Toggles**: Switch components for each flag:
-    - Errors, Performance, User Interactions, Network Requests, Console Messages, Page Views
-  - **Sanitization**: Preset selector (STRICT / BALANCED / LENIENT), enabled toggle
-  - **Save** button with optimistic update
-  - **Reset to Defaults** button
-- [x] **Live Preview**: TerminalBlock showing SDK initialization code reflecting current form state (with masked API key)
-- [x] **Status Indicator**: SignalDot with "Remote config active" and last sync timestamp
-
-**Enhancement added** to existing `components/settings/SDKConfigSettings.tsx` (no new files needed)
-
-#### 3.6.6 Release Tracking ✅ **COMPLETE**
-
-**Completed**: March 4, 2026
-
-- [x] **Release filter**: Text input in filter bar with `font-mono` styling
-- [x] **Release column**: Release version tag shown in log list items (both enhanced and legacy)
-- [ ] **Release comparison**: In error analytics, show error counts per release version (deferred — needs dedicated endpoint)
-- [x] **Release badge**: `v{release}` badge in log detail panel header and log details dialog
-
-**Files modified**: `ObservatoryFilterBar.tsx`, `EnhancedLogExplorer.tsx`, `EnhancedLogListItem.tsx`, `LogListItem.tsx`, `LogsDetailsDialog.tsx`
-
-#### 3.6.7 Offline Queue Indicator ✅ **COMPLETE**
-
-**Completed**: March 4, 2026
-
-- [x] "Offline" badge shown on log list items when `data.offlineQueued` or `metadata.offlineQueued` is true
-- [x] WifiOff icon info banner in log detail panels for offline-queued logs
-- [x] Integrated into EnhancedLogListItem, LogListItem, EnhancedLogDetailPanel, LogsDetailsDialog
+**Scope preserved**: Landing page, /sdk page, Observatory design tokens, shared components (SignalDot, TerminalBlock, SectionHeading), all shadcn/ui primitives.
 
 ---
 
-### Implementation Order (Phase 3.6)
+### 3.1 Infrastructure (Foundation for Everything)
+
+**Goal**: Build the data layer, state management, and layout components that every page depends on.
+
+#### 3.1.1 Zustand Store Expansion
+
+Expand `store/loghive-store.ts` with new slices:
+
+```typescript
+// New store slices
+currentUser: { id, email, name } | null
+currentProjectId: string | null
+selectedTimeRange: '1h' | '6h' | '24h' | '7d' | '30d' | 'custom'
+customTimeRange: { start: Date, end: Date } | null
+selectedEnvironment: string | 'all'
+autoRefreshEnabled: boolean
+autoRefreshInterval: number // ms
+sidebarCollapsed: boolean
+detailPanelOpen: boolean
+theme: 'dark' | 'light' | 'system'
+```
+
+#### 3.1.2 Global Hooks
+
+| File | Hooks | Purpose |
+|------|-------|---------|
+| `hooks/useTimeRange.ts` | `useTimeRange` | Syncs URL param <-> Zustand time range, provides setter |
+| `hooks/useProjectContext.ts` | `useProjectContext` | Reads `projectId` from URL, syncs to Zustand, provides project data |
+| `hooks/useEnvironmentFilter.ts` | `useEnvironmentFilter` | Global environment filter, URL <-> Zustand sync |
+
+#### 3.1.3 New Service Files
+
+| File | Endpoints Covered |
+|------|------------------|
+| `services/analytics.service.ts` | 20+ analytics endpoints (errors, performance, activity, sessions, environments) |
+| `services/funnel.service.ts` | Funnel analysis, popular paths |
+| `services/regression.service.ts` | Regression detection, baseline, comparison |
+| `services/customDashboard.service.ts` | Dashboard CRUD, widget CRUD, layout |
+| `services/aiSuggestion.service.ts` | Get/accept AI suggestions |
+| `services/userPreference.service.ts` | Favorites CRUD |
+| `services/user.service.ts` | Profile, password change |
+
+#### 3.1.4 New Hook Files
+
+| File | Hooks |
+|------|-------|
+| `hooks/analytics.hook.ts` | ~22 hooks: `useErrorTimeline`, `useTopErrors`, `useErrorDistribution`, `useErrorStats`, `useErrorDetails`, `useErrorTrends`, `usePerformanceTimeline`, `useWebVitalsAnalytics`, `useResourcePerformance`, `usePagePerformance`, `usePerformanceScore`, `useSlowestEndpoints`, `useActivityFeed`, `useActivityStats`, `useSessions`, `useSessionDetail`, `useSessionTimeline`, `useSessionStats`, `useUserJourneys`, `useEnvironmentStats` |
+| `hooks/funnel.hook.ts` | `useAnalyzeFunnel`, `usePopularPaths` |
+| `hooks/regression.hook.ts` | `useDetectRegressions`, `useBaseline`, `useComparePerformance` |
+| `hooks/customDashboard.hook.ts` | `useCustomDashboards`, `useCustomDashboard`, `useCreateDashboard`, `useUpdateDashboard`, `useDeleteDashboard`, `useUpdateLayout`, `useAddWidget`, `useUpdateWidget`, `useRemoveWidget`, `useDuplicateDashboard` |
+| `hooks/aiSuggestion.hook.ts` | `useAISuggestions`, `useAcceptSuggestion` |
+| `hooks/userPreference.hook.ts` | `useFavorites`, `useCheckFavorite`, `useAddFavorite`, `useRemoveFavorite` |
+| `hooks/user.hook.ts` | `useProfile`, `useUpdateProfile`, `useChangePassword` |
+
+#### 3.1.5 Project Context Layout
+
+- Create `/projects/[projectId]/layout.tsx` that syncs URL `projectId` -> Zustand store
+- All project-scoped pages inherit this layout
+
+#### 3.1.6 Top Bar Enhancements
+
+- [ ] Time range selector -> syncs to Zustand + URL params
+- [ ] Environment filter dropdown (global)
+- [ ] Auto-refresh toggle with interval indicator
+- [ ] Breadcrumbs that resolve project names from React Query cache
+
+#### 3.1.7 Sidebar Redesign
+
+Three sections:
+```
+Section 1: Primary Nav
+  Dashboard, Projects [count], Alerts [active count], Custom Dashboards
+
+Section 2: Active Project (appears when project selected)
+  [ProjectSelector dropdown -- name + SignalDot status]
+    Overview, Logs, Errors, Performance, Web Vitals, Sessions,
+    Activity Feed, Traces, Funnels, Regressions, Environments,
+    Alerts, Source Maps, Settings
+
+Section 3: Footer
+  SDK Docs, Settings, System status [SignalDot], User [Logout]
+```
+
+#### 3.1.8 Layout Components
+
+| Component | Purpose |
+|-----------|---------|
+| `PageHeader` | Title, description, action buttons -- standardized page header |
+| `TabLayout` | Tab bar with lazy-loaded content |
+| `MasterDetailLayout` | Resizable split pane (list + detail panel) |
+| `EmptyState` | Contextual empty state with icon, message, CTA |
+| `SkeletonDashboard` | Loading skeleton for dashboard pages |
+| `SkeletonTable` | Loading skeleton for table pages |
+| `MetricCard` | KPI card with value, label, trend arrow, sparkline |
+| `FilterBar` | Composable filter bar with search + chip dropdowns + action buttons |
+
+---
+
+### 3.2 Log Explorer (Most-Used Page)
+
+**Route**: `/projects/[projectId]/logs`
+**Layout**: Pattern B -- Explorer/Table (filter bar -> summary strip -> master-detail split pane)
+**Primary Data**: `/:projectId/logs`, `logs/summary`, `logs/trends`, `logs/distinct-values/*`, saved searches
+
+#### Components
+
+| Component | Purpose |
+|-----------|---------|
+| `FilterBar` | Search, level filter, service filter, environment filter, time range -- composable chips |
+| `StructuredQueryInput` | Supports `level:error AND service:auth` syntax |
+| `SavedSearchSelector` | Load/save filter configurations |
+| `LogTable` | Virtualized table (react-window) with column sorting, 10K+ row support |
+| `LogRow` | Level icon, timestamp, message, service tag, expand toggle |
+| `LogDetailPanel` | JSON tree, stack trace viewer, context tabs |
+| `StackTraceViewer` | Formatted stack trace with source map resolution |
+| `JsonTreeViewer` | Collapsible JSON tree for data/context/metadata |
+
+#### Features
+
+- [ ] Master-detail split pane: list (55%) + detail panel (45%), resizable drag handle
+- [ ] Keyboard navigation: j/k to move through list, Enter to select, Escape to close panel
+- [ ] Live tail mode via WebSocket with auto-scroll + pause button
+- [ ] URL-driven filters: all filters live in URL params for deep-linking
+- [ ] Structured query: `level:error AND service:auth` syntax parsed to API params
+- [ ] Saved searches: persist filter configurations, load from dropdown
+- [ ] Export: CSV/JSON download of filtered results
+- [ ] Virtualized rendering: react-window for 10K+ row performance
+
+---
+
+### 3.3 Error & Performance Analytics
+
+#### 3.3.1 Error Analytics Dashboard
+
+**Route**: `/projects/[projectId]/errors`
+**Layout**: Pattern C -- Analytics Dashboard (KPI cards -> tab bar -> chart + table)
+**Primary Data**: `analytics/errors/timeline`, `errors/top`, `errors/distribution`, `errors/stats`, `errors/trends`
+
+- [ ] Error KPI cards: total errors, error rate, unique errors, affected users
+- [ ] Error timeline chart: errors over time with level breakdown
+- [ ] Top errors table: grouped by message, sorted by frequency/impact
+- [ ] Error distribution chart: pie/donut by level, service, environment
+- [ ] Error trends: week-over-week comparison
+
+**Route**: `/projects/[projectId]/errors/[errorId]`
+- [ ] Error detail: full stack trace, occurrence timeline, affected environments
+- [ ] Source map resolution: "De-minify" button for stack traces
+- [ ] Occurrence list: paginated list of individual occurrences
+
+#### 3.3.2 Performance Analytics Dashboard
+
+**Route**: `/projects/[projectId]/performance`
+**Layout**: Pattern C -- Analytics Dashboard
+**Primary Data**: `analytics/performance/timeline`, `performance/web-vitals`, `performance/score`, `performance/pages`, `performance/slowest`, `performance/resources`
+
+- [ ] Performance score card: overall score with trend
+- [ ] Performance timeline: response time over time
+- [ ] Slowest endpoints table: ranked by p95 latency
+- [ ] Page performance table: per-page load times, LCP, CLS, INP
+- [ ] Resource performance: breakdown by resource type (scripts, images, styles)
+
+#### 3.3.3 Web Vitals Dashboard (Redesign)
+
+**Route**: `/projects/[projectId]/web-vitals`
+**Primary Data**: `web-vitals`, `web-vitals/history`, `web-vitals/pages`
+
+- [ ] `WebVitalGauge` -- Circular gauge with good/needs-improvement/poor zones
+- [ ] LCP, INP, CLS gauges with p75 values and Google thresholds
+- [ ] Historical trend charts per vital
+- [ ] Per-page breakdown table with ratings
+- [ ] Rating distribution donut charts
+
+#### Shared Chart Components
+
+| Component | Purpose |
+|-----------|---------|
+| `TimeSeriesChart` | Recharts wrapper with zoom, brush, Observatory theme |
+| `DistributionChart` | Pie/donut for categorical breakdowns |
+| `BarChart` | Horizontal/vertical bars |
+| `SparklineInline` | Tiny sparkline for table cells |
+| `HealthBadge` | Colored badge (critical/poor/good/excellent) |
+| `WebVitalGauge` | Circular gauge with performance zones |
+
+---
+
+### 3.4 Global Dashboard + Projects
+
+#### 3.4.1 Global Dashboard
+
+**Route**: `/dashboard`
+**Layout**: Pattern A -- Overview Dashboard (metric cards -> primary chart -> 2-col grid -> table)
+**Primary Data**: `dashboard/overview`, `dashboard/metrics`, `dashboard/realtime`, `dashboard/projects/health`, `alerts/stats`
+
+- [ ] Cross-project command center: aggregate metrics across all projects
+- [ ] Metric cards row: total logs, total errors, active alerts, projects count
+- [ ] Primary chart: aggregate log volume over time
+- [ ] Project health grid: card per project with health score, error rate, SignalDot status
+- [ ] Recent alerts strip: latest alert events across all projects
+- [ ] Real-time activity indicator: logs ingested/sec, WebSocket status
+
+#### 3.4.2 Projects List
+
+**Route**: `/projects`
+**Primary Data**: `projects`, `projects/summary`, `preferences/favorites`
+
+- [ ] Grid/list toggle view
+- [ ] Project cards: name, status SignalDot, key metrics (logs, errors, health), favorite star
+- [ ] Favorites section at top (pinned projects)
+- [ ] Search and filter (by name, status, environment)
+- [ ] Sort by: name, health score, recent activity, log count
+- [ ] Quick actions: archive, duplicate, settings
+
+#### 3.4.3 Project Overview
+
+**Route**: `/projects/[projectId]`
+**Layout**: Pattern A -- Overview Dashboard
+**Primary Data**: `projects/:id`, `insights/:projectId`, `dashboard/overview`
+
+- [ ] Project header: name, status, description, quick actions
+- [ ] Key metrics row: log volume, error rate, p95 latency, health score
+- [ ] Insights cards: AI-powered recommendations from insights endpoint
+- [ ] Recent errors strip: latest error events
+- [ ] Environment breakdown: traffic/errors per environment
+- [ ] Team section: member avatars with roles
+
+#### 3.4.4 Create Project
+
+**Route**: `/projects/new`
+- [ ] Step-by-step wizard: name + description -> environment -> SDK setup guide
+- [ ] SDK code snippet with project API key
+- [ ] "Waiting for first log" status with real-time detection
+
+---
+
+### 3.5 Alert System
+
+#### 3.5.1 Global Alert Events
+
+**Route**: `/alerts/events`
+**Layout**: Pattern B -- Explorer/Table
+**Primary Data**: `alerts` (user-scoped), `alerts/stats`
+
+- [ ] Alert stats cards: total, active, acknowledged, resolved
+- [ ] Filter bar: severity, status, project, date range, search
+- [ ] Tab filters: All | Active | Acknowledged | Snoozed | Resolved (with counts)
+- [ ] Alert event list: severity-colored left border, status badge, metadata
+- [ ] Bulk actions: acknowledge, resolve, snooze selected
+- [ ] Detail panel: timeline, triggering log, rule info, actions
+
+#### 3.5.2 Alert Rules
+
+**Route**: `/alerts/rules`
+**Primary Data**: `alert-rules` per project
+
+- [ ] Rule list with project grouping
+- [ ] Rule card: name, conditions summary, status (active/paused), last triggered
+- [ ] Create/edit rule form: `AlertRuleForm` with composite condition builder
+- [ ] `ConditionBuilder`: visual AND/OR condition tree builder
+- [ ] Rule testing: test rule against recent logs
+- [ ] Snooze: time-based rule snoozing
+
+**Route**: `/projects/[projectId]/alerts/rules`
+- [ ] Project-scoped alert rules with same components
+- [ ] AI suggestions integration: banner showing AI-suggested rules from `ai-suggestions/:projectId/suggestions`
+- [ ] Accept/dismiss AI suggestions
+
+#### 3.5.3 Alert Analytics
+
+**Route**: `/alerts/analytics`
+**Primary Data**: `alert-rules/analytics/:projectId`, `alert-rules/timeline/:projectId`
+
+- [ ] MTTR (Mean Time To Resolve) metrics
+- [ ] Noisiest rules: rules generating most alerts
+- [ ] Alert frequency trends: timeline of alert volume
+- [ ] Resolution rate: % of alerts resolved within SLA
+
+#### 3.5.4 Escalation Policies
+
+**Route**: `/alerts/escalation-policies`
+- [ ] `EscalationPolicyEditor`: multi-level escalation configuration
+- [ ] Visual timeline: Level 1 (5min) -> Level 2 (15min) -> Level 3 (30min)
+- [ ] Notification channel selection per level
+
+#### 3.5.5 Maintenance Windows
+
+**Route**: `/alerts/maintenance-windows`
+- [ ] `MaintenanceWindowScheduler`: date/time picker with recurrence options
+- [ ] Active/upcoming/past windows list
+- [ ] Affected rules and projects per window
+
+---
+
+### 3.6 Sessions, Traces, Activity
+
+#### 3.6.1 Session List
+
+**Route**: `/projects/[projectId]/sessions`
+**Layout**: Pattern B -- Explorer/Table
+**Primary Data**: `analytics/sessions`, `sessions/stats`
+
+- [ ] Session list with user/device info, duration, event count, error indicator
+- [ ] Filter by: date range, duration, has errors, user agent
+- [ ] Session stats cards: total sessions, avg duration, error session %, bounce rate
+
+#### 3.6.2 Session Detail
+
+**Route**: `/projects/[projectId]/sessions/[sessionId]`
+**Layout**: Pattern F -- Session Timeline
+**Primary Data**: `analytics/sessions/:sessionId`, `sessions/:sessionId/timeline`
+
+- [ ] `SessionTimeline`: horizontal timeline of session events
+- [ ] Event markers: page views, clicks, errors, network requests, console logs
+- [ ] Event detail panel: click event to see full context
+- [ ] Session metadata: user agent, device, location, duration
+
+#### 3.6.3 Trace List
+
+**Route**: `/projects/[projectId]/traces`
+**Layout**: Pattern B -- Explorer/Table
+**Primary Data**: `traces`
+
+- [ ] Trace list with service name, duration, span count, error indicator
+- [ ] Filter by: service, min duration, status, date range
+- [ ] Sort by: duration, timestamp, span count
+
+#### 3.6.4 Trace Waterfall
+
+**Route**: `/projects/[projectId]/traces/[traceId]`
+**Layout**: Pattern E -- Trace Waterfall
+**Primary Data**: `traces/:traceId`, `traces/:traceId/spans`
+
+- [ ] `TraceWaterfall`: Gantt-chart span visualization with tree nesting
+- [ ] `SpanDetailPanel`: tags, logs, duration, parent relationship for selected span
+- [ ] Error spans highlighted in red
+- [ ] Timeline view: chronological log list grouped by spanId
+
+#### 3.6.5 Activity Feed
+
+**Route**: `/projects/[projectId]/activity`
+**Primary Data**: `analytics/activity/feed`, `activity/stats`
+
+- [ ] Real-time event stream: page views, errors, performance events, user interactions
+- [ ] Filter by event type
+- [ ] Activity stats: events/sec, unique users, active pages
+- [ ] Auto-refresh with WebSocket integration
+
+---
+
+### 3.7 Advanced Analytics
+
+#### 3.7.1 Funnel Analysis
+
+**Route**: `/projects/[projectId]/funnels`
+**Layout**: Pattern G -- Funnel
+**Primary Data**: `funnels/:projectId/popular-paths`, POST `funnels/:projectId/analyze`
+
+- [ ] `FunnelVisualization`: stepped funnel with drop-off indicators and conversion rates
+- [ ] Step builder: add/remove/reorder funnel steps (event type + optional filters)
+- [ ] Popular paths display: auto-discovered common user journeys
+- [ ] Drop-off table: per-step completion rate, time between steps
+
+#### 3.7.2 Regression Detection
+
+**Route**: `/projects/[projectId]/regressions`
+**Primary Data**: `regressions/:projectId/detect`, `regressions/:projectId/baseline`
+
+- [ ] `RegressionComparisonChart`: current period vs baseline with z-score overlay
+- [ ] Regression list: detected regressions with severity, metric, affected endpoint
+- [ ] Baseline display: p50/p95/p99 baseline values with confidence intervals
+- [ ] Period comparison: side-by-side metric comparison between two time ranges
+
+#### 3.7.3 Environment Comparison
+
+**Route**: `/projects/[projectId]/environments`
+**Primary Data**: `analytics/environments/stats`
+
+- [ ] Environment comparison table: metrics per environment (production, staging, development)
+- [ ] Traffic distribution chart
+- [ ] Error rate comparison across environments
+- [ ] Performance comparison across environments
+
+#### 3.7.4 Custom Dashboards
+
+**Route**: `/custom-dashboards`
+**Primary Data**: `custom-dashboards`
+
+- [ ] Dashboard list with name, widget count, last modified, shared indicator
+- [ ] Create new dashboard button
+- [ ] Duplicate/delete actions
+
+**Route**: `/custom-dashboards/[dashboardId]`
+**Primary Data**: `custom-dashboards/:id`, widget data
+
+- [ ] Drag-and-drop widget canvas (react-grid-layout)
+- [ ] Widget types: counter, chart, log-stream, alert-list, bar chart, table
+- [ ] Widget configuration panel: data source, filters, time range, refresh interval
+- [ ] Save/load layouts
+- [ ] Share dashboard via link (isShared flag)
+
+---
+
+### 3.8 Settings & Auth
+
+#### 3.8.1 User Settings Hub
+
+**Route**: `/settings` (layout with vertical tab nav)
+**Layout**: Pattern D -- Settings
+
+| Sub-route | Purpose | Data |
+|-----------|---------|------|
+| `/settings/profile` | Name, email, avatar | GET/PUT `users/profile` |
+| `/settings/password` | Change password | PUT `users/change-password` |
+| `/settings/preferences` | UI preferences, favorites | `preferences/favorites` |
+
+#### 3.8.2 Project Settings (Tabbed Layout)
+
+**Route**: `/projects/[projectId]/settings`
+**Layout**: Pattern D -- Settings (vertical tabs)
+
+| Tab/Sub-route | Purpose | Data |
+|---------------|---------|------|
+| `/settings` (general) | Name, description, status | PUT `projects/:id` |
+| `/settings/team` | Team members | `projects/:id/team-members` |
+| `/settings/api-key` | API key management | `projects/:id` |
+| `/settings/sdk-config` | SDK remote configuration | `projects/:projectId/config` |
+| `/settings/rate-limit` | Rate limiting | PUT `projects/:id` |
+| `/settings/sampling` | Sampling configuration | PUT `projects/:id` |
+| `/settings/retention` | Data retention settings | PUT `projects/:id` |
+| `/settings/integrations` | Slack/webhook/email | PUT `projects/:projectId/integration-settings` |
+
+#### 3.8.3 Source Map Management
+
+**Route**: `/projects/[projectId]/source-maps`
+- [ ] Upload source map files (drag-and-drop)
+- [ ] Source map list: release version, file count, upload date
+- [ ] Delete source maps per release
+
+#### 3.8.4 Auth Pages (Redesign)
+
+| Route | Changes |
+|-------|---------|
+| `/login` | Add GitHub + Google OAuth buttons alongside email/password |
+| `/signup` | Add OAuth registration options |
+
+#### 3.8.5 Notifications
+
+**Route**: `/notifications`
+- [ ] Notification center with mark-as-read/unread
+- [ ] Filter by type (alert, system, team)
+- [ ] Notification preferences (which events trigger notifications)
+
+---
+
+### Route Summary (44 Total)
+
+**Auth routes** (4 -- no sidebar):
+`/login`, `/signup`, `/forgot-password`, `/reset-password/[token]`
+
+**Global pages** (16 -- sidebar + topbar):
+| Route | Purpose |
+|-------|---------|
+| `/dashboard` | Cross-project command center |
+| `/projects` | All projects grid/list |
+| `/projects/new` | Create project wizard |
+| `/alerts` | Global alert hub (layout) |
+| `/alerts/events` | All alert events across projects |
+| `/alerts/rules` | All alert rules |
+| `/alerts/analytics` | Alert trends, MTTR |
+| `/alerts/escalation-policies` | Escalation policies |
+| `/alerts/maintenance-windows` | Maintenance windows |
+| `/custom-dashboards` | Custom dashboard list |
+| `/custom-dashboards/[dashboardId]` | Dashboard view/edit |
+| `/notifications` | Notification center |
+| `/settings` | User settings hub (layout) |
+| `/settings/profile` | User profile |
+| `/settings/password` | Change password |
+| `/settings/preferences` | UI preferences |
+
+**Project-scoped pages** (24 -- under `/projects/[projectId]/`):
+| Route | Purpose |
+|-------|---------|
+| `/projects/[projectId]` | Project overview |
+| `/projects/[projectId]/logs` | Log explorer (master-detail) |
+| `/projects/[projectId]/errors` | Error analytics |
+| `/projects/[projectId]/errors/[errorId]` | Error detail |
+| `/projects/[projectId]/performance` | Performance analytics |
+| `/projects/[projectId]/web-vitals` | Core Web Vitals |
+| `/projects/[projectId]/sessions` | Session list |
+| `/projects/[projectId]/sessions/[sessionId]` | Session timeline |
+| `/projects/[projectId]/traces` | Trace list |
+| `/projects/[projectId]/traces/[traceId]` | Trace waterfall |
+| `/projects/[projectId]/activity` | Real-time activity feed |
+| `/projects/[projectId]/funnels` | Funnel analysis |
+| `/projects/[projectId]/regressions` | Regression detection |
+| `/projects/[projectId]/environments` | Environment comparison |
+| `/projects/[projectId]/alerts` | Project-scoped alerts |
+| `/projects/[projectId]/alerts/rules` | Project alert rules + AI suggestions |
+| `/projects/[projectId]/source-maps` | Source map management |
+| `/projects/[projectId]/settings` | Project settings (tabbed) |
+| `/projects/[projectId]/settings/team` | Team members |
+| `/projects/[projectId]/settings/api-key` | API key management |
+| `/projects/[projectId]/settings/sdk-config` | SDK configuration |
+| `/projects/[projectId]/settings/rate-limit` | Rate limiting |
+| `/projects/[projectId]/settings/sampling` | Sampling config |
+| `/projects/[projectId]/settings/retention` | Data retention |
+
+---
+
+### Key Architectural Decisions
+
+1. **Project context in URL AND Zustand**: The `projectId` lives in the URL path for deep-linking, mirrored to Zustand via a sync hook in the project layout. Components use either `useParams()` or the store.
+
+2. **Master-detail for log/alert inspection (not modals)**: Side panel (resizable split) keeps the list visible while inspecting details. Keyboard navigation: j/k to move, Enter to select, Escape to close.
+
+3. **`/logs` redirects to project picker**: The backend requires `projectId` for all log endpoints. No "global" log search -- `/logs` shows a project picker then redirects to `/projects/[pid]/logs`.
+
+4. **Time as a first-class citizen**: Every data page respects the global time range from Zustand/URL. Custom date ranges via calendar picker.
+
+5. **WebSocket-driven cache invalidation**: WebSocket broadcasts (log ingested, alert triggered) automatically invalidate relevant React Query cache keys instead of relying solely on polling.
+
+---
+
+### Implementation Order
 
 ```
-Step 1: SDK Config Management (3.6.5)        ← uses existing backend endpoints
-Step 2: Breadcrumbs + Environment (3.6.3)     ← enhances existing log detail, no new endpoints
-Step 3: Release Tracking (3.6.6)              ← uses existing distinct-values endpoint
-Step 4: Web Vitals Dashboard (3.6.1)          ← needs backend Phase 2.5.4
-Step 5: Distributed Tracing UI (3.6.2)        ← needs backend Phase 2.5.3
-Step 6: Source Map Viewer (3.6.4)             ← needs backend Phase 2.5.5
-Step 7: Offline Indicator (3.6.7)             ← cosmetic, lowest priority
+Phase A: Infrastructure -> services, hooks, layouts, store expansion
+Phase B: Log Explorer -> filter bar, virtualized table, master-detail
+Phase C: Error & Performance -> metric cards, charts, dashboards
+Phase D: Global Dashboard + Projects -> command center, project list/overview
+Phase E: Alert System -> events, rules, analytics, escalation, maintenance
+Phase F: Sessions, Traces, Activity -> session replay, trace waterfall, feed
+Phase G: Advanced Analytics -> funnels, regressions, environments, custom dashboards
+Phase H: Settings & Auth -> user/project settings, source maps, OAuth
 ```
-
-**Note**: Steps 1-3 can begin immediately (existing APIs). Steps 4-6 require backend Phase 2.5 to be implemented first.
-
-### New Files Summary (Phase 3.6)
-
-| File | Purpose |
-|------|---------|
-| `app/(dashboard)/projects/[projectId]/web-vitals/page.tsx` | Web Vitals dashboard page |
-| `app/(dashboard)/projects/[projectId]/traces/page.tsx` | Trace list page |
-| `app/(dashboard)/projects/[projectId]/traces/[traceId]/page.tsx` | Trace detail page |
-| `components/dashboard/web-vitals/*.tsx` | 5 web vital components |
-| `components/dashboard/traces/*.tsx` | 5 trace visualization components |
-| `components/dashboard/logs/BreadcrumbTrail.tsx` | Breadcrumb timeline |
-| `components/dashboard/logs/EnvironmentSnapshot.tsx` | Environment snapshot card |
-| `components/dashboard/logs/ResolvedStackTrace.tsx` | De-minified stack trace |
-| `components/dashboard/settings/SourceMapsTab.tsx` | Source map management |
-| `components/dashboard/settings/SDKConfigTab.tsx` | SDK remote config form |
-| `services/webVitals.service.ts` | Web vitals API client |
-| `services/trace.service.ts` | Trace API client |
-| `services/sourceMap.service.ts` | Source map API client |
-| `services/sdkConfig.service.ts` | SDK config API client |
-| `hooks/webVitals.hook.ts` | Web vitals React Query hooks |
-| `hooks/trace.hook.ts` | Trace React Query hooks |
-| `hooks/sourceMap.hook.ts` | Source map React Query hooks |
-| `hooks/sdkConfig.hook.ts` | SDK config React Query hooks |
 
 ---
 
 ## Phase 4: Enterprise UI
 
-### 4.1 Organization Pages
-- [ ] `/organization` — org settings, teams, members
-- [ ] `/organization/teams` — team management
-- [ ] `/organization/audit-log` — audit trail viewer
+**Goal**: Build frontend interfaces for organization management, billing, compliance, and enterprise security features.
 
-### 4.2 Billing Pages
-- [ ] `/billing` — current plan, usage meters, upgrade/downgrade
-- [ ] `/billing/invoices` — invoice history
-- [ ] `/billing/payment` — payment method management
+> **Depends on**: Backend Phase 4 (Organization, Billing, Security models and endpoints)
 
-### 4.3 Security Pages
-- [ ] `/settings/security` — MFA setup, session management, login history
-- [ ] `/settings/tokens` — API token management
+### 4.1 Organization Management
 
-### 4.4 Admin Panel
-- [ ] `/admin` — platform-wide admin dashboard (users, logs, health, revenue)
+**Routes**:
+| Route | Purpose |
+|-------|---------|
+| `/organization` | Organization settings hub (layout with tabs) |
+| `/organization/general` | Org name, slug, billing email, plan |
+| `/organization/members` | Organization member list with roles (owner/admin/member/billing) |
+| `/organization/teams` | Team management (create, members, project access) |
+| `/organization/audit-log` | Audit trail viewer with filters (user, action, resource, date range) |
+
+**Components**:
+- [ ] `OrgSettingsLayout` -- Tabbed settings (General, Members, Teams, Audit Log)
+- [ ] `MemberInviteForm` -- Email + role selector, bulk invite support
+- [ ] `MemberTable` -- Sortable table with role badges, remove/change-role actions
+- [ ] `TeamCard` -- Team name, member count, project access list, edit/delete
+- [ ] `TeamEditor` -- Team name, add/remove members, configure project-level permissions (view/edit/admin)
+- [ ] `AuditLogTable` -- Filterable, paginated table showing: timestamp, user, action, resource, IP, user agent
+- [ ] `AuditLogDetail` -- Expandable detail panel with full change diff (JSON before/after)
+
+**Services & Hooks**:
+- [ ] `services/organization.service.ts` -- org CRUD, member management, team CRUD
+- [ ] `hooks/organization.hook.ts` -- `useOrganization`, `useOrgMembers`, `useTeams`, `useAuditLog`
+
+### 4.2 Billing & Subscription
+
+**Routes**:
+| Route | Purpose |
+|-------|---------|
+| `/billing` | Billing overview (current plan, usage meters) |
+| `/billing/plans` | Plan comparison + upgrade/downgrade |
+| `/billing/payment` | Payment method management |
+| `/billing/invoices` | Invoice history + download |
+
+**Components**:
+- [ ] `BillingOverview` -- Current plan card, usage meters (logs, API calls, storage) with progress bars and thresholds (80%, 90%, 100%)
+- [ ] `UsageMeter` -- Circular/bar visualization showing usage vs limit, with trend sparkline
+- [ ] `PlanComparisonTable` -- Side-by-side feature comparison with checkmarks, current plan highlighted
+- [ ] `PlanSelector` -- Plan cards with monthly/annual toggle, signal green highlight on recommended tier
+- [ ] `UpgradeDialog` -- Confirm plan change with prorated price calculation
+- [ ] `PaymentMethodForm` -- Stripe Elements integration (card input, billing address)
+- [ ] `PaymentMethodCard` -- Display existing card (last 4 digits, expiry, brand icon)
+- [ ] `InvoiceTable` -- Date, amount, status (paid/pending/failed), download PDF link
+- [ ] `UsageAlertBanner` -- Persistent banner when approaching limits (80% yellow, 90% red)
+
+**Services & Hooks**:
+- [ ] `services/billing.service.ts` -- subscriptions, usage, invoices, payment methods
+- [ ] `hooks/billing.hook.ts` -- `useSubscription`, `useUsage`, `useInvoices`, `usePaymentMethods`, `useChangePlan`, `useUpdatePaymentMethod`
+
+### 4.3 Security & Compliance
+
+**Routes**:
+| Route | Purpose |
+|-------|---------|
+| `/settings/security` | MFA setup, session management |
+| `/settings/tokens` | API token management (create, revoke, scope) |
+| `/settings/privacy` | Data privacy controls, GDPR tools |
+
+**Components**:
+- [ ] `MFASetupWizard` -- Step-by-step TOTP setup: QR code display, verification input, backup codes
+- [ ] `MFAStatusCard` -- Current MFA status with enable/disable toggle
+- [ ] `SessionTable` -- Active sessions: device, browser, IP, last activity, "Revoke" button
+- [ ] `LoginHistoryTable` -- Recent logins: timestamp, device, IP, location, success/failure badge
+- [ ] `ApiTokenForm` -- Create token: name, scopes (checkboxes), expiration date picker
+- [ ] `ApiTokenTable` -- Active tokens: name, scopes, last used, expiry, "Revoke" button
+- [ ] `ApiTokenReveal` -- One-time token display after creation (masked, copy button, warning)
+- [ ] `DataExportButton` -- Trigger GDPR data export (all user data as JSON/CSV)
+- [ ] `DataDeletionForm` -- Right to deletion request with confirmation flow
+- [ ] `RetentionPolicyCard` -- Display/edit data retention settings per org
+- [ ] `ComplianceReportGenerator` -- Generate SOC 2 / GDPR compliance reports
+- [ ] `IPAllowlistEditor` -- Add/remove IP addresses/ranges, test current IP
+
+**Services & Hooks**:
+- [ ] `services/security.service.ts` -- MFA, sessions, tokens, GDPR
+- [ ] `hooks/security.hook.ts` -- `useMFASetup`, `useSessions`, `useLoginHistory`, `useApiTokens`, `useDataExport`
+
+### 4.4 SSO/SAML
+
+**Components**:
+- [ ] `SSOConfigForm` -- SAML configuration: IDP URL, certificate, attribute mapping
+- [ ] `SSOTestButton` -- Test SSO connection with result feedback
+- [ ] `SSOLoginButton` -- "Sign in with SSO" on login page (appears when org has SSO enabled)
+
+### 4.5 Admin Dashboard (Platform-Wide)
+
+**Routes**:
+| Route | Purpose |
+|-------|---------|
+| `/admin` | Platform admin overview |
+| `/admin/users` | All users management |
+| `/admin/organizations` | All organizations |
+| `/admin/system` | System health, metrics, config |
+
+**Components**:
+- [ ] `AdminDashboard` -- Platform KPIs: total users, total orgs, total logs ingested, MRR, system health
+- [ ] `AdminUserTable` -- Search/filter users, view details, impersonate, ban/unban
+- [ ] `AdminOrgTable` -- All organizations with plan, usage, health
+- [ ] `SystemHealthPanel` -- DB status, Redis status, queue depth, error rates, uptime
 
 ---
 
 ## Phase 5: Ecosystem UI
 
-### 5.1 Documentation Site
-- [ ] `/docs` — comprehensive documentation with search
-- [ ] SDK reference with code examples
-- [ ] API reference with interactive playground
-- [ ] Integration guides
+**Goal**: Build interfaces for the public-facing platform, documentation, integration marketplace, and developer tools.
 
-### 5.2 Public Pages
-- [ ] `/status` — public status page with incident history
-- [ ] `/changelog` — release notes with version history
-- [ ] `/blog` — content section (optional, may use external CMS)
+> **Depends on**: Backend Phase 5 (Integrations, webhooks, public API)
 
-### 5.3 Integration Management
-- [ ] Integration marketplace page
-- [ ] OAuth connection flows
-- [ ] Integration status and configuration
+### 5.1 Documentation Site (`/docs`)
+
+**Routes**:
+| Route | Purpose |
+|-------|---------|
+| `/docs` | Documentation home with search |
+| `/docs/[...slug]` | Individual doc pages (MDX-based) |
+| `/docs/api` | API reference (auto-generated from OpenAPI spec) |
+| `/docs/sdk` | SDK reference with framework-specific guides |
+
+**Components**:
+- [ ] `DocsLayout` -- Sidebar table of contents + content area + on-page TOC (right rail)
+- [ ] `DocSearch` -- Full-text search across all documentation (Algolia or custom)
+- [ ] `CodeBlock` -- Enhanced TerminalBlock with language tabs (React/Vue/Next.js/Node), copy button, line highlighting
+- [ ] `APIEndpointCard` -- Method badge (GET/POST/PUT/DELETE), path, description, try-it-out button
+- [ ] `APIPlayground` -- Interactive API testing: parameter inputs, auth header, response preview
+- [ ] `SDKMethodReference` -- Auto-generated from TypeScript types: method signature, params, return type, examples
+- [ ] `VersionSelector` -- Documentation version switcher (v1, v2)
+- [ ] `FeedbackWidget` -- "Was this helpful?" thumbs up/down + optional comment
+
+**Content Structure** (MDX files):
+```
+docs/
+  getting-started/
+    quickstart.mdx
+    installation.mdx
+    first-project.mdx
+  sdk/
+    javascript.mdx
+    react.mdx
+    nextjs.mdx
+    vue.mdx
+    node.mdx
+    configuration.mdx
+    auto-instrumentation.mdx
+    data-sanitization.mdx
+  api/
+    authentication.mdx
+    logs.mdx
+    projects.mdx
+    alerts.mdx
+    analytics.mdx
+    webhooks.mdx
+  guides/
+    error-tracking.mdx
+    performance-monitoring.mdx
+    distributed-tracing.mdx
+    custom-dashboards.mdx
+    team-management.mdx
+```
+
+### 5.2 Public Status Page (`/status`)
+
+**Components**:
+- [ ] `StatusPage` -- Public (no auth required), Observatory dark theme
+- [ ] `SystemStatusBanner` -- Current overall status: Operational / Degraded / Outage with SignalDot
+- [ ] `ComponentStatusList` -- Individual component status: API, Dashboard, WebSocket, Database, SDK CDN
+- [ ] `UptimeGraph` -- 90-day uptime visualization (green/yellow/red blocks per day)
+- [ ] `IncidentTimeline` -- Recent incidents with status updates, timestamps, resolution notes
+- [ ] `IncidentDetailPage` -- Full incident report with timeline of updates
+- [ ] `StatusSubscribeForm` -- Email/webhook subscription for status updates
+- [ ] `ResponseTimeChart` -- API response time over last 24h/7d/30d
+
+### 5.3 Changelog (`/changelog`)
+
+**Components**:
+- [ ] `ChangelogPage` -- Reverse-chronological list of releases
+- [ ] `ChangelogEntry` -- Date, version tag, category badges (Feature/Fix/Improvement/Breaking), description with screenshots
+- [ ] `ChangelogFilter` -- Filter by category, search
+- [ ] `ChangelogRSS` -- RSS feed generation
+- [ ] `InAppChangelog` -- Small changelog widget in dashboard sidebar (shows unread count)
+
+### 5.4 Integration Marketplace
+
+**Routes**:
+| Route | Purpose |
+|-------|---------|
+| `/integrations` | Integration marketplace (public browsable) |
+| `/integrations/[slug]` | Individual integration detail + setup guide |
+| `/settings/integrations` | User's connected integrations (authenticated) |
+
+**Components**:
+- [ ] `IntegrationGrid` -- Card grid of available integrations with search and category filter
+- [ ] `IntegrationCard` -- Logo, name, category badge, short description, "Connect" button
+- [ ] `IntegrationDetailPage` -- Full description, screenshots, setup instructions, pricing
+- [ ] `IntegrationSetupWizard` -- Step-by-step OAuth flow for each integration
+- [ ] `ConnectedIntegrationCard` -- Status (connected/disconnected), last sync, configuration, disconnect button
+
+**Integrations to Support**:
+- [ ] GitHub -- Link errors to issues, source code context
+- [ ] Jira -- Create tickets from alerts
+- [ ] PagerDuty -- Incident creation and escalation
+- [ ] Slack -- Channel notifications with action buttons
+- [ ] Discord -- Webhook notifications
+- [ ] Microsoft Teams -- Connector notifications
+- [ ] Webhook -- Custom HTTP webhook configuration
+
+### 5.5 CLI Tool Documentation
+
+- [ ] Installation guide for `monita` CLI
+- [ ] Command reference: `monita init`, `monita logs`, `monita deploy`, `monita sourcemaps upload`
+- [ ] CI/CD integration examples (GitHub Actions, GitLab CI, CircleCI)
+
+### 5.6 Blog/Content (`/blog`)
+
+- [ ] Blog listing page with category filters
+- [ ] Blog post page (MDX-based)
+- [ ] Author profiles
+- [ ] Related posts sidebar
+- [ ] Newsletter subscription (optional)
 
 ---
 
@@ -788,4 +1299,4 @@ remote-logger/
 
 ---
 
-*Last updated: March 4, 2026 — Phase 3.6 added: SDK Feature Visualization (web vitals, tracing, breadcrumbs, source maps, remote config, release tracking)*
+*Last updated: March 4, 2026 — Phase 3 replaced with Complete Frontend Rewrite plan (44 routes, 8 implementation phases). Phase 4 Enterprise UI and Phase 5 Ecosystem UI fully detailed.*

@@ -8,39 +8,39 @@
    "A precision instrument pointed at a vast, complex sky"
    ============================================================================ */
 
-/* Light mode fallback — kept functional but dark is the default */
+/* Light mode — Observatory Light */
 :root {
   --background: #f8fafc;
-  --foreground: #0b1220;
+  --foreground: #0f172a;
   --card: #ffffff;
-  --card-foreground: #0b1220;
+  --card-foreground: #0f172a;
   --popover: #ffffff;
-  --popover-foreground: #0b1220;
+  --popover-foreground: #0f172a;
   --primary: #00b368;
   --primary-foreground: #ffffff;
   --secondary: #f1f5f9;
-  --secondary-foreground: #0b1220;
+  --secondary-foreground: #0f172a;
   --muted: #f1f5f9;
   --muted-foreground: #64748b;
   --accent: #f1f5f9;
-  --accent-foreground: #0b1220;
+  --accent-foreground: #0f172a;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   --border: #e2e8f0;
   --input: #e2e8f0;
   --ring: #00b368;
   --chart-1: #00b368;
-  --chart-2: #4d8ef8;
-  --chart-3: #f59e0b;
-  --chart-4: #ef4444;
-  --chart-5: #6fa3ff;
-  --sidebar: #f8fafc;
-  --sidebar-foreground: #0b1220;
+  --chart-2: #3b7ce8;
+  --chart-3: #d97706;
+  --chart-4: #dc2626;
+  --chart-5: #4d8ef8;
+  --sidebar: #f1f5f9;
+  --sidebar-foreground: #0f172a;
   --sidebar-primary: #00b368;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f1f5f9;
-  --sidebar-accent-foreground: #0b1220;
-  --sidebar-border: #e2e8f0;
+  --sidebar-accent: #e2e8f0;
+  --sidebar-accent-foreground: #0f172a;
+  --sidebar-border: #cbd5e1;
   --sidebar-ring: #00b368;
 
   --font-sans: var(--font-body), "DM Sans", sans-serif;
@@ -49,16 +49,105 @@
 
   --radius: 0.5rem;
 
-  --shadow-2xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-2xs: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
   --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px -1px rgba(0, 0, 0, 0.08);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px -1px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.06);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.06);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
+
+  /* =========================================================================
+     OBSERVATORY EXTENSION TOKENS — Light Mode
+     ========================================================================= */
+
+  /* Background layers — light depth hierarchy */
+  --bg-void: #eef2f7;
+  --bg-base: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-elevated: #f1f5f9;
+  --bg-overlay: #ffffff;
+
+  /* Borders — soft, never invisible */
+  --border-faint: #e2e8f0;
+  --border-subtle: #cbd5e1;
+  --border-accent: #94a3b8;
+
+  /* Signal Green — slightly darker for light bg contrast */
+  --signal: #00b368;
+  --signal-glow: #00b36820;
+  --signal-muted: #00b36810;
+  --signal-bright: #00d97e;
+
+  /* Electric Blue — data, information */
+  --data: #3b7ce8;
+  --data-muted: #3b7ce815;
+  --data-bright: #4d8ef8;
+
+  /* Status colors — same hues, tuned for light bg */
+  --status-warn: #d97706;
+  --status-danger: #dc2626;
+  --status-fatal: #b91c1c;
+  --status-ok: #00b368;
+
+  /* Web Vital rating colors */
+  --rating-good: #00b368;
+  --rating-needs-improvement: #d97706;
+  --rating-poor: #dc2626;
+
+  /* Log level palette — darker variants for light bg readability */
+  --level-trace: #94a3b8;
+  --level-debug: #64748b;
+  --level-info: #3b7ce8;
+  --level-warn: #d97706;
+  --level-error: #dc2626;
+  --level-fatal: #991b1b;
+
+  /* Text hierarchy — dark on light */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --text-code: #0e7c47;
+
+  /* Glow effects — very subtle on light */
+  --glow-signal: 0 0 20px #00b36812, 0 0 40px #00b36808;
+  --glow-signal-sm: 0 0 8px #00b36818;
+  --glow-data: 0 0 20px #3b7ce812, 0 0 40px #3b7ce808;
+  --glow-danger: 0 0 20px #dc262612, 0 0 40px #dc262608;
+
+  /* Card shadows — light and crisp */
+  --shadow-card: 0 1px 3px #0000000a, 0 1px 2px #00000008;
+  --shadow-float: 0 10px 40px #00000012, 0 4px 12px #0000000a;
+  --shadow-lift: 0 20px 60px #00000018, 0 8px 24px #00000010;
+
+  /* Inner glow for active borders */
+  --border-glow: inset 0 1px 0 #ffffff80;
+
+  /* Syntax highlighting — dark variants for light bg */
+  --syntax-keyword: #7c3aed;
+  --syntax-string: #0e7c47;
+  --syntax-number: #c2410c;
+  --syntax-comment: #94a3b8;
+  --syntax-function: #2563eb;
+  --syntax-type: #b45309;
+  --syntax-property: #0f172a;
+  --syntax-operator: #0891b2;
+
+  /* Motion system — same timing for both modes */
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-snap: cubic-bezier(0.2, 0, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+
+  --dur-instant: 80ms;
+  --dur-fast: 150ms;
+  --dur-normal: 250ms;
+  --dur-slow: 400ms;
+  --dur-xslow: 700ms;
+  --dur-scene: 1200ms;
 }
 
 /* ============================================================================
@@ -153,6 +242,11 @@
   --status-danger: #ef4444;
   --status-fatal: #c0392b;
   --status-ok: #00d97e;
+
+  /* Web Vital rating colors */
+  --rating-good: #00d97e;
+  --rating-needs-improvement: #f59e0b;
+  --rating-poor: #ef4444;
 
   /* Log level palette */
   --level-trace: #3d4d60;
@@ -271,6 +365,11 @@
   --color-status-danger: var(--status-danger, #ef4444);
   --color-status-fatal: var(--status-fatal, #c0392b);
   --color-status-ok: var(--status-ok, #00d97e);
+
+  /* Web Vital rating colors — text-rating-good, bg-rating-poor, etc. */
+  --color-rating-good: var(--rating-good, #00d97e);
+  --color-rating-needs-improvement: var(--rating-needs-improvement, #f59e0b);
+  --color-rating-poor: var(--rating-poor, #ef4444);
 
   /* Log level colors — text-level-error, bg-level-warn, etc. */
   --color-level-trace: var(--level-trace, #3d4d60);
