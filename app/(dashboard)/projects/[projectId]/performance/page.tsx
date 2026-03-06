@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { useParams } from "next/navigation";
 import { useLogHiveStore } from "@/store/loghive-store";
 import {
@@ -16,6 +17,14 @@ import { TimeSeriesChart } from "@/components/shared/TimeSeriesChart";
 import { ObservatoryBarChart } from "@/components/shared/ObservatoryBarChart";
 import { SkeletonDashboard } from "@/components/shared/SkeletonDashboard";
 import {
+  formatDuration,
+  formatPercent as sharedFormatPercent,
+  truncateUrl as sharedTruncateUrl,
+  formatBytes,
+  computeChange,
+  resolveTimeRangeParams,
+} from "@/lib/format-utils";
+import {
   Clock,
   Gauge,
   TrendingUp,
@@ -27,24 +36,22 @@ import {
 } from "lucide-react";
 
 // ---------------------------------------------------------------------------
-// Formatting helpers
+// Formatting helpers (thin wrappers preserving "--" for missing values)
 // ---------------------------------------------------------------------------
 
 function formatMs(ms: number | undefined | null): string {
   if (ms == null || isNaN(ms)) return "--";
-  if (ms >= 1000) return `${(ms / 1000).toFixed(1)}s`;
-  return `${Math.round(ms)}ms`;
+  return formatDuration(ms);
 }
 
 function formatPercent(val: number | undefined | null): string {
   if (val == null || isNaN(val)) return "--";
-  return `${val.toFixed(1)}%`;
+  return sharedFormatPercent(val);
 }
 
 function truncateUrl(url: string, maxLen = 60): string {
   if (!url) return "--";
-  if (url.length <= maxLen) return url;
-  return url.slice(0, maxLen - 3) + "...";
+  return sharedTruncateUrl(url, maxLen) || "--";
 }
 
 // ---------------------------------------------------------------------------
@@ -58,7 +65,7 @@ function scoreVariant(score: number): "success" | "warning" | "danger" {
 }
 
 // ---------------------------------------------------------------------------
-// Trend helper
+// Trend helper (wraps shared computeChange)
 // ---------------------------------------------------------------------------
 
 function computeTrend(
@@ -66,11 +73,11 @@ function computeTrend(
   previous: number | undefined | null
 ): { direction: "up" | "down" | "neutral"; value: string } | undefined {
   if (current == null || previous == null || previous === 0) return undefined;
-  const diff = ((current - previous) / previous) * 100;
-  if (Math.abs(diff) < 0.5) return { direction: "neutral", value: "0%" };
+  const info = computeChange(current, previous);
+  if (Math.abs(info.value) < 0.5) return { direction: "neutral", value: "0%" };
   return {
-    direction: diff > 0 ? "up" : "down",
-    value: `${Math.abs(diff).toFixed(1)}%`,
+    direction: info.direction,
+    value: `${Math.abs(info.value).toFixed(1)}%`,
   };
 }
 
@@ -296,11 +303,7 @@ function ResourcesTable({ data }: { data: ResourceEntry[] }) {
 
 function formatSize(bytes: number | undefined | null): string {
   if (bytes == null || isNaN(bytes)) return "--";
-  if (bytes === 0) return "0 B";
-  const units = ["B", "KB", "MB", "GB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  const idx = Math.min(i, units.length - 1);
-  return `${(bytes / Math.pow(1024, idx)).toFixed(idx === 0 ? 0 : 1)} ${units[idx]}`;
+  return formatBytes(bytes);
 }
 
 function EmptyTab({ message }: { message: string }) {
@@ -321,7 +324,11 @@ export default function PerformanceAnalyticsPage() {
   const projectId = typeof params?.projectId === "string" ? params.projectId : "";
 
   const selectedTimeRange = useLogHiveStore((s) => s.selectedTimeRange);
-  const timeParams = { timeRange: selectedTimeRange };
+  const customTimeRange = useLogHiveStore((s) => s.customTimeRange);
+  const timeParams = useMemo(
+    () => resolveTimeRangeParams(selectedTimeRange, customTimeRange),
+    [selectedTimeRange, customTimeRange]
+  );
 
   // Data hooks
   const {

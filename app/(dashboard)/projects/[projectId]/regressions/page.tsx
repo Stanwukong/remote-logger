@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useParams } from "next/navigation";
 import { useLogHiveStore } from "@/store/loghive-store";
+import { resolveTimeRangeParams } from "@/lib/format-utils";
 import { useDetectRegressions, useBaseline } from "@/hooks/regression.hook";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { MetricCard } from "@/components/shared/MetricCard";
@@ -261,7 +262,11 @@ export default function RegressionsPage() {
   const projectId = typeof params?.projectId === "string" ? params.projectId : "";
 
   const selectedTimeRange = useLogHiveStore((s) => s.selectedTimeRange);
-  const timeParams = { timeRange: selectedTimeRange };
+  const customTimeRange = useLogHiveStore((s) => s.customTimeRange);
+  const timeParams = useMemo(
+    () => resolveTimeRangeParams(selectedTimeRange, customTimeRange),
+    [selectedTimeRange, customTimeRange]
+  );
 
   const {
     data: regressionsRaw,

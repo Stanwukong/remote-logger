@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { resolveTimeRangeParams } from "@/lib/format-utils";
 
 // ============================================
 // Types
@@ -105,6 +106,11 @@ export default function ActivityPage() {
   const params = useParams<{ projectId: string }>();
   const projectId = typeof params?.projectId === "string" ? params.projectId : "";
   const selectedTimeRange = useLogHiveStore((s) => s.selectedTimeRange);
+  const customTimeRange = useLogHiveStore((s) => s.customTimeRange);
+  const timeRangeParams = useMemo(
+    () => resolveTimeRangeParams(selectedTimeRange, customTimeRange),
+    [selectedTimeRange, customTimeRange]
+  );
 
   const [levelFilter, setLevelFilter] = useState<LevelFilter>("all");
   const [page, setPage] = useState(1);
@@ -130,7 +136,7 @@ export default function ActivityPage() {
 
   const { data: statsData, isLoading: statsLoading } = useActivityStats(
     projectId,
-    { timeRange: selectedTimeRange }
+    timeRangeParams
   );
 
   // Parse feed events

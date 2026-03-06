@@ -9,6 +9,7 @@ import {
   useWebVitalsHistory,
   useWebVitalsByPage,
 } from "@/hooks/webVitals.hook";
+import { resolveTimeRangeParams } from "@/lib/format-utils";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { WebVitalGauge } from "@/components/shared/WebVitalGauge";
 import { TimeSeriesChart } from "@/components/shared/TimeSeriesChart";
@@ -167,8 +168,13 @@ export default function WebVitalsPage() {
     typeof params?.projectId === "string" ? params.projectId : "";
 
   const selectedTimeRange = useLogHiveStore((s) => s.selectedTimeRange);
-  const timeRange = selectedTimeRange === "custom" ? "24h" : selectedTimeRange;
-  const interval = getInterval(timeRange);
+  const customTimeRange = useLogHiveStore((s) => s.customTimeRange);
+  const timeRangeParams = useMemo(
+    () => resolveTimeRangeParams(selectedTimeRange, customTimeRange),
+    [selectedTimeRange, customTimeRange]
+  );
+  const timeRange = timeRangeParams.timeRange;
+  const interval = getInterval(selectedTimeRange === "custom" ? "24h" : selectedTimeRange);
 
   // ---- Data fetching ----
   const {

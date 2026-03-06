@@ -1,10 +1,13 @@
 "use client";
 
+import { useMemo } from "react";
 import { useDashboardData } from "@/hooks/dashboard.hook";
 import { useProjects } from "@/hooks/project.hooks";
 import { useUserAlertStats, useUserAlerts } from "@/hooks/alerts.hook";
+import { useLogHiveStore } from "@/store/loghive-store";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { MetricCard } from "@/components/shared/MetricCard";
+import { Sparkline } from "@/components/shared/Sparkline";
 import { TimeSeriesChart } from "@/components/shared/TimeSeriesChart";
 import { SkeletonDashboard } from "@/components/shared/SkeletonDashboard";
 import { SignalDot } from "@/components/shared/SignalDot";
@@ -12,6 +15,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import {
+  formatCompact,
+  formatPercent,
+  formatDuration,
+  timeAgo,
+  getPreviousPeriodLabel,
+} from "@/lib/format-utils";
 import {
   Activity,
   AlertTriangle,
@@ -21,34 +31,40 @@ import {
   ScrollText,
   ArrowRight,
   Clock,
+  Gauge,
 } from "lucide-react";
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-function formatNumber(n: number | undefined | null): string {
-  if (n === undefined || n === null) return "0";
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
-  return n.toLocaleString();
+function getTimeRangeDates(
+  timeRange: string,
+  customRange?: { start: Date; end: Date } | null
+): { startDate: string; endDate: string } {
+  if (timeRange === "custom" && customRange) {
+    return {
+      startDate: customRange.start.toISOString(),
+      endDate: customRange.end.toISOString(),
+    };
+  }
+  const end = new Date();
+  const start = new Date();
+  const match = timeRange.match(/^(\d+)([hdwm])$/);
+  if (match) {
+    const val = parseInt(match[1]);
+    const unit = match[2];
+    if (unit === "h") start.setHours(start.getHours() - val);
+    else if (unit === "d") start.setDate(start.getDate() - val);
+    else if (unit === "w") start.setDate(start.getDate() - val * 7);
+    else if (unit === "m") start.setMonth(start.getMonth() - val);
+  } else {
+    start.setHours(start.getHours() - 24);
+  }
+  return { startDate: start.toISOString(), endDate: end.toISOString() };
 }
 
-function timeAgo(dateStr: string | undefined): string {
-  if (!dateStr) return "";
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const minutes = Math.floor(diff / 60_000);
-  if (minutes < 1) return "just now";
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  return `${days}d ago`;
-}
-
-function deriveProjectHealth(
-  project: any
-): "ok" | "warn" | "danger" {
+function deriveProjectHealth(project: any): "ok" | "warn" | "danger" {
   const errorRate = project?.metrics?.recentActivity?.errorsLast24h ?? 0;
   const healthScore = project?.metrics?.healthScore ?? 100;
   if (healthScore < 50 || errorRate > 50) return "danger";
@@ -67,11 +83,18 @@ const severityBadgeVariant: Record<string, "default" | "secondary" | "destructiv
 // ---------------------------------------------------------------------------
 
 export default function DashboardPage() {
+  const selectedTimeRange = useLogHiveStore((s) => s.selectedTimeRange);
+  const customTimeRange = useLogHiveStore((s) => s.customTimeRange);
+  const { startDate, endDate } = useMemo(
+    () => getTimeRangeDates(selectedTimeRange, customTimeRange),
+    [selectedTimeRange, customTimeRange]
+  );
+
   const {
     overview,
     isLoading: dashboardLoading,
     hasData: dashboardHasData,
-  } = useDashboardData();
+  } = useDashboardData({ startDate, endDate });
 
   const { data: projectsResponse, isLoading: projectsLoading } = useProjects();
   const { data: alertStatsResponse, isLoading: alertStatsLoading } = useUserAlertStats();
@@ -94,14 +117,38 @@ export default function DashboardPage() {
 
   const totalLogs = overviewData?.summary?.totalLogs ?? 0;
   const totalErrors = overviewData?.summary?.totalErrors ?? 0;
+  const errorRate = overviewData?.summary?.errorRate ?? 0;
+  const avgResponseTime = overviewData?.summary?.averageResponseTime ?? 0;
   const activeAlerts = alertStats?.active ?? 0;
   const activeProjectCount = projects.filter((p: any) => p.isActive !== false).length;
 
-  // Build time-series data from overview trends if available
-  const timeSeriesData: any[] = [];
+  // Period comparison data (from new backend)
+  const comparison = overviewData?.comparison;
+  const sparklines = overviewData?.sparklines;
+  const periodLabel = getPreviousPeriodLabel(selectedTimeRange);
+
+  // Build time-series data from overview logsOverTime
+  const logsOverTime = overviewData?.logsOverTime ?? [];
+  const timeSeriesData = logsOverTime.map((point: any) => ({
+    timestamp: point.timestamp,
+    logs: point.total,
+    errors: point.errors,
+    warnings: point.warnings,
+  }));
   const timeSeriesSeries = [
     { key: "logs", label: "Log Volume", color: "var(--signal)", type: "area" as const },
+    { key: "errors", label: "Errors", color: "var(--status-danger)", type: "area" as const },
   ];
+
+  // Helper to derive trend from comparison data
+  function getTrend(compData?: { change: number }): { direction: "up" | "down" | "neutral"; value: string } | undefined {
+    if (!compData || compData.change === undefined) return undefined;
+    const change = compData.change;
+    return {
+      direction: change > 0 ? "up" : change < 0 ? "down" : "neutral",
+      value: `${Math.abs(change).toFixed(1)}%`,
+    };
+  }
 
   // Empty state: no projects at all
   if (projects.length === 0 && !dashboardHasData) {
@@ -131,46 +178,54 @@ export default function DashboardPage() {
 
   return (
     <div className="p-6 md:px-8 lg:p-10 space-y-6">
-      {/* Page Header */}
-      <PageHeader
-        title="Dashboard"
-        description="Cross-project overview"
-      />
+      <PageHeader title="Dashboard" description="Cross-project overview" />
 
-      {/* Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Metric Cards — with sparklines and real comparison data */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <MetricCard
           label="Total Logs"
-          value={formatNumber(totalLogs)}
+          value={formatCompact(totalLogs)}
           icon={<ScrollText className="h-4 w-4" />}
-          trend={
-            overviewData?.trends?.logVolumeChange
-              ? {
-                  direction: overviewData.trends.logVolumeChange > 0 ? "up" : overviewData.trends.logVolumeChange < 0 ? "down" : "neutral",
-                  value: `${Math.abs(overviewData.trends.logVolumeChange).toFixed(1)}%`,
-                }
-              : undefined
+          trend={getTrend(comparison?.totalLogs)}
+          subtitle={comparison ? periodLabel : undefined}
+          sparkline={
+            sparklines?.logs?.length ? (
+              <Sparkline data={sparklines.logs} color="var(--signal)" />
+            ) : undefined
           }
-        />
-        <MetricCard
-          label="Active Alerts"
-          value={formatNumber(activeAlerts)}
-          icon={<AlertTriangle className="h-4 w-4" />}
-          variant={activeAlerts > 0 ? "danger" : "default"}
         />
         <MetricCard
           label="Total Errors"
-          value={formatNumber(totalErrors)}
+          value={formatCompact(totalErrors)}
           icon={<Bug className="h-4 w-4" />}
-          variant={totalErrors > 0 ? "warning" : "default"}
-          trend={
-            overviewData?.trends?.errorRateChange
-              ? {
-                  direction: overviewData.trends.errorRateChange > 0 ? "up" : overviewData.trends.errorRateChange < 0 ? "down" : "neutral",
-                  value: `${Math.abs(overviewData.trends.errorRateChange).toFixed(1)}%`,
-                }
-              : undefined
+          variant={totalErrors > 0 ? "danger" : "default"}
+          trend={getTrend(comparison?.totalErrors)}
+          subtitle={comparison ? periodLabel : undefined}
+          sparkline={
+            sparklines?.errors?.length ? (
+              <Sparkline data={sparklines.errors} color="var(--status-danger)" />
+            ) : undefined
           }
+        />
+        <MetricCard
+          label="Error Rate"
+          value={formatPercent(errorRate)}
+          icon={<AlertTriangle className="h-4 w-4" />}
+          variant={errorRate > 5 ? "warning" : "default"}
+          trend={getTrend(comparison?.errorRate)}
+          subtitle={comparison ? periodLabel : undefined}
+          sparkline={
+            sparklines?.errorRate?.length ? (
+              <Sparkline data={sparklines.errorRate} color="var(--status-warn)" />
+            ) : undefined
+          }
+        />
+        <MetricCard
+          label="Avg Response"
+          value={formatDuration(avgResponseTime)}
+          icon={<Gauge className="h-4 w-4" />}
+          trend={getTrend(comparison?.averageResponseTime)}
+          subtitle={comparison ? periodLabel : undefined}
         />
         <MetricCard
           label="Active Projects"
@@ -180,7 +235,7 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* Log Volume Chart */}
+      {/* Log Volume Chart — populated from logsOverTime */}
       <Card className="bg-bg-surface border-border-subtle">
         <CardHeader>
           <CardTitle className="text-sm font-body text-text-secondary uppercase tracking-wider">
@@ -193,7 +248,7 @@ export default function DashboardPage() {
               data={timeSeriesData}
               series={timeSeriesSeries}
               height={280}
-              showLegend={false}
+              showLegend
             />
           ) : (
             <div className="flex items-center justify-center h-[280px] text-text-muted text-sm">
@@ -235,7 +290,7 @@ export default function DashboardPage() {
                           {project.name}
                         </p>
                         <p className="text-xs text-text-muted">
-                          {formatNumber(project.logCount ?? project.metrics?.recentActivity?.logsLast24h ?? 0)} logs
+                          {formatCompact(project.logCount ?? project.metrics?.recentActivity?.logsLast24h ?? 0)} logs
                         </p>
                       </div>
                     </Link>

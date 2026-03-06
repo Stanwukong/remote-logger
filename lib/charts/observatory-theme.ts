@@ -35,10 +35,20 @@ export const TOOLTIP_STYLES = {
 } as const;
 
 export const GRID_PROPS = {
-  strokeDasharray: "3 3",
   stroke: "var(--border-faint)",
-  strokeOpacity: 0.5,
+  strokeOpacity: 0.06,
 } as const;
+
+export const CHART_PALETTE = [
+  "var(--signal)",
+  "var(--data)",
+  "var(--status-warn)",
+  "var(--status-danger)",
+  "#a78bfa",  // purple
+  "#f472b6",  // pink
+  "#fb923c",  // orange
+  "#34d399",  // teal
+] as const;
 
 export const AXIS_TICK_PROPS = {
   fill: "var(--text-muted)",

@@ -21,7 +21,7 @@ export default function LogsExplorerContent() {
 
   if (isProjectsLoading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-bg-base">
+      <div className="h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
           <Loader2 className="w-12 h-12 animate-spin mx-auto text-signal" />
           <p className="text-sm text-text-muted">Loading projects...</p>

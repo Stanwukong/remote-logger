@@ -729,4 +729,329 @@ export const analyticsService = {
       handleApiError(error);
     }
   },
+
+  // -----------------------------------------------
+  // NETWORK ANALYTICS
+  // -----------------------------------------------
+
+  getNetworkOverview: async (
+    projectId: string,
+    params?: { timeRange?: string }
+  ) => {
+    try {
+      const searchParams = new URLSearchParams();
+      if (params?.timeRange) searchParams.append("timeRange", params.timeRange);
+      const response = await apiClient.get<ApiResponse>(
+        `/analytics/${projectId}/network/overview?${searchParams.toString()}`
+      );
+      if (response.data.status === "error") {
+        throw new ApiError(response.data.message || "Failed to fetch network overview", response.status, response.data.errors);
+      }
+      return response.data.data;
+    } catch (error) { handleApiError(error); }
+  },
+
+  getNetworkRequests: async (
+    projectId: string,
+    params?: { timeRange?: string; page?: number; limit?: number; status?: string; method?: string; search?: string }
+  ) => {
+    try {
+      const searchParams = new URLSearchParams();
+      if (params?.timeRange) searchParams.append("timeRange", params.timeRange);
+      if (params?.page !== undefined) searchParams.append("page", params.page.toString());
+      if (params?.limit !== undefined) searchParams.append("limit", params.limit.toString());
+      if (params?.status) searchParams.append("status", params.status);
+      if (params?.method) searchParams.append("method", params.method);
+      if (params?.search) searchParams.append("search", params.search);
+      const response = await apiClient.get<ApiResponse>(
+        `/analytics/${projectId}/network/requests?${searchParams.toString()}`
+      );
+      if (response.data.status === "error") {
+        throw new ApiError(response.data.message || "Failed to fetch network requests", response.status, response.data.errors);
+      }
+      return response.data;
+    } catch (error) { handleApiError(error); }
+  },
+
+  getNetworkTimeline: async (
+    projectId: string,
+    params?: { timeRange?: string; granularity?: string }
+  ) => {
+    try {
+      const searchParams = new URLSearchParams();
+      if (params?.timeRange) searchParams.append("timeRange", params.timeRange);
+      if (params?.granularity) searchParams.append("granularity", params.granularity);
+      const response = await apiClient.get<ApiResponse>(
+        `/analytics/${projectId}/network/timeline?${searchParams.toString()}`
+      );
+      if (response.data.status === "error") {
+        throw new ApiError(response.data.message || "Failed to fetch network timeline", response.status, response.data.errors);
+      }
+      return response.data.data;
+    } catch (error) { handleApiError(error); }
+  },
+
+  getNetworkTopEndpoints: async (
+    projectId: string,
+    params?: { timeRange?: string; limit?: number }
+  ) => {
+    try {
+      const searchParams = new URLSearchParams();
+      if (params?.timeRange) searchParams.append("timeRange", params.timeRange);
+      if (params?.limit !== undefined) searchParams.append("limit", params.limit.toString());
+      const response = await apiClient.get<ApiResponse>(
+        `/analytics/${projectId}/network/top-endpoints?${searchParams.toString()}`
+      );
+      if (response.data.status === "error") {
+        throw new ApiError(response.data.message || "Failed to fetch network top endpoints", response.status, response.data.errors);
+      }
+      return response.data.data;
+    } catch (error) { handleApiError(error); }
+  },
+
+  getNetworkSlowest: async (
+    projectId: string,
+    params?: { timeRange?: string; limit?: number }
+  ) => {
+    try {
+      const searchParams = new URLSearchParams();
+      if (params?.timeRange) searchParams.append("timeRange", params.timeRange);
+      if (params?.limit !== undefined) searchParams.append("limit", params.limit.toString());
+      const response = await apiClient.get<ApiResponse>(
+        `/analytics/${projectId}/network/slowest?${searchParams.toString()}`
+      );
+      if (response.data.status === "error") {
+        throw new ApiError(response.data.message || "Failed to fetch slowest network requests", response.status, response.data.errors);
+      }
+      return response.data.data;
+    } catch (error) { handleApiError(error); }
+  },
+
+  // -----------------------------------------------
+  // INTERACTION ANALYTICS
+  // -----------------------------------------------
+
+  getInteractionOverview: async (
+    projectId: string,
+    params?: { timeRange?: string }
+  ) => {
+    try {
+      const searchParams = new URLSearchParams();
+      if (params?.timeRange) searchParams.append("timeRange", params.timeRange);
+      const response = await apiClient.get<ApiResponse>(
+        `/analytics/${projectId}/interactions/overview?${searchParams.toString()}`
+      );
+      if (response.data.status === "error") {
+        throw new ApiError(response.data.message || "Failed to fetch interaction overview", response.status, response.data.errors);
+      }
+      return response.data.data;
+    } catch (error) { handleApiError(error); }
+  },
+
+  getInteractionTimeline: async (
+    projectId: string,
+    params?: { timeRange?: string; granularity?: string }
+  ) => {
+    try {
+      const searchParams = new URLSearchParams();
+      if (params?.timeRange) searchParams.append("timeRange", params.timeRange);
+      if (params?.granularity) searchParams.append("granularity", params.granularity);
+      const response = await apiClient.get<ApiResponse>(
+        `/analytics/${projectId}/interactions/timeline?${searchParams.toString()}`
+      );
+      if (response.data.status === "error") {
+        throw new ApiError(response.data.message || "Failed to fetch interaction timeline", response.status, response.data.errors);
+      }
+      return response.data.data;
+    } catch (error) { handleApiError(error); }
+  },
+
+  getInteractionTopElements: async (
+    projectId: string,
+    params?: { timeRange?: string; limit?: number }
+  ) => {
+    try {
+      const searchParams = new URLSearchParams();
+      if (params?.timeRange) searchParams.append("timeRange", params.timeRange);
+      if (params?.limit !== undefined) searchParams.append("limit", params.limit.toString());
+      const response = await apiClient.get<ApiResponse>(
+        `/analytics/${projectId}/interactions/top-elements?${searchParams.toString()}`
+      );
+      if (response.data.status === "error") {
+        throw new ApiError(response.data.message || "Failed to fetch top elements", response.status, response.data.errors);
+      }
+      return response.data.data;
+    } catch (error) { handleApiError(error); }
+  },
+
+  getInteractionMostClicked: async (
+    projectId: string,
+    params?: { timeRange?: string; limit?: number }
+  ) => {
+    try {
+      const searchParams = new URLSearchParams();
+      if (params?.timeRange) searchParams.append("timeRange", params.timeRange);
+      if (params?.limit !== undefined) searchParams.append("limit", params.limit.toString());
+      const response = await apiClient.get<ApiResponse>(
+        `/analytics/${projectId}/interactions/most-clicked?${searchParams.toString()}`
+      );
+      if (response.data.status === "error") {
+        throw new ApiError(response.data.message || "Failed to fetch most clicked", response.status, response.data.errors);
+      }
+      return response.data.data;
+    } catch (error) { handleApiError(error); }
+  },
+
+  // -----------------------------------------------
+  // CONSOLE ANALYTICS
+  // -----------------------------------------------
+
+  getConsoleOverview: async (
+    projectId: string,
+    params?: { timeRange?: string }
+  ) => {
+    try {
+      const searchParams = new URLSearchParams();
+      if (params?.timeRange) searchParams.append("timeRange", params.timeRange);
+      const response = await apiClient.get<ApiResponse>(
+        `/analytics/${projectId}/console/overview?${searchParams.toString()}`
+      );
+      if (response.data.status === "error") {
+        throw new ApiError(response.data.message || "Failed to fetch console overview", response.status, response.data.errors);
+      }
+      return response.data.data;
+    } catch (error) { handleApiError(error); }
+  },
+
+  getConsoleMessages: async (
+    projectId: string,
+    params?: { timeRange?: string; page?: number; limit?: number; level?: string; search?: string }
+  ) => {
+    try {
+      const searchParams = new URLSearchParams();
+      if (params?.timeRange) searchParams.append("timeRange", params.timeRange);
+      if (params?.page !== undefined) searchParams.append("page", params.page.toString());
+      if (params?.limit !== undefined) searchParams.append("limit", params.limit.toString());
+      if (params?.level) searchParams.append("level", params.level);
+      if (params?.search) searchParams.append("search", params.search);
+      const response = await apiClient.get<ApiResponse>(
+        `/analytics/${projectId}/console/messages?${searchParams.toString()}`
+      );
+      if (response.data.status === "error") {
+        throw new ApiError(response.data.message || "Failed to fetch console messages", response.status, response.data.errors);
+      }
+      return response.data;
+    } catch (error) { handleApiError(error); }
+  },
+
+  getConsoleTimeline: async (
+    projectId: string,
+    params?: { timeRange?: string; granularity?: string }
+  ) => {
+    try {
+      const searchParams = new URLSearchParams();
+      if (params?.timeRange) searchParams.append("timeRange", params.timeRange);
+      if (params?.granularity) searchParams.append("granularity", params.granularity);
+      const response = await apiClient.get<ApiResponse>(
+        `/analytics/${projectId}/console/timeline?${searchParams.toString()}`
+      );
+      if (response.data.status === "error") {
+        throw new ApiError(response.data.message || "Failed to fetch console timeline", response.status, response.data.errors);
+      }
+      return response.data.data;
+    } catch (error) { handleApiError(error); }
+  },
+
+  // -----------------------------------------------
+  // PAGEVIEW ANALYTICS
+  // -----------------------------------------------
+
+  getPageviewOverview: async (
+    projectId: string,
+    params?: { timeRange?: string }
+  ) => {
+    try {
+      const searchParams = new URLSearchParams();
+      if (params?.timeRange) searchParams.append("timeRange", params.timeRange);
+      const response = await apiClient.get<ApiResponse>(
+        `/analytics/${projectId}/pageviews/overview?${searchParams.toString()}`
+      );
+      if (response.data.status === "error") {
+        throw new ApiError(response.data.message || "Failed to fetch pageview overview", response.status, response.data.errors);
+      }
+      return response.data.data;
+    } catch (error) { handleApiError(error); }
+  },
+
+  getPageviewTimeline: async (
+    projectId: string,
+    params?: { timeRange?: string; granularity?: string }
+  ) => {
+    try {
+      const searchParams = new URLSearchParams();
+      if (params?.timeRange) searchParams.append("timeRange", params.timeRange);
+      if (params?.granularity) searchParams.append("granularity", params.granularity);
+      const response = await apiClient.get<ApiResponse>(
+        `/analytics/${projectId}/pageviews/timeline?${searchParams.toString()}`
+      );
+      if (response.data.status === "error") {
+        throw new ApiError(response.data.message || "Failed to fetch pageview timeline", response.status, response.data.errors);
+      }
+      return response.data.data;
+    } catch (error) { handleApiError(error); }
+  },
+
+  getPageviewTopPages: async (
+    projectId: string,
+    params?: { timeRange?: string; limit?: number }
+  ) => {
+    try {
+      const searchParams = new URLSearchParams();
+      if (params?.timeRange) searchParams.append("timeRange", params.timeRange);
+      if (params?.limit !== undefined) searchParams.append("limit", params.limit.toString());
+      const response = await apiClient.get<ApiResponse>(
+        `/analytics/${projectId}/pageviews/top-pages?${searchParams.toString()}`
+      );
+      if (response.data.status === "error") {
+        throw new ApiError(response.data.message || "Failed to fetch top pages", response.status, response.data.errors);
+      }
+      return response.data.data;
+    } catch (error) { handleApiError(error); }
+  },
+
+  getPageviewReferrers: async (
+    projectId: string,
+    params?: { timeRange?: string; limit?: number }
+  ) => {
+    try {
+      const searchParams = new URLSearchParams();
+      if (params?.timeRange) searchParams.append("timeRange", params.timeRange);
+      if (params?.limit !== undefined) searchParams.append("limit", params.limit.toString());
+      const response = await apiClient.get<ApiResponse>(
+        `/analytics/${projectId}/pageviews/referrers?${searchParams.toString()}`
+      );
+      if (response.data.status === "error") {
+        throw new ApiError(response.data.message || "Failed to fetch pageview referrers", response.status, response.data.errors);
+      }
+      return response.data.data;
+    } catch (error) { handleApiError(error); }
+  },
+
+  getPageviewNavigationFlow: async (
+    projectId: string,
+    params?: { timeRange?: string; limit?: number }
+  ) => {
+    try {
+      const searchParams = new URLSearchParams();
+      if (params?.timeRange) searchParams.append("timeRange", params.timeRange);
+      if (params?.limit !== undefined) searchParams.append("limit", params.limit.toString());
+      const response = await apiClient.get<ApiResponse>(
+        `/analytics/${projectId}/pageviews/navigation-flow?${searchParams.toString()}`
+      );
+      if (response.data.status === "error") {
+        throw new ApiError(response.data.message || "Failed to fetch navigation flow", response.status, response.data.errors);
+      }
+      return response.data.data;
+    } catch (error) { handleApiError(error); }
+  },
 };

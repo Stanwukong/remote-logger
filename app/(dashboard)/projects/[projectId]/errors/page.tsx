@@ -12,8 +12,10 @@ import {
   useErrorStats,
   useErrorTrends,
 } from "@/hooks/analytics.hook";
+import { formatCompact, computeChange, resolveTimeRangeParams } from "@/lib/format-utils";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { MetricCard } from "@/components/shared/MetricCard";
+import { Sparkline } from "@/components/shared/Sparkline";
 import { TabLayout } from "@/components/shared/TabLayout";
 import { TimeSeriesChart } from "@/components/shared/TimeSeriesChart";
 import { DistributionChart } from "@/components/shared/DistributionChart";
@@ -76,25 +78,15 @@ const ERROR_TABS = [
 ];
 
 // ---------------------------------------------------------------------------
-// Helper: format compact numbers
-// ---------------------------------------------------------------------------
-
-function formatCompact(value: number): string {
-  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
-  if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`;
-  return value.toLocaleString();
-}
-
-// ---------------------------------------------------------------------------
-// Helper: compute trend direction from percentage
+// Helper: compute trend direction for MetricCard (wraps computeChange)
 // ---------------------------------------------------------------------------
 
 function computeTrend(current: number, previous: number | undefined) {
   if (previous === undefined || previous === 0) return null;
-  const change = ((current - previous) / previous) * 100;
+  const info = computeChange(current, previous);
   return {
-    direction: change > 0 ? ("up" as const) : change < 0 ? ("down" as const) : ("neutral" as const),
-    value: `${Math.abs(change).toFixed(1)}%`,
+    direction: info.direction,
+    value: `${Math.abs(info.value).toFixed(1)}%`,
   };
 }
 
@@ -201,9 +193,10 @@ export default function ErrorAnalyticsPage() {
   const projectId = typeof params?.projectId === "string" ? params.projectId : "";
 
   const selectedTimeRange = useLogHiveStore((s) => s.selectedTimeRange);
+  const customTimeRange = useLogHiveStore((s) => s.customTimeRange);
   const timeRangeParams = useMemo(
-    () => ({ timeRange: selectedTimeRange }),
-    [selectedTimeRange]
+    () => resolveTimeRangeParams(selectedTimeRange, customTimeRange),
+    [selectedTimeRange, customTimeRange]
   );
 
   // Data hooks
@@ -262,6 +255,12 @@ export default function ErrorAnalyticsPage() {
     ?? (topErrors.length > 0 ? topErrors[0]?.name : undefined)
     ?? "None";
 
+  // Sparkline data: error counts from the timeline series
+  const errorSparklineData = useMemo(
+    () => timeline.map((pt) => pt.count ?? 0),
+    [timeline]
+  );
+
   // Loading state
   const isCriticalLoading = statsLoading;
 
@@ -292,6 +291,11 @@ export default function ErrorAnalyticsPage() {
           value={formatCompact(totalErrors)}
           variant="danger"
           icon={<AlertTriangle className="w-4 h-4" />}
+          sparkline={
+            errorSparklineData.length >= 2 ? (
+              <Sparkline data={errorSparklineData} color="var(--status-danger)" />
+            ) : undefined
+          }
         />
         <MetricCard
           label="Error Rate"

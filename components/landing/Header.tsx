@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
@@ -70,6 +71,7 @@ export function Header() {
 
         {/* CTA Group — Desktop */}
         <div className="hidden md:flex items-center gap-3">
+          <ThemeToggle />
           <Button variant="ghost" size="sm" asChild>
             <Link
               href="/login"
@@ -108,6 +110,10 @@ export function Header() {
               </a>
             ))}
             <div className="pt-3 space-y-2 border-t border-border-faint">
+              <div className="flex items-center justify-between py-1">
+                <span className="text-sm text-text-secondary">Theme</span>
+                <ThemeToggle />
+              </div>
               <Button variant="ghost" className="w-full justify-center" asChild>
                 <Link href="/login">Sign In</Link>
               </Button>

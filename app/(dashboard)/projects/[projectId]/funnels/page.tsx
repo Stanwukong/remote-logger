@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useParams } from "next/navigation";
 import { useLogHiveStore } from "@/store/loghive-store";
+import { resolveTimeRangeParams } from "@/lib/format-utils";
 import { useAnalyzeFunnel, usePopularPaths } from "@/hooks/funnel.hook";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { MetricCard } from "@/components/shared/MetricCard";
@@ -368,6 +369,11 @@ export default function FunnelAnalysisPage() {
   const projectId = typeof params?.projectId === "string" ? params.projectId : "";
 
   const selectedTimeRange = useLogHiveStore((s) => s.selectedTimeRange);
+  const customTimeRange = useLogHiveStore((s) => s.customTimeRange);
+  const timeRangeParams = useMemo(
+    () => resolveTimeRangeParams(selectedTimeRange, customTimeRange),
+    [selectedTimeRange, customTimeRange]
+  );
 
   // Step builder state
   const [steps, setSteps] = useState<FunnelStepInput[]>([
@@ -383,7 +389,7 @@ export default function FunnelAnalysisPage() {
   const {
     data: popularPathsRaw,
     isLoading: pathsLoading,
-  } = usePopularPaths(projectId, { limit: 10, timeRange: selectedTimeRange });
+  } = usePopularPaths(projectId, { limit: 10, ...timeRangeParams });
 
   const popularPaths: PopularPath[] = Array.isArray(popularPathsRaw) ? popularPathsRaw : [];
 
@@ -409,9 +415,9 @@ export default function FunnelAnalysisPage() {
 
     analyzeMutation.mutate({
       steps: validSteps.map((s) => ({ eventType: s.eventType.trim() })),
-      timeRange: selectedTimeRange,
+      ...timeRangeParams,
     });
-  }, [steps, selectedTimeRange, analyzeMutation]);
+  }, [steps, timeRangeParams, analyzeMutation]);
 
   const hasValidSteps = steps.filter((s) => s.eventType.trim() !== "").length >= 2;
   const resultSteps: FunnelStepResult[] = funnelResult?.steps ?? [];

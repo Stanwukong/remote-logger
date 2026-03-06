@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { useParams } from "next/navigation";
 import { useProject } from "@/hooks/project.hooks";
 import { useLogSummary } from "@/hooks/log.hooks";
@@ -26,6 +27,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { Project } from "@/types/project.types";
+import { resolveTimeRangeParams } from "@/lib/format-utils";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -129,10 +131,15 @@ export default function ProjectDashboard() {
   const params = useParams<{ projectId: string }>();
   const projectId = typeof params?.projectId === "string" ? params.projectId : "";
   const selectedTimeRange = useLogHiveStore((s) => s.selectedTimeRange);
+  const customTimeRange = useLogHiveStore((s) => s.customTimeRange);
+  const timeRangeParams = useMemo(
+    () => resolveTimeRangeParams(selectedTimeRange, customTimeRange),
+    [selectedTimeRange, customTimeRange]
+  );
 
   const { data: projectData, isLoading: projectLoading } = useProject(projectId);
   // Log summary available for future use
-  useLogSummary(projectId, selectedTimeRange);
+  useLogSummary(projectId, timeRangeParams.timeRange);
   const { data: alertStatsResponse } = useAlertStats(projectId);
 
   if (projectLoading) {

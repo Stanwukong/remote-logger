@@ -1,16 +1,18 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, AlertTriangle, Clock, Hash, Globe } from "lucide-react";
+import { ArrowLeft, AlertTriangle, Clock, Hash, Globe, ChevronRight, Sparkles, CheckCircle2, Circle, Lightbulb } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import { useErrorDetails } from "@/hooks/analytics.hook";
+import { useRootCause } from "@/hooks/useInsights";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { MetricCard } from "@/components/shared/MetricCard";
 import { TimeSeriesChart } from "@/components/shared/TimeSeriesChart";
 import { StackTraceViewer } from "@/components/shared/StackTraceViewer";
 import { JsonTreeViewer } from "@/components/shared/JsonTreeViewer";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { SignalDot } from "@/components/shared/SignalDot";
 import { CHART_COLORS } from "@/lib/charts/observatory-theme";
 
@@ -117,7 +119,10 @@ export default function ErrorDetailPage() {
   const projectId = typeof params?.projectId === "string" ? params.projectId : "";
   const errorId = typeof params?.errorId === "string" ? params.errorId : "";
 
+  const [rcaExpanded, setRcaExpanded] = useState(false);
+
   const { data: detailData, isLoading, error: fetchError } = useErrorDetails(projectId, errorId);
+  const { data: rootCause, isLoading: rcaLoading } = useRootCause(projectId, errorId, rcaExpanded);
 
   const errorDetail: ErrorDetailData | null = detailData ?? null;
 
@@ -315,6 +320,140 @@ export default function ErrorDetailPage() {
           )}
         </div>
       )}
+
+      {/* Root Cause Analysis — Sentry Seer-inspired collapsible section */}
+      <div className="rounded-lg border border-border-subtle bg-bg-surface overflow-hidden">
+        <button
+          onClick={() => setRcaExpanded(!rcaExpanded)}
+          className="w-full flex items-center gap-3 px-5 py-4 hover:bg-bg-elevated/50 transition-colors"
+        >
+          <ChevronRight
+            className={`w-4 h-4 text-text-muted transition-transform duration-200 ${
+              rcaExpanded ? "rotate-90" : ""
+            }`}
+          />
+          <Sparkles className="w-4 h-4 text-signal" />
+          <span className="text-sm font-display font-semibold text-text-primary">
+            Root Cause Analysis
+          </span>
+          <span className="bg-signal/10 text-signal text-[10px] rounded px-1.5 py-0.5 font-medium">
+            AI
+          </span>
+          {rootCause?.confidence && (
+            <Badge
+              variant={
+                rootCause.confidence === "high"
+                  ? "status-ok"
+                  : rootCause.confidence === "medium"
+                  ? "status-warn"
+                  : "status-danger"
+              }
+              className="text-[10px] ml-auto"
+            >
+              {rootCause.confidence} confidence
+            </Badge>
+          )}
+        </button>
+
+        {/* Collapsible content */}
+        <div
+          className={`transition-all duration-300 ease-in-out overflow-hidden ${
+            rcaExpanded ? "max-h-[800px] opacity-100" : "max-h-0 opacity-0"
+          }`}
+        >
+          <div className="px-5 pb-5 border-t border-border-faint">
+            {/* Loading state */}
+            {rcaLoading && (
+              <div className="py-6 flex items-center gap-3">
+                <Sparkles className="w-4 h-4 text-signal" />
+                <span className="text-sm text-text-secondary">Analyzing error patterns</span>
+                <span className="flex gap-1 ml-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-signal animate-ai-dot" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-signal animate-ai-dot [animation-delay:160ms]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-signal animate-ai-dot [animation-delay:320ms]" />
+                </span>
+              </div>
+            )}
+
+            {/* RCA Result — 3-step progressive disclosure */}
+            {rootCause && !rcaLoading && (
+              <div className="pt-4 space-y-4">
+                {/* Step indicators with vertical line */}
+                <div className="relative pl-8 space-y-5">
+                  {/* Vertical connecting line */}
+                  <div className="absolute left-[11px] top-2 bottom-2 w-px bg-border-faint" />
+
+                  {/* Step 1: Analysis */}
+                  <div className="relative">
+                    <div className="absolute -left-8 top-0.5 w-[22px] h-[22px] rounded-full bg-signal/10 border-2 border-signal flex items-center justify-center">
+                      <CheckCircle2 className="w-3 h-3 text-signal" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-text-muted uppercase tracking-wide mb-1">
+                        Analysis
+                      </p>
+                      <p className="text-sm text-text-secondary leading-relaxed whitespace-pre-wrap">
+                        {rootCause.analysis}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Step 2: Source */}
+                  <div className="relative">
+                    <div className="absolute -left-8 top-0.5 w-[22px] h-[22px] rounded-full bg-signal/10 border-2 border-signal flex items-center justify-center">
+                      <CheckCircle2 className="w-3 h-3 text-signal" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-text-muted uppercase tracking-wide mb-1">
+                        Source
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={rootCause.source === "ai" ? "signal" : "outline"}>
+                          {rootCause.source === "ai" ? "Claude AI" : "Statistical Heuristic"}
+                        </Badge>
+                        <Badge
+                          variant={
+                            rootCause.confidence === "high"
+                              ? "status-ok"
+                              : rootCause.confidence === "medium"
+                              ? "status-warn"
+                              : "status-danger"
+                          }
+                        >
+                          {rootCause.confidence} confidence
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Step 3: Recommendation */}
+                  <div className="relative">
+                    <div className="absolute -left-8 top-0.5 w-[22px] h-[22px] rounded-full border-2 border-border-subtle bg-bg-surface flex items-center justify-center">
+                      <Lightbulb className="w-3 h-3 text-text-muted" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-text-muted uppercase tracking-wide mb-1">
+                        Next Steps
+                      </p>
+                      <p className="text-xs text-text-muted">
+                        Review the analysis above and check related logs in the timeline for more context.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Source unavailability fallback banner */}
+                {rootCause.source === "heuristic" && (
+                  <div className="bg-bg-elevated/50 border border-border-faint rounded-lg px-4 py-3 text-xs text-text-muted">
+                    AI insights temporarily unavailable. Showing statistical analysis.
+                    Set <code className="font-mono text-text-secondary">ANTHROPIC_ENABLED=true</code> for AI-powered analysis.
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
 
       {/* Error Timeline Chart */}
       {timelineData.length > 0 && (

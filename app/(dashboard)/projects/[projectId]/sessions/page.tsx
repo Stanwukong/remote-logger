@@ -33,18 +33,11 @@ import {
 } from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { formatDuration, resolveTimeRangeParams } from "@/lib/format-utils";
 
 // ============================================
 // Helpers
 // ============================================
-
-function formatDuration(ms: number): string {
-  if (ms < 1000) return `${Math.round(ms)}ms`;
-  if (ms < 60_000) return `${(ms / 1000).toFixed(1)}s`;
-  const minutes = Math.floor(ms / 60_000);
-  const seconds = Math.round((ms % 60_000) / 1000);
-  return `${minutes}m ${seconds}s`;
-}
 
 function truncateId(id: string, len = 12): string {
   if (id.length <= len) return id;
@@ -80,6 +73,11 @@ export default function SessionsPage() {
   const projectId = typeof params?.projectId === "string" ? params.projectId : "";
   const router = useRouter();
   const selectedTimeRange = useLogHiveStore((s) => s.selectedTimeRange);
+  const customTimeRange = useLogHiveStore((s) => s.customTimeRange);
+  const timeRangeParams = useMemo(
+    () => resolveTimeRangeParams(selectedTimeRange, customTimeRange),
+    [selectedTimeRange, customTimeRange]
+  );
 
   const [page, setPage] = useState(1);
   const limit = 20;
@@ -89,11 +87,9 @@ export default function SessionsPage() {
     data: sessionsData,
     isLoading: sessionsLoading,
     error: sessionsError,
-  } = useSessions(projectId, { page, limit, timeRange: selectedTimeRange });
+  } = useSessions(projectId, { page, limit, ...timeRangeParams });
 
-  const { data: statsData, isLoading: statsLoading } = useSessionStats(projectId, {
-    timeRange: selectedTimeRange,
-  });
+  const { data: statsData, isLoading: statsLoading } = useSessionStats(projectId, timeRangeParams);
 
   const sessions = useMemo(() => {
     if (!sessionsData) return [];

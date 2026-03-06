@@ -318,7 +318,7 @@ export default function ProjectLogsPage() {
   return (
     <div className="h-[calc(100vh-4rem)] flex flex-col bg-bg-base">
       {/* Page Header */}
-      <div className="border-b border-border-subtle bg-bg-surface px-6 pt-4 pb-3">
+      <div className="border-b border-border-subtle px-6 pt-4 pb-3">
         <PageHeader
           title="Log Explorer"
           description="Real-time log monitoring and analysis"
@@ -371,18 +371,8 @@ export default function ProjectLogsPage() {
         />
       </div>
 
-      {/* Structured Query Input */}
-      <div className="px-6 py-3 border-b border-border-subtle bg-bg-surface">
-        <StructuredQueryInput
-          value={structuredQuery}
-          onChange={setStructuredQuery}
-          onSubmit={() => refetch()}
-          placeholder='Search logs... (e.g. level:error AND service:auth "timeout")'
-        />
-      </div>
-
       {/* Observatory Filter Bar */}
-      <div className="px-6 py-3 border-b border-border-subtle bg-bg-surface">
+      <div className="px-6 py-3 border-b border-border-subtle">
         <ObservatoryFilterBar
           filters={filters}
           onFiltersChange={setFilters}

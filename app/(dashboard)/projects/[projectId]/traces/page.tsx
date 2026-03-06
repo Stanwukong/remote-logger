@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useLogHiveStore } from "@/store/loghive-store";
@@ -48,7 +48,8 @@ function formatDuration(ms: number): string {
   return `${minutes}m ${seconds}s`;
 }
 
-function truncateId(id: string, len = 12): string {
+function truncateId(id: string | undefined | null, len = 12): string {
+  if (!id) return "—";
   if (id.length <= len) return id;
   return id.slice(0, len) + "...";
 }
@@ -69,7 +70,7 @@ export default function TracesPage() {
   const [page, setPage] = useState(1);
   const limit = 25;
 
-  const buildParams = useCallback((): Record<string, string> => {
+  const queryParams = useMemo((): Record<string, string> => {
     const p: Record<string, string> = {
       timeRange,
       page: String(page),
@@ -85,7 +86,7 @@ export default function TracesPage() {
     data: tracesResponse,
     isLoading,
     error,
-  } = useTraces(projectId, buildParams());
+  } = useTraces(projectId, queryParams);
 
   const traces: TraceSummary[] = useMemo(() => {
     const raw = tracesResponse?.data;

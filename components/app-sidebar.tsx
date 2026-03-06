@@ -36,6 +36,10 @@ import {
   FileCode,
   LayoutGrid,
   ChevronRight,
+  Wifi,
+  MousePointerClick,
+  Eye,
+  Terminal,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -66,6 +70,10 @@ const projectSubNavItems = [
   { title: "Errors", path: "/errors", icon: Bug },
   { title: "Performance", path: "/performance", icon: Gauge },
   { title: "Web Vitals", path: "/web-vitals", icon: Activity },
+  { title: "Network", path: "/network", icon: Wifi },
+  { title: "Interactions", path: "/interactions", icon: MousePointerClick },
+  { title: "Pageviews", path: "/pageviews", icon: Eye },
+  { title: "Console", path: "/console", icon: Terminal },
   { title: "Sessions", path: "/sessions", icon: Users },
   { title: "Activity Feed", path: "/activity", icon: Radio },
   { title: "Traces", path: "/traces", icon: GitBranch },

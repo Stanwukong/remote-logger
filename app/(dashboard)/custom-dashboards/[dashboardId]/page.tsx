@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   useCustomDashboard,
@@ -14,7 +14,8 @@ import { PageHeader } from "@/components/shared/PageHeader";
 import { MetricCard } from "@/components/shared/MetricCard";
 import { TimeSeriesChart } from "@/components/shared/TimeSeriesChart";
 import { SkeletonDashboard } from "@/components/shared/SkeletonDashboard";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SignalDot } from "@/components/shared/SignalDot";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -33,6 +34,17 @@ import {
   FileText,
   LayoutGrid,
   ArrowLeft,
+  ScrollText,
+  Bug,
+  AlertTriangle,
+  Gauge,
+  Wifi,
+  MousePointerClick,
+  Eye,
+  Terminal,
+  Activity,
+  Zap,
+  Globe,
 } from "lucide-react";
 
 // ---------------------------------------------------------------------------
@@ -67,6 +79,60 @@ interface DashboardDetail {
   updatedAt?: string;
   createdAt?: string;
 }
+
+// ---------------------------------------------------------------------------
+// Data Source Presets
+// ---------------------------------------------------------------------------
+
+interface DataSourcePreset {
+  value: string;
+  label: string;
+  category: string;
+  color: string;
+  icon: React.ReactNode;
+}
+
+const DATA_SOURCE_PRESETS: DataSourcePreset[] = [
+  // General
+  { value: "log-volume", label: "Log Volume", category: "General", color: "var(--signal)", icon: <ScrollText className="w-3.5 h-3.5" /> },
+  { value: "error-count", label: "Error Count", category: "General", color: "var(--status-danger)", icon: <Bug className="w-3.5 h-3.5" /> },
+  { value: "error-rate", label: "Error Rate", category: "General", color: "var(--status-warn)", icon: <AlertTriangle className="w-3.5 h-3.5" /> },
+  { value: "warning-count", label: "Warning Count", category: "General", color: "var(--status-warn)", icon: <AlertTriangle className="w-3.5 h-3.5" /> },
+  { value: "active-alerts", label: "Active Alerts", category: "General", color: "var(--status-danger)", icon: <Zap className="w-3.5 h-3.5" /> },
+  // Network
+  { value: "network-requests", label: "Total Requests", category: "Network", color: "var(--data)", icon: <Wifi className="w-3.5 h-3.5" /> },
+  { value: "network-failure-rate", label: "Failure Rate", category: "Network", color: "var(--status-danger)", icon: <Wifi className="w-3.5 h-3.5" /> },
+  { value: "network-avg-duration", label: "Avg Duration", category: "Network", color: "var(--signal)", icon: <Gauge className="w-3.5 h-3.5" /> },
+  { value: "network-p95-duration", label: "P95 Duration", category: "Network", color: "var(--status-warn)", icon: <Gauge className="w-3.5 h-3.5" /> },
+  { value: "network-errors", label: "Failed Requests", category: "Network", color: "var(--status-danger)", icon: <Wifi className="w-3.5 h-3.5" /> },
+  // Interactions
+  { value: "interaction-total", label: "Total Interactions", category: "Interactions", color: "var(--data)", icon: <MousePointerClick className="w-3.5 h-3.5" /> },
+  { value: "interaction-clicks", label: "Clicks", category: "Interactions", color: "var(--signal)", icon: <MousePointerClick className="w-3.5 h-3.5" /> },
+  { value: "interaction-scrolls", label: "Scrolls", category: "Interactions", color: "var(--data-bright, #6ea8ff)", icon: <Activity className="w-3.5 h-3.5" /> },
+  { value: "interaction-keypresses", label: "Keypresses", category: "Interactions", color: "var(--status-warn)", icon: <Activity className="w-3.5 h-3.5" /> },
+  // Console
+  { value: "console-total", label: "Total Messages", category: "Console", color: "var(--text-muted)", icon: <Terminal className="w-3.5 h-3.5" /> },
+  { value: "console-errors", label: "Console Errors", category: "Console", color: "var(--status-danger)", icon: <Terminal className="w-3.5 h-3.5" /> },
+  { value: "console-warnings", label: "Console Warnings", category: "Console", color: "var(--status-warn)", icon: <Terminal className="w-3.5 h-3.5" /> },
+  { value: "console-error-rate", label: "Error Rate", category: "Console", color: "var(--status-danger)", icon: <Terminal className="w-3.5 h-3.5" /> },
+  // Pageviews
+  { value: "pageview-total", label: "Total Pageviews", category: "Pageviews", color: "var(--signal)", icon: <Eye className="w-3.5 h-3.5" /> },
+  { value: "pageview-unique-pages", label: "Unique Pages", category: "Pageviews", color: "var(--data)", icon: <Globe className="w-3.5 h-3.5" /> },
+  { value: "pageview-bounce-rate", label: "Bounce Rate", category: "Pageviews", color: "var(--status-warn)", icon: <Eye className="w-3.5 h-3.5" /> },
+  // Performance
+  { value: "perf-lcp", label: "LCP", category: "Performance", color: "var(--signal)", icon: <Gauge className="w-3.5 h-3.5" /> },
+  { value: "perf-cls", label: "CLS", category: "Performance", color: "var(--data)", icon: <Gauge className="w-3.5 h-3.5" /> },
+  { value: "perf-inp", label: "INP", category: "Performance", color: "var(--status-warn)", icon: <Gauge className="w-3.5 h-3.5" /> },
+  { value: "perf-fcp", label: "FCP", category: "Performance", color: "#a78bfa", icon: <Gauge className="w-3.5 h-3.5" /> },
+  { value: "perf-ttfb", label: "TTFB", category: "Performance", color: "#f472b6", icon: <Gauge className="w-3.5 h-3.5" /> },
+];
+
+function getPreset(dataSource: string | undefined): DataSourcePreset | undefined {
+  if (!dataSource) return undefined;
+  return DATA_SOURCE_PRESETS.find((p) => p.value === dataSource);
+}
+
+const DATA_SOURCE_CATEGORIES = [...new Set(DATA_SOURCE_PRESETS.map((p) => p.category))];
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -109,21 +175,8 @@ function widgetTypeIcon(type: WidgetType) {
   }
 }
 
-function widgetTypeLabel(type: WidgetType): string {
-  switch (type) {
-    case "metric":
-      return "Metric Card";
-    case "chart":
-      return "Time Series Chart";
-    case "table":
-      return "Data Table";
-    case "text":
-      return "Text / Notes";
-  }
-}
-
 // ---------------------------------------------------------------------------
-// Add Widget Dialog
+// Add Widget Dialog — with categorized data source presets
 // ---------------------------------------------------------------------------
 
 function AddWidgetDialog({
@@ -147,15 +200,22 @@ function AddWidgetDialog({
   const [dataSource, setDataSource] = useState("");
   const [size, setSize] = useState<WidgetSize>("small");
 
+  const handleSelectPreset = useCallback((preset: DataSourcePreset) => {
+    setDataSource(preset.value);
+    if (!title.trim()) setTitle(preset.label);
+  }, [title]);
+
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
       if (!title.trim()) return;
+      const preset = getPreset(dataSource);
       onAdd({
         type,
         title: title.trim(),
         config: {
           dataSource: dataSource.trim() || undefined,
+          color: preset?.color,
         },
         size,
       });
@@ -178,7 +238,7 @@ function AddWidgetDialog({
         className="absolute inset-0 bg-bg-void/80 backdrop-blur-sm"
         onClick={onClose}
       />
-      <div className="relative w-full max-w-lg rounded-lg border border-border-subtle bg-bg-surface shadow-2xl p-6 mx-4">
+      <div className="relative w-full max-w-xl rounded-lg border border-border-subtle bg-bg-surface shadow-2xl p-6 mx-4 max-h-[85vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-lg font-display font-semibold text-text-primary">
             Add Widget
@@ -230,18 +290,50 @@ function AddWidgetDialog({
             />
           </div>
 
-          {/* Data Source */}
+          {/* Data Source — categorized presets */}
           {type !== "text" && (
             <div>
-              <label className="block text-xs text-text-muted uppercase tracking-wider font-medium mb-1.5">
-                Data Source (optional)
+              <label className="block text-xs text-text-muted uppercase tracking-wider font-medium mb-2">
+                Data Source
               </label>
-              <Input
-                value={dataSource}
-                onChange={(e) => setDataSource(e.target.value)}
-                placeholder="e.g., error-count, response-time, log-volume"
-                className="bg-bg-elevated border-border-subtle"
-              />
+              <div className="space-y-3">
+                {DATA_SOURCE_CATEGORIES.map((cat) => {
+                  const presets = DATA_SOURCE_PRESETS.filter((p) => p.category === cat);
+                  return (
+                    <div key={cat}>
+                      <p className="text-[10px] text-text-muted uppercase tracking-widest font-medium mb-1.5">
+                        {cat}
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {presets.map((preset) => (
+                          <button
+                            key={preset.value}
+                            type="button"
+                            onClick={() => handleSelectPreset(preset)}
+                            className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border text-xs transition-all ${
+                              dataSource === preset.value
+                                ? "border-signal bg-signal/10 text-signal"
+                                : "border-border-subtle bg-bg-elevated text-text-secondary hover:border-border-accent hover:text-text-primary"
+                            }`}
+                          >
+                            {preset.icon}
+                            {preset.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              {/* Custom source fallback */}
+              <div className="mt-3">
+                <Input
+                  value={dataSource}
+                  onChange={(e) => setDataSource(e.target.value)}
+                  placeholder="Or type a custom data source..."
+                  className="bg-bg-elevated border-border-subtle text-xs"
+                />
+              </div>
             </div>
           )}
 
@@ -290,7 +382,7 @@ function AddWidgetDialog({
 }
 
 // ---------------------------------------------------------------------------
-// Widget Renderer
+// Widget Renderer — with data source awareness
 // ---------------------------------------------------------------------------
 
 function WidgetRenderer({
@@ -304,16 +396,14 @@ function WidgetRenderer({
   onRemove: () => void;
   onResize: (size: WidgetSize) => void;
 }) {
-  const widgetId = getWidgetId(widget);
   const currentW = widget.position?.w ?? 1;
-
   const currentSize: WidgetSize =
     currentW >= 3 ? "large" : currentW >= 2 ? "medium" : "small";
 
+  const preset = getPreset(widget.config?.dataSource);
+
   return (
-    <div
-      className={`${widgetGridClass(widget)} group relative`}
-    >
+    <div className={`${widgetGridClass(widget)} group relative`}>
       <div className="rounded-lg border border-border-subtle bg-bg-surface overflow-hidden h-full">
         {/* Widget Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-border-subtle bg-bg-surface">
@@ -322,16 +412,20 @@ function WidgetRenderer({
               <GripVertical className="w-4 h-4 text-text-muted cursor-grab shrink-0" />
             )}
             <span className="text-text-muted shrink-0">
-              {widgetTypeIcon(widget.type)}
+              {preset?.icon ?? widgetTypeIcon(widget.type)}
             </span>
             <h4 className="text-xs font-display font-semibold text-text-primary truncate">
               {widget.title}
             </h4>
+            {preset && (
+              <Badge variant="outline" className="text-[9px] px-1.5 py-0 shrink-0">
+                {preset.category}
+              </Badge>
+            )}
           </div>
 
           {isEditing && (
             <div className="flex items-center gap-1">
-              {/* Resize controls */}
               {currentSize !== "small" && (
                 <button
                   onClick={() =>
@@ -371,13 +465,9 @@ function WidgetRenderer({
             <MetricCard
               label={widget.config?.label ?? widget.title}
               value={widget.config?.value ?? "--"}
-              subtitle={widget.config?.subtitle}
+              subtitle={widget.config?.subtitle ?? (preset ? `Source: ${preset.label}` : undefined)}
               variant={widget.config?.variant}
-              icon={
-                widget.config?.icon ? (
-                  <BarChart3 className="w-4 h-4" />
-                ) : undefined
-              }
+              icon={preset?.icon ?? (widget.config?.icon ? <BarChart3 className="w-4 h-4" /> : undefined)}
             />
           )}
 
@@ -391,8 +481,8 @@ function WidgetRenderer({
                       {
                         key: "value",
                         label: widget.title,
-                        color: "var(--chart-1)",
-                        type: "area",
+                        color: preset?.color ?? "var(--signal)",
+                        type: "area" as const,
                       },
                     ]
                   }
@@ -402,8 +492,21 @@ function WidgetRenderer({
               ) : (
                 <div className="flex items-center justify-center h-[200px] text-text-muted text-xs">
                   <div className="text-center">
-                    <LineChart className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                    <p>Configure a data source to display chart data</p>
+                    {preset?.icon ? (
+                      <div className="w-10 h-10 rounded-xl bg-bg-elevated flex items-center justify-center mx-auto mb-3">
+                        {preset.icon}
+                      </div>
+                    ) : (
+                      <LineChart className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                    )}
+                    <p className="font-medium text-text-secondary mb-1">
+                      {preset ? preset.label : "No data source configured"}
+                    </p>
+                    <p className="text-text-muted">
+                      {preset
+                        ? "Chart will populate when data is available"
+                        : "Select a data source to display chart data"}
+                    </p>
                   </div>
                 </div>
               )}
@@ -457,8 +560,21 @@ function WidgetRenderer({
               ) : (
                 <div className="flex items-center justify-center h-[120px] text-text-muted text-xs">
                   <div className="text-center">
-                    <Table2 className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                    <p>Configure a data source to display table data</p>
+                    {preset?.icon ? (
+                      <div className="w-10 h-10 rounded-xl bg-bg-elevated flex items-center justify-center mx-auto mb-3">
+                        {preset.icon}
+                      </div>
+                    ) : (
+                      <Table2 className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                    )}
+                    <p className="font-medium text-text-secondary mb-1">
+                      {preset ? preset.label : "No data source configured"}
+                    </p>
+                    <p className="text-text-muted">
+                      {preset
+                        ? "Table will populate when data is available"
+                        : "Select a data source to display table data"}
+                    </p>
                   </div>
                 </div>
               )}
@@ -733,7 +849,7 @@ export default function CustomDashboardDetailPage() {
           </h3>
           <p className="text-text-muted text-sm max-w-md mx-auto mb-6">
             Add widgets to your dashboard to visualize metrics, charts, tables,
-            and notes. Click "Add Widget" above to get started.
+            and notes. Click &ldquo;Add Widget&rdquo; above to get started.
           </p>
           <Button
             variant="signal"
@@ -750,7 +866,7 @@ export default function CustomDashboardDetailPage() {
       {/* Saving indicator */}
       {(updateLayoutMutation.isPending || updateMutation.isPending) && (
         <div className="fixed bottom-6 right-6 bg-bg-surface border border-border-subtle rounded-lg shadow-xl px-4 py-2 flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-signal animate-pulse" />
+          <SignalDot status="ok" size="sm" pulse />
           <span className="text-xs text-text-secondary">Saving changes...</span>
         </div>
       )}

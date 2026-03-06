@@ -199,7 +199,6 @@ export function TimeSeriesChart({
 
           {showGrid && (
             <CartesianGrid
-              strokeDasharray={GRID_PROPS.strokeDasharray}
               stroke={GRID_PROPS.stroke}
               strokeOpacity={GRID_PROPS.strokeOpacity}
               vertical={false}

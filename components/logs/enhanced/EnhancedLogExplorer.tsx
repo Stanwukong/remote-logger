@@ -204,7 +204,7 @@ export function EnhancedLogExplorer() {
   return (
     <div className="h-[calc(100vh-4rem)] flex flex-col bg-bg-base">
       {/* Header */}
-      <div className="border-b border-border-subtle bg-bg-surface px-6 py-4">
+      <div className="border-b border-border-subtle px-6 py-4">
         <div className="flex items-center justify-between">
           <SectionHeading
             headline="Log Explorer"

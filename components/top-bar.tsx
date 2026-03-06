@@ -12,6 +12,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -40,6 +42,8 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { useWebsocket } from "@/hooks/useWebsocket";
 import { useLogHiveStore } from "@/store/loghive-store";
 import { useProjects } from "@/hooks/project.hooks";
+import { format } from "date-fns";
+import type { DateRange } from "react-day-picker";
 
 // ============================================
 // TYPES
@@ -93,7 +97,13 @@ const REFRESH_INTERVALS = [
 
 const isObjectId = (str: string) => /^[a-f\d]{24}$/i.test(str);
 
-const getTimeRangeLabel = (value: string) => {
+const getTimeRangeLabel = (
+  value: string,
+  customRange?: { start: Date; end: Date } | null
+) => {
+  if (value === "custom" && customRange) {
+    return `${format(customRange.start, "MMM d")} - ${format(customRange.end, "MMM d")}`;
+  }
   return TIME_RANGES.find((range) => range.value === value)?.label || "Custom";
 };
 
@@ -131,10 +141,13 @@ export function TopBar({ onCommandOpen }: TopBarProps) {
 
   // Local state
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
 
   // Zustand store
   const selectedTimeRange = useLogHiveStore((s) => s.selectedTimeRange);
   const setTimeRange = useLogHiveStore((s) => s.setTimeRange);
+  const customTimeRange = useLogHiveStore((s) => s.customTimeRange);
+  const setCustomTimeRange = useLogHiveStore((s) => s.setCustomTimeRange);
   const selectedEnvironment = useLogHiveStore((s) => s.selectedEnvironment);
   const setSelectedEnvironment = useLogHiveStore(
     (s) => s.setSelectedEnvironment
@@ -312,7 +325,7 @@ export function TopBar({ onCommandOpen }: TopBarProps) {
               className="hidden md:flex text-text-secondary hover:text-text-primary"
             >
               <Clock className="w-4 h-4 mr-2" />
-              {getTimeRangeLabel(selectedTimeRange)}
+              {getTimeRangeLabel(selectedTimeRange, customTimeRange)}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -338,7 +351,10 @@ export function TopBar({ onCommandOpen }: TopBarProps) {
             ))}
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onSelect={() => setTimeRange("custom")}
+              onSelect={(e) => {
+                e.preventDefault();
+                setDatePickerOpen(true);
+              }}
               className={
                 selectedTimeRange === "custom"
                   ? "bg-signal/10 text-signal"
@@ -350,6 +366,46 @@ export function TopBar({ onCommandOpen }: TopBarProps) {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+
+        {/* Custom Date Range Popover */}
+        <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
+          <PopoverTrigger asChild>
+            <span className="hidden" />
+          </PopoverTrigger>
+          <PopoverContent
+            className="w-auto p-0 bg-bg-surface border-border-subtle"
+            align="end"
+            sideOffset={8}
+          >
+            <div className="p-3 border-b border-border-subtle">
+              <p className="text-sm font-medium text-text-primary">Select date range</p>
+              <p className="text-xs text-text-muted mt-0.5">
+                {customTimeRange
+                  ? `${format(customTimeRange.start, "MMM d, yyyy")} - ${format(customTimeRange.end, "MMM d, yyyy")}`
+                  : "Pick a start and end date"}
+              </p>
+            </div>
+            <CalendarComponent
+              mode="range"
+              defaultMonth={customTimeRange?.start ?? new Date()}
+              selected={
+                customTimeRange
+                  ? { from: customTimeRange.start, to: customTimeRange.end }
+                  : undefined
+              }
+              onSelect={(range: DateRange | undefined) => {
+                if (range?.from && range?.to) {
+                  setCustomTimeRange({ start: range.from, end: range.to });
+                  setDatePickerOpen(false);
+                } else if (range?.from) {
+                  // Partial selection — wait for end date
+                }
+              }}
+              numberOfMonths={2}
+              disabled={{ after: new Date() }}
+            />
+          </PopoverContent>
+        </Popover>
 
         {/* Environment Filter */}
         <DropdownMenu>

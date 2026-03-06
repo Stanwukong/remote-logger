@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { useParams } from "next/navigation";
 import { useLogHiveStore } from "@/store/loghive-store";
 import { useEnvironmentStats } from "@/hooks/analytics.hook";
@@ -8,6 +9,12 @@ import { MetricCard } from "@/components/shared/MetricCard";
 import { ObservatoryBarChart } from "@/components/shared/ObservatoryBarChart";
 import { SkeletonDashboard } from "@/components/shared/SkeletonDashboard";
 import { SignalDot } from "@/components/shared/SignalDot";
+import {
+  formatDuration,
+  formatPercent as sharedFormatPercent,
+  formatCompact,
+  resolveTimeRangeParams,
+} from "@/lib/format-utils";
 import {
   Globe,
   Server,
@@ -34,25 +41,22 @@ interface EnvironmentEntry {
 }
 
 // ---------------------------------------------------------------------------
-// Helpers
+// Helpers (thin wrappers preserving "--" for missing values)
 // ---------------------------------------------------------------------------
 
 function formatMs(ms: number | undefined | null): string {
   if (ms == null || isNaN(ms)) return "--";
-  if (ms >= 1000) return `${(ms / 1000).toFixed(1)}s`;
-  return `${Math.round(ms)}ms`;
+  return formatDuration(ms);
 }
 
 function formatPercent(val: number | undefined | null): string {
   if (val == null || isNaN(val)) return "--";
-  return `${val.toFixed(1)}%`;
+  return sharedFormatPercent(val);
 }
 
 function formatCount(val: number | undefined | null): string {
   if (val == null || isNaN(val)) return "--";
-  if (val >= 1000000) return `${(val / 1000000).toFixed(1)}M`;
-  if (val >= 1000) return `${(val / 1000).toFixed(1)}K`;
-  return val.toLocaleString();
+  return formatCompact(val);
 }
 
 function envHealthStatus(errorRate: number): "ok" | "warn" | "danger" {
@@ -213,7 +217,11 @@ export default function EnvironmentsPage() {
   const projectId = typeof params?.projectId === "string" ? params.projectId : "";
 
   const selectedTimeRange = useLogHiveStore((s) => s.selectedTimeRange);
-  const timeParams = { timeRange: selectedTimeRange };
+  const customTimeRange = useLogHiveStore((s) => s.customTimeRange);
+  const timeParams = useMemo(
+    () => resolveTimeRangeParams(selectedTimeRange, customTimeRange),
+    [selectedTimeRange, customTimeRange]
+  );
 
   const {
     data: envStatsRaw,

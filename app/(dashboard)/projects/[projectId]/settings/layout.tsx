@@ -72,7 +72,7 @@ export default function ProjectSettingsLayout({
   return (
     <div className="flex min-h-[calc(100vh-4rem)]">
       {/* Left sidebar navigation */}
-      <nav className="w-[220px] shrink-0 border-r border-border-subtle bg-bg-surface/50 p-4 space-y-1">
+      <nav className="w-1/5.5 shrink-0 border-r border-border-subtle  p-4 space-y-1">
         {/* Back link */}
         <Button
           variant="ghost"
@@ -105,7 +105,7 @@ export default function ProjectSettingsLayout({
               key={tab.name}
               href={tabHref}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors duration-150",
+                "flex items-center gap-3 px-3 py-2.5  text-sm font-medium transition-colors duration-150",
                 isActive
                   ? "bg-signal/10 text-signal border-l-2 border-signal"
                   : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated"

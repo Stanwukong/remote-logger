@@ -12,7 +12,7 @@ interface PageHeaderProps {
 
 export function PageHeader({ title, description, actions, badge, className }: PageHeaderProps) {
   return (
-    <div className={cn('flex items-start justify-between gap-4 pb-6', className)}>
+    <div className={cn('flex items-start justify-between gap-4 pb-6 px-4', className)}>
       <div className="space-y-1 min-w-0">
         <div className="flex items-center gap-3">
           <h1 className="text-2xl font-display font-bold text-text-primary tracking-tight truncate">
