@@ -62,14 +62,16 @@ export function Sparkline({
             </defs>
           )}
           <Area
-            type="monotone"
+            type="natural"
             dataKey="value"
             stroke={color}
-            strokeWidth={1.5}
+            strokeWidth={1.75}
             fill={gradient ? `url(#${gradientId})` : "none"}
             fillOpacity={1}
             dot={false}
-            isAnimationActive={false}
+            isAnimationActive={true}
+            animationDuration={600}
+            animationEasing="ease-out"
           />
         </AreaChart>
       </ResponsiveContainer>

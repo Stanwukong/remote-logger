@@ -17,12 +17,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   Settings,
   Loader2,
   Hash,
   Archive,
   ArrowRightLeft,
   Trash2,
+  UserCheck,
 } from "lucide-react";
 import {
   useProject,
@@ -30,6 +40,7 @@ import {
   useDeleteProject,
   useArchiveProject,
   useRestoreProject,
+  useTransferOwnership,
 } from "@/hooks/project.hooks";
 import { SignalDot } from "@/components/shared/SignalDot";
 import { toast } from "sonner";
@@ -222,8 +233,18 @@ function DangerZone({ project, router }: { project: any; router: any }) {
   const archiveProject = useArchiveProject();
   const restoreProject = useRestoreProject();
   const deleteProject = useDeleteProject();
+  const transferOwnership = useTransferOwnership();
+  const [transferOpen, setTransferOpen] = useState(false);
+  const [selectedMemberId, setSelectedMemberId] = useState<string>("");
 
   const handleArchiveToggle = () => {
+    const confirmed = window.confirm(
+      project.isActive
+        ? `Archive "${project.name}"? This will stop log ingestion until restored.`
+        : `Restore "${project.name}"? This will resume log ingestion.`
+    );
+    if (!confirmed) return;
+
     if (project.isActive) {
       archiveProject.mutate(project._id, {
         onSuccess: () => toast.success("Project archived successfully"),
@@ -235,6 +256,30 @@ function DangerZone({ project, router }: { project: any; router: any }) {
         onError: () => toast.error("Failed to restore project"),
       });
     }
+  };
+
+  const handleTransfer = () => {
+    if (!selectedMemberId) return;
+    const currentOwnerId =
+      typeof project.ownerId === "object"
+        ? project.ownerId._id
+        : project.ownerId;
+
+    transferOwnership.mutate(
+      {
+        projectId: project._id,
+        newOwnerId: selectedMemberId,
+        currentOwnerId,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Ownership transferred successfully");
+          setTransferOpen(false);
+          setSelectedMemberId("");
+        },
+        onError: () => toast.error("Failed to transfer ownership"),
+      }
+    );
   };
 
   const handleDelete = () => {
@@ -255,12 +300,15 @@ function DangerZone({ project, router }: { project: any; router: any }) {
     );
   };
 
+  const teamMembers: any[] = project.teamMembers ?? [];
+
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-display font-semibold text-text-primary">
         Danger Zone
       </h2>
 
+      {/* Archive / Restore */}
       <Card className="bg-bg-surface border-border-subtle">
         <CardContent className="p-0">
           <div className="flex items-center justify-between p-5">
@@ -295,6 +343,7 @@ function DangerZone({ project, router }: { project: any; router: any }) {
         </CardContent>
       </Card>
 
+      {/* Transfer Ownership */}
       <Card className="bg-bg-surface border-border-subtle">
         <CardContent className="p-0">
           <div className="flex items-center justify-between p-5">
@@ -311,17 +360,113 @@ function DangerZone({ project, router }: { project: any; router: any }) {
                 </p>
               </div>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-data/30 text-data hover:bg-data/10 hover:border-data/50"
-            >
-              Transfer
-            </Button>
+            <Dialog open={transferOpen} onOpenChange={setTransferOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={teamMembers.length === 0}
+                  className="border-data/30 text-data hover:bg-data/10 hover:border-data/50"
+                >
+                  Transfer
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-bg-surface border-border-subtle">
+                <DialogHeader>
+                  <DialogTitle className="font-display text-text-primary">
+                    Transfer Ownership
+                  </DialogTitle>
+                  <DialogDescription className="text-text-muted">
+                    Select a team member to become the new owner of &quot;{project.name}&quot;.
+                    You will remain as an admin team member.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-2 py-4">
+                  {teamMembers.length === 0 ? (
+                    <p className="text-sm text-text-muted text-center py-4">
+                      No team members to transfer to. Add a team member first.
+                    </p>
+                  ) : (
+                    teamMembers.map((member: any) => {
+                      const user = member.user;
+                      const userId =
+                        typeof user === "object" ? user._id : user;
+                      const name =
+                        typeof user === "object"
+                          ? `${user.firstName || ""} ${user.lastName || ""}`.trim() || user.email
+                          : userId;
+                      const email =
+                        typeof user === "object" ? user.email : "";
+
+                      return (
+                        <button
+                          key={userId}
+                          onClick={() => setSelectedMemberId(userId)}
+                          className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-colors text-left ${
+                            selectedMemberId === userId
+                              ? "border-data bg-data/10"
+                              : "border-border-subtle hover:bg-bg-elevated"
+                          }`}
+                        >
+                          <div className="w-8 h-8 rounded-full bg-bg-elevated border border-border-subtle flex items-center justify-center text-xs font-medium text-text-secondary">
+                            {typeof user === "object"
+                              ? `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`
+                              : "?"}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-text-primary truncate">
+                              {name}
+                            </p>
+                            {email && (
+                              <p className="text-xs text-text-muted truncate">
+                                {email}
+                              </p>
+                            )}
+                          </div>
+                          <Badge
+                            variant="secondary"
+                            className="text-[10px] bg-bg-elevated text-text-muted"
+                          >
+                            {member.role}
+                          </Badge>
+                          {selectedMemberId === userId && (
+                            <UserCheck className="w-4 h-4 text-data shrink-0" />
+                          )}
+                        </button>
+                      );
+                    })
+                  )}
+                </div>
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setTransferOpen(false);
+                      setSelectedMemberId("");
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="signal"
+                    size="sm"
+                    onClick={handleTransfer}
+                    disabled={!selectedMemberId || transferOwnership.isPending}
+                  >
+                    {transferOwnership.isPending && (
+                      <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                    )}
+                    Confirm Transfer
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         </CardContent>
       </Card>
 
+      {/* Delete */}
       <Card className="bg-status-danger/5 border-status-danger/30">
         <CardContent className="p-0">
           <div className="flex items-center justify-between p-5">

@@ -17,8 +17,8 @@ const footerSections = [
     links: [
       { href: "/docs", label: "Documentation" },
       { href: "/sdk", label: "SDK Reference" },
-      { href: "/docs", label: "Changelog" },
-      { href: "/docs", label: "Status Page" },
+      { href: "/changelog", label: "Changelog" },
+      { href: "/status", label: "Status Page" },
     ],
   },
   {

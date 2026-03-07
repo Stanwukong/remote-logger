@@ -49,9 +49,16 @@ interface FunnelResult {
 }
 
 interface PopularPath {
-  path: string[];
+  path: string | string[];
   count: number;
   percentage?: number;
+}
+
+/** Normalize path from backend (string with " → " separator) to array */
+function normalizePath(p: string | string[]): string[] {
+  if (Array.isArray(p)) return p;
+  if (typeof p === "string") return p.split(" → ").filter(Boolean);
+  return [];
 }
 
 // ---------------------------------------------------------------------------
@@ -320,6 +327,7 @@ function PopularPathsSection({ paths }: { paths: PopularPath[] }) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {paths.map((pathItem, index) => {
           const barWidth = Math.max((pathItem.count / maxCount) * 100, 8);
+          const segments = normalizePath(pathItem.path);
 
           return (
             <div
@@ -335,7 +343,7 @@ function PopularPathsSection({ paths }: { paths: PopularPath[] }) {
                 </span>
               </div>
               <div className="flex items-center flex-wrap gap-1 mb-3">
-                {pathItem.path.map((segment, si) => (
+                {segments.map((segment, si) => (
                   <span key={si} className="flex items-center gap-1">
                     {si > 0 && (
                       <ArrowRight className="w-3 h-3 text-text-muted shrink-0" />

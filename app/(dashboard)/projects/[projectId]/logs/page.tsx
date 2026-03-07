@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useParams } from "next/navigation";
 import { useLogHiveStore } from "@/store/loghive-store";
 import { useLogs, useDistinctValues } from "@/hooks/log.hooks";
-import { useWebsocket } from "@/hooks/useWebsocket";
+import { useProjectWebSocket } from "@/hooks/useWebsocket";
 import { logService } from "@/services/log.service";
 import { LogEntry, LogFilters as ApiLogFilters } from "@/types/analytics";
 
@@ -24,6 +24,7 @@ import {
   parseStructuredQuery,
 } from "@/components/shared/StructuredQueryInput";
 import { SavedSearchSelector } from "@/components/shared/SavedSearchSelector";
+import { NLQueryBar } from "@/components/shared/NLQueryBar";
 
 // UI
 import { Button } from "@/components/ui/button";
@@ -33,7 +34,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { RefreshCw, Download, Loader2, Activity } from "lucide-react";
+import { RefreshCw, Download, Loader2, Activity, Sparkles } from "lucide-react";
+import { useAskQuestion } from "@/hooks/useInsights";
 import { toast } from "sonner";
 
 // ---------------------------------------------------------------------------
@@ -74,6 +76,9 @@ export default function ProjectLogsPage() {
   const [structuredQuery, setStructuredQuery] = useState("");
   const [selectedLogIndex, setSelectedLogIndex] = useState<number>(-1);
   const [isLiveTail, setIsLiveTail] = useState(false);
+  const [showNLQ, setShowNLQ] = useState(false);
+  const [nlqResponse, setNlqResponse] = useState<{ answer: string; source: "ai" | "heuristic" } | null>(null);
+  const askQuestion = useAskQuestion();
 
   const listContainerRef = useRef<HTMLDivElement>(null);
 
@@ -150,15 +155,18 @@ export default function ProjectLogsPage() {
   const { data: logsData, isLoading, refetch } = useLogs(projectId, apiFilters);
   const logs = useMemo(() => logsData?.logs ?? [], [logsData]);
 
-  // 7. Live tail via WebSocket
-  const { lastMessage } = useWebsocket();
+  // 7. Live tail via WebSocket (Socket.io)
+  const { lastMessage } = useProjectWebSocket(projectId);
 
   useEffect(() => {
     if (!isLiveTail || !lastMessage) return;
     try {
-      const msg = lastMessage.data;
-      if (msg?.type === "new_log" && msg?.projectId === projectId) {
-        refetch();
+      // Socket.io messages arrive as { type, payload }
+      if (lastMessage.type === "NEW_LOG") {
+        const log = lastMessage.payload?.log;
+        if (!log || log.projectId === projectId || !log.projectId) {
+          refetch();
+        }
       }
     } catch {
       // Silently ignore parse errors
@@ -331,6 +339,17 @@ export default function ProjectLogsPage() {
                 onLoadSearch={handleLoadSearch}
               />
 
+              <Button
+                variant={showNLQ ? "signal" : "outline"}
+                size="sm"
+                onClick={() => setShowNLQ(!showNLQ)}
+                className={showNLQ ? "" : "border-border-faint"}
+                title="Ask AI about your logs"
+              >
+                <Sparkles className="w-4 h-4 mr-2" />
+                Ask AI
+              </Button>
+
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -382,6 +401,30 @@ export default function ProjectLogsPage() {
           onToggleLiveTail={() => setIsLiveTail(!isLiveTail)}
         />
       </div>
+
+      {/* NLQ Bar */}
+      {showNLQ && (
+        <div className="px-6 py-3 border-b border-border-subtle bg-bg-surface/50">
+          <NLQueryBar
+            onSubmit={(question) => {
+              askQuestion.mutate(
+                { projectId, question },
+                {
+                  onSuccess: (data: any) => {
+                    setNlqResponse({
+                      answer: data?.answer || data?.data?.answer || "No answer available.",
+                      source: data?.source || data?.data?.source || "heuristic",
+                    });
+                  },
+                }
+              );
+            }}
+            response={nlqResponse}
+            isLoading={askQuestion.isPending}
+            placeholder="Ask about your logs... e.g. 'What caused the error spike?'"
+          />
+        </div>
+      )}
 
       {/* Results Summary Strip */}
       <div className="px-6 py-2 bg-bg-elevated border-b border-border-faint">

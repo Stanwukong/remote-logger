@@ -8,7 +8,9 @@ import { Project } from "./project.types";
 export type WebSocketEventType =
   | "INITIAL_DATA"
   | "NEW_LOG"
+  | "NEW_ALERT"
   | "ALERT_TRIGGERED"
+  | "ALERT_RESOLVED"
   | "NOTIFICATION"
   | "PROJECT_UPDATED"
   | "SUBSCRIBE_TO_PROJECT"
@@ -17,6 +19,8 @@ export type WebSocketEventType =
 export interface WebSocketMessage<T = any> {
   type: WebSocketEventType;
   payload: T;
+  /** Client-side timestamp of when the message was received */
+  timestamp?: number;
 }
 
 export interface InitialDataPayload {

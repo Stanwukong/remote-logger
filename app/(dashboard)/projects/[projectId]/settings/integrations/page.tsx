@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams } from "next/navigation";
 import {
   Card,
@@ -18,25 +18,243 @@ import {
   Zap,
   Mail,
   Webhook,
-  Plus,
-  Trash2,
   Check,
+  Play,
+  AlertCircle,
 } from "lucide-react";
-import { useProject, useUpdateProject } from "@/hooks/project.hooks";
+import { useProject } from "@/hooks/project.hooks";
 import { toast } from "sonner";
 import { SignalDot } from "@/components/shared/SignalDot";
+
+// Validation helpers
+function isValidUrl(value: string): boolean {
+  try {
+    new URL(value);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function isValidEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+
+function validateEmails(value: string): { valid: boolean; errors: string[] } {
+  if (!value.trim()) return { valid: true, errors: [] };
+  const emails = value.split(",").map((e) => e.trim()).filter(Boolean);
+  const errors: string[] = [];
+  for (const email of emails) {
+    if (!isValidEmail(email)) {
+      errors.push(`"${email}" is not a valid email address`);
+    }
+  }
+  return { valid: errors.length === 0, errors };
+}
+
+type TestingState = {
+  slack: boolean;
+  email: boolean;
+  webhook: boolean;
+};
 
 export default function IntegrationSettingsPage() {
   const params = useParams<{ projectId: string }>();
   const projectId =
     typeof params?.projectId === "string" ? params.projectId : "";
   const { data: projectData, isLoading } = useProject(projectId);
-  const updateProject = useUpdateProject();
 
   const [slackWebhookUrl, setSlackWebhookUrl] = useState("");
   const [emailRecipients, setEmailRecipients] = useState("");
   const [webhookUrl, setWebhookUrl] = useState("");
   const [saving, setSaving] = useState(false);
+  const [initialized, setInitialized] = useState(false);
+  const [testing, setTesting] = useState<TestingState>({
+    slack: false,
+    email: false,
+    webhook: false,
+  });
+
+  // Validation error states
+  const [slackError, setSlackError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [webhookError, setWebhookError] = useState("");
+
+  const project = projectData?.project;
+
+  // Pre-fill form fields from existing project settings
+  useEffect(() => {
+    if (project && !initialized) {
+      const settings = project.integrationSettings;
+      if (settings) {
+        setSlackWebhookUrl(settings.slack?.webhookUrl || "");
+        setEmailRecipients(
+          settings.email?.recipients?.join(", ") || ""
+        );
+        setWebhookUrl(settings.webhook?.url || "");
+      }
+      setInitialized(true);
+    }
+  }, [project, initialized]);
+
+  // Validate on change
+  const handleSlackChange = useCallback((value: string) => {
+    setSlackWebhookUrl(value);
+    if (value && !isValidUrl(value)) {
+      setSlackError("Please enter a valid URL");
+    } else {
+      setSlackError("");
+    }
+  }, []);
+
+  const handleEmailChange = useCallback((value: string) => {
+    setEmailRecipients(value);
+    if (value) {
+      const { errors } = validateEmails(value);
+      setEmailError(errors.length > 0 ? errors[0] : "");
+    } else {
+      setEmailError("");
+    }
+  }, []);
+
+  const handleWebhookChange = useCallback((value: string) => {
+    setWebhookUrl(value);
+    if (value && !isValidUrl(value)) {
+      setWebhookError("Please enter a valid URL");
+    } else {
+      setWebhookError("");
+    }
+  }, []);
+
+  const handleSave = async () => {
+    // Run validation before saving
+    let hasErrors = false;
+
+    if (slackWebhookUrl && !isValidUrl(slackWebhookUrl)) {
+      setSlackError("Please enter a valid URL");
+      hasErrors = true;
+    }
+    if (emailRecipients) {
+      const { valid, errors } = validateEmails(emailRecipients);
+      if (!valid) {
+        setEmailError(errors[0]);
+        hasErrors = true;
+      }
+    }
+    if (webhookUrl && !isValidUrl(webhookUrl)) {
+      setWebhookError("Please enter a valid URL");
+      hasErrors = true;
+    }
+
+    if (hasErrors) {
+      toast.error("Please fix validation errors before saving");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const { apiClient } = await import("@/services/config");
+      await apiClient.put(`/projects/${projectId}/integration-settings`, {
+        slack: { webhookUrl: slackWebhookUrl || undefined },
+        email: {
+          recipients: emailRecipients
+            ? emailRecipients
+                .split(",")
+                .map((e) => e.trim())
+                .filter(Boolean)
+            : [],
+        },
+        webhook: { url: webhookUrl || undefined },
+      });
+      toast.success("Integration settings saved");
+    } catch (err: any) {
+      toast.error(
+        err?.response?.data?.message ||
+          err?.message ||
+          "Failed to save integration settings"
+      );
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleTest = async (type: "slack" | "email" | "webhook") => {
+    // Validate before testing
+    if (type === "slack") {
+      if (!slackWebhookUrl) {
+        toast.error("Enter a Slack webhook URL first");
+        return;
+      }
+      if (!isValidUrl(slackWebhookUrl)) {
+        toast.error("Slack webhook URL is not a valid URL");
+        return;
+      }
+    }
+
+    if (type === "email") {
+      if (!emailRecipients) {
+        toast.error("Enter at least one email recipient first");
+        return;
+      }
+      const { valid, errors } = validateEmails(emailRecipients);
+      if (!valid) {
+        toast.error(errors[0]);
+        return;
+      }
+    }
+
+    if (type === "webhook") {
+      if (!webhookUrl) {
+        toast.error("Enter a webhook URL first");
+        return;
+      }
+      if (!isValidUrl(webhookUrl)) {
+        toast.error("Webhook URL is not a valid URL");
+        return;
+      }
+    }
+
+    setTesting((prev) => ({ ...prev, [type]: true }));
+
+    try {
+      const { apiClient } = await import("@/services/config");
+      const configPayload: Record<string, any> = {};
+
+      if (type === "slack") {
+        configPayload.webhookUrl = slackWebhookUrl;
+      } else if (type === "email") {
+        configPayload.recipients = emailRecipients
+          .split(",")
+          .map((e) => e.trim())
+          .filter(Boolean);
+      } else if (type === "webhook") {
+        configPayload.url = webhookUrl;
+      }
+
+      const response = await apiClient.post(
+        `/integrations/${projectId}/test`,
+        { type, config: configPayload }
+      );
+
+      if (response.data?.status === "success") {
+        toast.success(
+          response.data.message || `${type} integration test successful`
+        );
+      } else {
+        toast.error(
+          response.data?.message || `${type} integration test failed`
+        );
+      }
+    } catch (err: any) {
+      const errorMessage =
+        err?.response?.data?.message ||
+        err?.message ||
+        `Failed to test ${type} integration`;
+      toast.error(errorMessage);
+    } finally {
+      setTesting((prev) => ({ ...prev, [type]: false }));
+    }
+  };
 
   if (isLoading) {
     return (
@@ -46,8 +264,6 @@ export default function IntegrationSettingsPage() {
       </div>
     );
   }
-
-  const project = projectData?.project;
 
   if (!project) {
     return (
@@ -60,27 +276,6 @@ export default function IntegrationSettingsPage() {
       </div>
     );
   }
-
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      const { apiClient } = await import("@/services/config");
-      await apiClient.put(`/projects/${projectId}/integration-settings`, {
-        slack: { webhookUrl: slackWebhookUrl || undefined },
-        email: {
-          recipients: emailRecipients
-            ? emailRecipients.split(",").map((e) => e.trim())
-            : [],
-        },
-        webhook: { url: webhookUrl || undefined },
-      });
-      toast.success("Integration settings saved");
-    } catch (err: any) {
-      toast.error(err?.message || "Failed to save integration settings");
-    } finally {
-      setSaving(false);
-    }
-  };
 
   return (
     <div className="space-y-6 max-w-2xl">
@@ -133,10 +328,34 @@ export default function IntegrationSettingsPage() {
             <Input
               id="slackUrl"
               value={slackWebhookUrl}
-              onChange={(e) => setSlackWebhookUrl(e.target.value)}
+              onChange={(e) => handleSlackChange(e.target.value)}
               placeholder="https://hooks.slack.com/services/..."
-              className="bg-bg-elevated border-border-subtle text-text-primary placeholder:text-text-muted focus:border-signal focus:ring-signal/20 font-mono text-sm"
+              className={`bg-bg-elevated border-border-subtle text-text-primary placeholder:text-text-muted focus:border-signal focus:ring-signal/20 font-mono text-sm ${
+                slackError ? "border-status-danger focus:border-status-danger" : ""
+              }`}
             />
+            {slackError && (
+              <p className="text-xs text-status-danger flex items-center gap-1">
+                <AlertCircle className="w-3 h-3" />
+                {slackError}
+              </p>
+            )}
+          </div>
+          <div className="flex justify-end">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleTest("slack")}
+              disabled={testing.slack || !slackWebhookUrl}
+              className="border-border-subtle text-text-secondary hover:text-text-primary hover:bg-bg-elevated"
+            >
+              {testing.slack ? (
+                <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+              ) : (
+                <Play className="w-3.5 h-3.5 mr-1.5" />
+              )}
+              Test
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -172,19 +391,49 @@ export default function IntegrationSettingsPage() {
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="space-y-2">
-            <Label htmlFor="emailRecipients" className="text-text-secondary text-sm">
+            <Label
+              htmlFor="emailRecipients"
+              className="text-text-secondary text-sm"
+            >
               Recipients
             </Label>
             <Input
               id="emailRecipients"
               value={emailRecipients}
-              onChange={(e) => setEmailRecipients(e.target.value)}
+              onChange={(e) => handleEmailChange(e.target.value)}
               placeholder="dev@example.com, ops@example.com"
-              className="bg-bg-elevated border-border-subtle text-text-primary placeholder:text-text-muted focus:border-signal focus:ring-signal/20"
+              className={`bg-bg-elevated border-border-subtle text-text-primary placeholder:text-text-muted focus:border-signal focus:ring-signal/20 ${
+                emailError
+                  ? "border-status-danger focus:border-status-danger"
+                  : ""
+              }`}
             />
-            <p className="text-xs text-text-muted">
-              Separate multiple emails with commas
-            </p>
+            {emailError ? (
+              <p className="text-xs text-status-danger flex items-center gap-1">
+                <AlertCircle className="w-3 h-3" />
+                {emailError}
+              </p>
+            ) : (
+              <p className="text-xs text-text-muted">
+                Separate multiple emails with commas
+              </p>
+            )}
+          </div>
+          <div className="flex justify-end">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleTest("email")}
+              disabled={testing.email || !emailRecipients}
+              className="border-border-subtle text-text-secondary hover:text-text-primary hover:bg-bg-elevated"
+            >
+              {testing.email ? (
+                <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+              ) : (
+                <Play className="w-3.5 h-3.5 mr-1.5" />
+              )}
+              Test
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -226,10 +475,36 @@ export default function IntegrationSettingsPage() {
             <Input
               id="webhookUrl"
               value={webhookUrl}
-              onChange={(e) => setWebhookUrl(e.target.value)}
+              onChange={(e) => handleWebhookChange(e.target.value)}
               placeholder="https://your-service.com/webhook"
-              className="bg-bg-elevated border-border-subtle text-text-primary placeholder:text-text-muted focus:border-signal focus:ring-signal/20 font-mono text-sm"
+              className={`bg-bg-elevated border-border-subtle text-text-primary placeholder:text-text-muted focus:border-signal focus:ring-signal/20 font-mono text-sm ${
+                webhookError
+                  ? "border-status-danger focus:border-status-danger"
+                  : ""
+              }`}
             />
+            {webhookError && (
+              <p className="text-xs text-status-danger flex items-center gap-1">
+                <AlertCircle className="w-3 h-3" />
+                {webhookError}
+              </p>
+            )}
+          </div>
+          <div className="flex justify-end">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleTest("webhook")}
+              disabled={testing.webhook || !webhookUrl}
+              className="border-border-subtle text-text-secondary hover:text-text-primary hover:bg-bg-elevated"
+            >
+              {testing.webhook ? (
+                <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+              ) : (
+                <Play className="w-3.5 h-3.5 mr-1.5" />
+              )}
+              Test
+            </Button>
           </div>
         </CardContent>
       </Card>

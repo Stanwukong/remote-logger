@@ -51,3 +51,20 @@ export const useChangePassword = () => {
       userService.changePassword(data),
   });
 };
+
+// ============================================
+// GDPR HOOKS
+// ============================================
+
+export const useExportData = () => {
+  return useMutation({
+    mutationFn: () => userService.exportData(),
+  });
+};
+
+export const useDeleteAccount = () => {
+  return useMutation({
+    mutationFn: (confirmEmail: string) =>
+      userService.deleteAccount(confirmEmail),
+  });
+};

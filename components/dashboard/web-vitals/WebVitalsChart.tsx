@@ -12,7 +12,6 @@ import {
 } from "recharts";
 import {
   CHART_COLORS,
-  TOOLTIP_STYLES,
   GRID_PROPS,
   AXIS_PROPS,
 } from "@/lib/charts/observatory-theme";
@@ -39,6 +38,32 @@ const THRESHOLDS: Record<string, { good: number; poor: number }> = {
 function formatUnit(vital: string, value: number): string {
   if (vital === "CLS") return value.toFixed(3);
   return `${Math.round(value)}ms`;
+}
+
+function CustomTooltip({ active, payload, label }: any) {
+  if (!active || !payload || !payload[0]) return null;
+
+  const value = payload[0].value;
+  const vital = payload[0].payload.vital;
+
+  return (
+    <div
+      className="rounded-lg border border-border-subtle/60 p-3 text-sm"
+      style={{
+        backgroundColor: "rgba(11, 18, 32, 0.85)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        boxShadow:
+          "0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255,255,255,0.04)",
+        fontVariantNumeric: "tabular-nums",
+      }}
+    >
+      <div className="text-text-muted mb-1">{label}</div>
+      <div className="text-text-primary font-medium">
+        {vital}: {formatUnit(vital, value)}
+      </div>
+    </div>
+  );
 }
 
 export function WebVitalsChart({ data, selectedVital }: WebVitalsChartProps) {
@@ -103,6 +128,28 @@ export function WebVitalsChart({ data, selectedVital }: WebVitalsChartProps) {
                   stopOpacity={0.02}
                 />
               </linearGradient>
+              <filter id="vitalGlow" height="200%">
+                <feGaussianBlur
+                  in="SourceGraphic"
+                  stdDeviation="3"
+                  result="blur"
+                />
+                <feFlood
+                  floodColor={CHART_COLORS.signal}
+                  floodOpacity="0.35"
+                  result="color"
+                />
+                <feComposite
+                  in="color"
+                  in2="blur"
+                  operator="in"
+                  result="shadow"
+                />
+                <feMerge>
+                  <feMergeNode in="shadow" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
             </defs>
             <CartesianGrid {...GRID_PROPS} />
             <XAxis dataKey="time" {...AXIS_PROPS} />
@@ -111,11 +158,12 @@ export function WebVitalsChart({ data, selectedVital }: WebVitalsChartProps) {
               tickFormatter={(val) => formatUnit(selectedVital, val)}
             />
             <Tooltip
-              {...TOOLTIP_STYLES}
-              formatter={(value: number | string) => [
-                formatUnit(selectedVital, Number(value)),
-                `Avg ${selectedVital}`,
-              ]}
+              content={<CustomTooltip />}
+              cursor={{
+                stroke: "var(--text-muted)",
+                strokeOpacity: 0.3,
+                strokeWidth: 1,
+              }}
             />
 
             {/* Threshold reference lines */}
@@ -154,13 +202,17 @@ export function WebVitalsChart({ data, selectedVital }: WebVitalsChartProps) {
               stroke={CHART_COLORS.signal}
               strokeWidth={2}
               fill="url(#signalGradient)"
+              filter="url(#vitalGlow)"
               dot={false}
               activeDot={{
                 r: 5,
                 fill: CHART_COLORS.signal,
                 stroke: "var(--bg-surface)",
                 strokeWidth: 2,
+                style: { filter: "drop-shadow(0 0 6px var(--signal))" },
               }}
+              animationDuration={800}
+              animationEasing="ease-out"
             />
           </AreaChart>
         </ResponsiveContainer>

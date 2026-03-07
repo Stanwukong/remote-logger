@@ -128,7 +128,7 @@ export default function ProjectAlertsPage() {
   return (
     <div className="flex flex-col h-full bg-bg-base">
       {/* Header */}
-      <div className="shrink-0 px-6 pt-6 bg-bg-surface border-b border-border-subtle">
+      <div className="shrink-0 px-6 pt-6 border-b border-border-subtle">
         <PageHeader
           title={`${projectName} Alerts`}
           description="Monitor alert events, manage rules, and review AI suggestions for this project"

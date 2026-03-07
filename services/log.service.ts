@@ -215,22 +215,45 @@ export const logService = {
     filters: LogFilters = {}
   ) => {
     try {
+      // Build export body: pick only fields the ExportLogsQueryDTO expects
+      // and override limit to allow up to 10000 entries for export
+      const exportBody: Record<string, any> = { format };
+      if (filters.levels && filters.levels.length > 0) exportBody.levels = filters.levels;
+      if (filters.services && filters.services.length > 0) exportBody.services = filters.services;
+      if ((filters as any).environments && (filters as any).environments.length > 0) {
+        exportBody.environments = (filters as any).environments;
+      }
+      if (filters.search) exportBody.search = filters.search;
+      if (filters.startDate) exportBody.startDate = filters.startDate;
+      // endDate defaults to now on the backend if not provided
+      exportBody.limit = 10000;
+
       const response = await apiClient.post(
         `/${projectId}/logs/export`,
-        {
-          format,
-          ...filters,
-        },
+        exportBody,
         {
           responseType: "blob",
         }
       );
 
+      // Determine filename from Content-Disposition header or generate a fallback
+      let filename = `monita-logs-${projectId}.${format}`;
+      const disposition = response.headers["content-disposition"];
+      if (disposition) {
+        const match = disposition.match(/filename="?([^";\n]+)"?/);
+        if (match && match[1]) {
+          filename = match[1];
+        }
+      }
+
       // Create download link
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const blob = new Blob([response.data], {
+        type: format === "csv" ? "text/csv" : "application/json",
+      });
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `logs-${projectId}-${new Date().toISOString().split("T")[0]}.${format}`);
+      link.setAttribute("download", filename);
       document.body.appendChild(link);
       link.click();
       link.remove();

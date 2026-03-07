@@ -7,7 +7,7 @@ import {
   useActivityFeed,
   useActivityStats,
 } from "@/hooks/analytics.hook";
-import { useWebsocket } from "@/hooks/useWebsocket";
+import { useProjectWebSocket } from "@/hooks/useWebsocket";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { MetricCard } from "@/components/shared/MetricCard";
 import { SignalDot } from "@/components/shared/SignalDot";
@@ -119,9 +119,8 @@ export default function ActivityPage() {
   const feedEndRef = useRef<HTMLDivElement>(null);
   const limit = 50;
 
-  // WebSocket
-  const { connectionStatus, lastMessage } = useWebsocket();
-  const isConnected = connectionStatus === "connected";
+  // WebSocket (Socket.io via project room)
+  const { connectionStatus, lastMessage, isConnected } = useProjectWebSocket(projectId);
 
   // Data hooks
   const {
@@ -164,25 +163,28 @@ export default function ActivityPage() {
     return statsData;
   }, [statsData]);
 
-  // Handle WebSocket messages
+  // Handle WebSocket messages (Socket.io format: { type, payload })
   useEffect(() => {
     if (!lastMessage || !liveMode) return;
 
-    const data = lastMessage.data;
-    if (!data) return;
+    // Only handle NEW_LOG messages
+    if (lastMessage.type !== "NEW_LOG") return;
+
+    const log = lastMessage.payload?.log;
+    if (!log) return;
 
     // Check if this message is a log event for our project
-    const eventProjectId = data.projectId || data.project_id;
+    const eventProjectId = log.projectId || log.project_id;
     if (eventProjectId && eventProjectId !== projectId) return;
 
     const newEvent: ActivityEvent = {
-      _id: data._id || data.id || `ws-${Date.now()}-${Math.random()}`,
-      timestamp: data.timestamp || new Date().toISOString(),
-      level: data.level || "info",
-      message: data.message || data.msg || "New event",
-      service: data.service,
-      eventType: data.eventType || data.type,
-      environment: data.environment,
+      _id: log._id || log.id || `ws-${Date.now()}-${Math.random()}`,
+      timestamp: log.timestamp || new Date().toISOString(),
+      level: log.level || "info",
+      message: log.message || log.msg || "New event",
+      service: log.service,
+      eventType: log.eventType || log.type,
+      environment: log.environment,
       projectId: eventProjectId,
     };
 

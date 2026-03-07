@@ -1,7 +1,16 @@
+"use client";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 import type { LogEntry } from "@/types/analytics"
+import {
+  CHART_COLORS,
+  GRID_PROPS,
+  AXIS_PROPS,
+  ANIMATION_CONFIG,
+  CURSOR_LINE_PROPS,
+} from "@/lib/charts/observatory-theme"
 
 interface ErrorsTabProps {
   logs: LogEntry[]
@@ -43,28 +52,101 @@ export function ErrorsTab({ logs }: ErrorsTabProps) {
         <CardContent>
           <div className="h-64 md:h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={errorChartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  dataKey="time" 
-                  tick={{ fontSize: 12 }}
+              <LineChart data={errorChartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                <defs>
+                  <filter id="errorsGlow" height="200%">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+                    <feFlood floodColor={CHART_COLORS.danger} floodOpacity="0.35" result="color" />
+                    <feComposite in="color" in2="blur" operator="in" result="shadow" />
+                    <feMerge><feMergeNode in="shadow" /><feMergeNode in="SourceGraphic" /></feMerge>
+                  </filter>
+                  <filter id="warningsGlow" height="200%">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+                    <feFlood floodColor={CHART_COLORS.warn} floodOpacity="0.35" result="color" />
+                    <feComposite in="color" in2="blur" operator="in" result="shadow" />
+                    <feMerge><feMergeNode in="shadow" /><feMergeNode in="SourceGraphic" /></feMerge>
+                  </filter>
+                </defs>
+                <CartesianGrid
+                  stroke={GRID_PROPS.stroke}
+                  strokeOpacity={GRID_PROPS.strokeOpacity}
+                  vertical={false}
+                />
+                <XAxis
+                  dataKey="time"
+                  {...AXIS_PROPS}
+                  stroke={CHART_COLORS.grid}
                   interval="preserveStartEnd"
                 />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip />
-                <Line 
-                  type="monotone" 
-                  dataKey="errors" 
-                  stroke="hsl(var(--destructive))" 
-                  strokeWidth={2} 
-                  dot={{ r: 3 }}
+                <YAxis
+                  {...AXIS_PROPS}
+                  stroke={CHART_COLORS.grid}
+                  width={40}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="warnings" 
-                  stroke="hsl(var(--warning))" 
+                <Tooltip
+                  content={({ active, payload, label }) => {
+                    if (!active || !payload?.length) return null;
+                    return (
+                      <div
+                        className="rounded-lg border border-border-subtle/60 p-3 text-sm"
+                        style={{
+                          backgroundColor: "rgba(11, 18, 32, 0.85)",
+                          backdropFilter: "blur(12px)",
+                          WebkitBackdropFilter: "blur(12px)",
+                          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255,255,255,0.04)",
+                          fontVariantNumeric: "tabular-nums",
+                        }}
+                      >
+                        <p className="text-text-muted text-[11px] mb-1.5 font-mono">{label}</p>
+                        <div className="space-y-1">
+                          {payload.map((entry: any, i: number) => (
+                            <div key={i} className="flex items-center justify-between gap-4">
+                              <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color, boxShadow: `0 0 6px ${entry.color}` }} />
+                                <span className="text-text-secondary text-xs">{entry.name}</span>
+                              </div>
+                              <span className="text-text-primary font-semibold font-mono text-xs">
+                                {entry.value?.toLocaleString()}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  }}
+                  cursor={CURSOR_LINE_PROPS}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="errors"
+                  name="Errors"
+                  stroke={CHART_COLORS.danger}
                   strokeWidth={2}
-                  dot={{ r: 3 }}
+                  dot={false}
+                  activeDot={{
+                    r: 5, strokeWidth: 2,
+                    stroke: CHART_COLORS.danger,
+                    fill: "var(--bg-surface)",
+                    style: { filter: `drop-shadow(0 0 6px ${CHART_COLORS.danger})` },
+                  }}
+                  filter="url(#errorsGlow)"
+                  {...ANIMATION_CONFIG}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="warnings"
+                  name="Warnings"
+                  stroke={CHART_COLORS.warn}
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={{
+                    r: 5, strokeWidth: 2,
+                    stroke: CHART_COLORS.warn,
+                    fill: "var(--bg-surface)",
+                    style: { filter: `drop-shadow(0 0 6px ${CHART_COLORS.warn})` },
+                  }}
+                  filter="url(#warningsGlow)"
+                  {...ANIMATION_CONFIG}
                 />
               </LineChart>
             </ResponsiveContainer>

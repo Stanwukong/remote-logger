@@ -175,15 +175,9 @@ export const useBulkDeleteProjects = () => {
 export const useArchiveProject = () => {
   return useMutation({
     mutationFn: (projectId: string) => projectService.archiveProject(projectId),
-    onSuccess: (archivedProject) => {
-      // Invalidate project list and summary/analytics
+    onSuccess: (_data, projectId) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.lists({}) });
-      if (archivedProject) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.details(archivedProject.project._id),
-        });
-      }
-
+      queryClient.invalidateQueries({ queryKey: queryKeys.details(projectId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.summary() });
     },
   });
@@ -195,14 +189,9 @@ export const useArchiveProject = () => {
 export const useRestoreProject = () => {
   return useMutation({
     mutationFn: (projectId: string) => projectService.restoreProject(projectId),
-    onSuccess: (restoredProject) => {
-      // Invalidate project list and summary/analytics
+    onSuccess: (_data, projectId) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.lists({}) });
-      if (restoredProject) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.details(restoredProject.id),
-        });
-      }
+      queryClient.invalidateQueries({ queryKey: queryKeys.details(projectId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.summary() });
     },
   });
@@ -225,6 +214,27 @@ export const useRegenerateApiKey = () => {
           queryKey: queryKeys.byApiKey(projectWithNewKey.apiKey),
         });
       }
+    },
+  });
+};
+
+/**
+ * Hook to transfer project ownership to another team member.
+ */
+export const useTransferOwnership = () => {
+  return useMutation({
+    mutationFn: ({
+      projectId,
+      newOwnerId,
+      currentOwnerId,
+    }: {
+      projectId: string;
+      newOwnerId: string;
+      currentOwnerId: string;
+    }) => projectService.transferOwnership(projectId, newOwnerId, currentOwnerId),
+    onSuccess: (_data, { projectId }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.details(projectId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.lists({}) });
     },
   });
 };

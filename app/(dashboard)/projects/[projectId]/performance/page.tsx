@@ -24,6 +24,7 @@ import {
   computeChange,
   resolveTimeRangeParams,
 } from "@/lib/format-utils";
+import { useAnomalies } from "@/hooks/anomaly.hook";
 import {
   Clock,
   Gauge,
@@ -356,6 +357,22 @@ export default function PerformanceAnalyticsPage() {
     isLoading: resourcesLoading,
   } = useResourcePerformance(projectId, timeParams);
 
+  // Anomaly data for chart overlays
+  const { data: anomalyData } = useAnomalies(projectId, {
+    type: "response_time_degradation",
+    resolved: false,
+    limit: 20,
+  });
+
+  const anomalyMarkers = useMemo(() => {
+    const anomalies = Array.isArray(anomalyData) ? anomalyData : (anomalyData as any)?.data ?? [];
+    return anomalies.map((a: any) => ({
+      timestamp: a.detectedAt,
+      severity: a.severity as "critical" | "warning" | "info",
+      label: "!",
+    }));
+  }, [anomalyData]);
+
   // Derive metrics from score data
   const score = scoreData?.score ?? scoreData?.performanceScore ?? null;
   const avgResponseTime = scoreData?.avgResponseTime ?? scoreData?.avg ?? null;
@@ -535,6 +552,7 @@ export default function PerformanceAnalyticsPage() {
                   showBrush={timelineSeries.length > 30}
                   formatYAxis={(val: number) => formatMs(val)}
                   formatTooltip={(val: number) => formatMs(val)}
+                  anomalies={anomalyMarkers}
                 />
               </div>
             );

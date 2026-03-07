@@ -13,56 +13,77 @@ const plans = [
     subtitle: "For solo builders",
     monthly: 0,
     annual: 0,
-    metric: "10,000 logs/month",
+    metric: "25,000 logs/month",
     features: [
-      "1 project",
+      "2 projects",
       "7-day retention",
-      "Basic alerting",
-      "Email support",
-      "Community access",
+      "3 alert rules",
+      "1 custom dashboard",
+      "Community support",
     ],
-    cta: "Get Started",
+    cta: "Get Started Free",
     ctaVariant: "outline" as const,
     popular: false,
+    recommended: false,
+  },
+  {
+    name: "Starter",
+    subtitle: "For side projects",
+    monthly: 9,
+    annual: 7,
+    metric: "250,000 logs/month",
+    features: [
+      "5 projects",
+      "3 team members",
+      "14-day retention",
+      "15 alert rules",
+      "Basic AI Insights",
+      "Email support (48h)",
+    ],
+    cta: "Start Trial",
+    ctaVariant: "outline" as const,
+    popular: false,
+    recommended: false,
   },
   {
     name: "Professional",
     subtitle: "For serious projects",
     monthly: 29,
     annual: 23,
-    metric: "1M logs/month",
+    metric: "2M logs/month",
     features: [
-      "Unlimited projects",
+      "15 projects",
+      "10 team members",
       "30-day retention",
-      "Advanced alerting",
-      "Priority support",
-      "Team collaboration",
-      "API access",
-      "Custom dashboards",
+      "Unlimited alerts",
+      "Full AI Insights",
+      "Anomaly detection",
+      "Email support (24h)",
     ],
-    cta: "Start Free Trial",
-    ctaVariant: "outline" as const,
+    cta: "Start Trial",
+    ctaVariant: "signal" as const,
     popular: false,
+    recommended: true,
   },
   {
     name: "Team",
     subtitle: "For growing teams",
-    monthly: 99,
-    annual: 79,
-    metric: "10M logs/month",
+    monthly: 79,
+    annual: 63,
+    metric: "15M logs/month",
     features: [
-      "Everything in Professional",
+      "Unlimited projects",
+      "25 team members",
       "90-day retention",
-      "Role-based access",
-      "Advanced analytics",
-      "Custom integrations",
-      "Slack & webhook alerts",
-      "Team management",
-      "Audit trail",
+      "Unlimited everything",
+      "30-day audit log",
+      "Enforced MFA",
+      "Priority support (4h)",
     ],
-    cta: "Start Free Trial",
-    ctaVariant: "signal" as const,
+    cta: "Start Trial",
+    ctaVariant: "outline" as const,
     popular: true,
+    recommended: false,
   },
   {
     name: "Enterprise",
@@ -72,17 +93,17 @@ const plans = [
     metric: "Unlimited logs",
     features: [
       "Everything in Team",
-      "Custom retention",
-      "On-premise option",
-      "24/7 dedicated support",
-      "SLA guarantees",
-      "Training & onboarding",
-      "Custom SLAs",
+      "365-day retention",
+      "365-day audit log",
+      "SSO + enforced MFA",
+      "Custom AI models",
       "Dedicated CSM",
+      "Custom SLAs",
     ],
-    cta: "Talk to us",
+    cta: "Contact Sales",
     ctaVariant: "ghost" as const,
     popular: false,
+    recommended: false,
   },
 ];
 
@@ -92,11 +113,11 @@ export function Pricing() {
 
   return (
     <section id="pricing" className="py-24 bg-bg-base" ref={containerRef}>
-      <div className="max-w-[1280px] mx-auto px-6">
+      <div className="max-w-[1400px] mx-auto px-6">
         <SectionHeading
           eyebrow="PRICING"
           headline="Start free. Scale when you're ready."
-          sub="No surprise bills. No per-seat traps. No enterprise sales calls for the team tier."
+          sub="No surprise bills. No per-seat traps. Transparent pricing at every tier."
         />
 
         {/* Toggle */}
@@ -115,7 +136,7 @@ export function Pricing() {
           >
             <span
               className={`absolute top-0.5 w-5 h-5 rounded-full bg-bg-void transition-transform duration-200 ${
-                annual ? "-translate-x-6" : "translate-x-0.5"
+                annual ? "translate-x-6" : "translate-x-0.5"
               }`}
             />
           </button>
@@ -123,24 +144,34 @@ export function Pricing() {
             className={`text-sm ${annual ? "text-text-primary" : "text-text-muted"}`}
           >
             Annual{" "}
-            <span className="text-signal text-xs font-semibold">-20%</span>
+            <span className="text-signal text-xs font-semibold">Save up to 20%</span>
           </span>
         </div>
 
         {/* Cards */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6" data-reveal>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5" data-reveal>
           {plans.map((plan) => (
             <div
               key={plan.name}
               className={`rounded-xl border bg-bg-surface p-6 flex flex-col transition-all duration-200 hover:-translate-y-0.5 relative ${
-                plan.popular
+                plan.recommended
                   ? "border-t-2 border-t-signal border-signal/30 shadow-[var(--glow-signal)]"
+                  : plan.popular
+                  ? "border-t-2 border-t-data-info border-data-info/30"
                   : "border-border-subtle"
               }`}
             >
-              {plan.popular && (
+              {plan.recommended && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="px-3 py-1 rounded-full bg-signal text-bg-void text-[10px] font-display font-bold uppercase tracking-wider">
+                  <span className="px-3 py-1 rounded-full bg-signal text-bg-void text-[10px] font-display font-bold uppercase tracking-wider whitespace-nowrap">
+                    Recommended
+                  </span>
+                </div>
+              )}
+
+              {plan.popular && !plan.recommended && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span className="px-3 py-1 rounded-full bg-data-info text-white text-[10px] font-display font-bold uppercase tracking-wider whitespace-nowrap">
                     Most Popular
                   </span>
                 </div>
@@ -171,6 +202,11 @@ export function Pricing() {
                       ${annual ? plan.annual : plan.monthly}
                     </span>
                     <span className="text-sm text-text-muted ml-1">/mo</span>
+                    {annual && plan.monthly > 0 && (
+                      <p className="text-xs text-signal mt-0.5">
+                        Save ${plan.monthly - plan.annual}/mo
+                      </p>
+                    )}
                   </div>
                 )}
               </div>

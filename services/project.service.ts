@@ -388,4 +388,28 @@ export const projectService = {
       handleApiError(error);
     }
   },
+
+  /**
+   * Transfer project ownership to another user.
+   * @param projectId - The ID of the project.
+   * @param newOwnerId - The ID of the new owner.
+   */
+  transferOwnership: async (projectId: string, newOwnerId: string, currentOwnerId: string) => {
+    try {
+      const response = await apiClient.put<ApiResponse>(
+        `/projects/${projectId}/transfer-ownership`,
+        { newOwnerId, currentOwnerId }
+      );
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to transfer ownership",
+          response.status,
+          response.data.errors
+        );
+      }
+      return response.data.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
 };

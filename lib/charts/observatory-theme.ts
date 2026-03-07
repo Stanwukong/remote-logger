@@ -61,3 +61,35 @@ export const AXIS_PROPS = {
   axisLine: false,
   tick: AXIS_TICK_PROPS,
 } as const;
+
+// ---------------------------------------------------------------------------
+// Animation & interaction constants
+// ---------------------------------------------------------------------------
+
+/** Standard Recharts animation config for chart mount */
+export const ANIMATION_CONFIG = {
+  animationDuration: 800,
+  animationEasing: "ease-out" as const,
+};
+
+/** Active dot style: ring with glow effect */
+export const ACTIVE_DOT_PROPS = {
+  r: 5,
+  strokeWidth: 2,
+  fill: "var(--bg-surface)",
+  style: { filter: "drop-shadow(0 0 4px currentColor)" },
+};
+
+/** Cursor line style for tooltips (vertical indicator line) */
+export const CURSOR_LINE_PROPS = {
+  stroke: "var(--text-muted)",
+  strokeOpacity: 0.3,
+  strokeWidth: 1,
+} as const;
+
+/** Bar chart cursor (hover highlight on bar area) */
+export const CURSOR_BAR_PROPS = {
+  fill: "var(--text-muted)",
+  opacity: 0.06,
+  radius: 4,
+} as const;

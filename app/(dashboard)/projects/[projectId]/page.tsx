@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { useProject } from "@/hooks/project.hooks";
 import { useLogSummary } from "@/hooks/log.hooks";
@@ -11,6 +11,7 @@ import { MetricCard } from "@/components/shared/MetricCard";
 import { TimeSeriesChart } from "@/components/shared/TimeSeriesChart";
 import { SkeletonDashboard } from "@/components/shared/SkeletonDashboard";
 import { SignalDot } from "@/components/shared/SignalDot";
+import { GettingStartedWizard } from "@/components/shared/GettingStartedWizard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -142,6 +143,17 @@ export default function ProjectDashboard() {
   useLogSummary(projectId, timeRangeParams.timeRange);
   const { data: alertStatsResponse } = useAlertStats(projectId);
 
+  // Getting-started wizard visibility
+  const [wizardDismissed, setWizardDismissed] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem(`wizard-dismissed-${projectId}`) === "true";
+  });
+
+  const handleDismissWizard = useCallback(() => {
+    localStorage.setItem(`wizard-dismissed-${projectId}`, "true");
+    setWizardDismissed(true);
+  }, [projectId]);
+
   if (projectLoading) {
     return (
       <div className="p-6 md:px-8 lg:p-10">
@@ -228,6 +240,15 @@ export default function ProjectDashboard() {
           </Button>
         }
       />
+
+      {/* Getting Started Wizard — shown when project has no logs */}
+      {!wizardDismissed && project.logCount === 0 && (
+        <GettingStartedWizard
+          projectId={projectId}
+          apiKey={project.apiKey}
+          onDismiss={handleDismissWizard}
+        />
+      )}
 
       {/* Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useCallback } from "react";
 import {
   ResponsiveContainer,
   BarChart,
@@ -15,6 +16,8 @@ import {
   CHART_COLORS,
   GRID_PROPS,
   AXIS_PROPS,
+  ANIMATION_CONFIG,
+  CURSOR_BAR_PROPS,
 } from "@/lib/charts/observatory-theme";
 
 // ---------------------------------------------------------------------------
@@ -75,23 +78,42 @@ interface ChartTooltipProps {
 
 function CustomTooltip({ active, payload, label, formatValue }: ChartTooltipProps) {
   if (!active || !payload?.length) return null;
+
   return (
-    <div className="bg-bg-surface border border-border-subtle rounded-lg shadow-xl p-3 text-sm">
-      <p className="text-text-muted text-xs mb-2">{label}</p>
-      {payload.map((entry, i) => (
-        <div key={i} className="flex items-center gap-2">
-          <div
-            className="w-2.5 h-2.5 rounded-full shrink-0"
-            style={{ backgroundColor: entry.color }}
-          />
-          <span className="text-text-secondary">{entry.name}:</span>
-          <span className="text-text-primary font-semibold font-mono">
-            {formatValue
-              ? formatValue(entry.value)
-              : entry.value.toLocaleString()}
-          </span>
-        </div>
-      ))}
+    <div
+      className="rounded-lg shadow-2xl p-3 text-sm border border-border-subtle"
+      style={{
+        backgroundColor: "rgba(11, 18, 32, 0.85)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        transition: "opacity 200ms ease-in-out",
+      }}
+    >
+      <p className="text-text-muted text-xs mb-2.5 font-medium">{label}</p>
+      <div className="space-y-1.5">
+        {payload.map((entry, i) => (
+          <div key={i} className="flex items-center justify-between gap-4 min-w-[160px]">
+            <div className="flex items-center gap-2">
+              <div
+                className="w-2 h-2 rounded-full shrink-0"
+                style={{
+                  backgroundColor: entry.color,
+                  boxShadow: `0 0 6px ${entry.color}`,
+                }}
+              />
+              <span className="text-text-secondary text-xs">{entry.name}</span>
+            </div>
+            <span
+              className="text-text-primary font-semibold text-xs font-mono"
+              style={{ fontVariantNumeric: "tabular-nums" }}
+            >
+              {formatValue
+                ? formatValue(entry.value)
+                : entry.value.toLocaleString()}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -106,18 +128,34 @@ interface LegendEntry {
   dataKey?: string;
 }
 
-function CustomLegend({ payload }: { payload?: LegendEntry[] }) {
+interface CustomLegendProps {
+  payload?: LegendEntry[];
+  hoveredSeries: string | null;
+  onSeriesHover: (dataKey: string | null) => void;
+}
+
+function CustomLegend({ payload, hoveredSeries, onSeriesHover }: CustomLegendProps) {
   if (!payload?.length) return null;
+
   return (
     <div className="flex items-center justify-center gap-4 pt-3">
       {payload.map((entry, i) => (
         <div
           key={i}
-          className="flex items-center gap-1.5 font-body text-xs text-text-secondary"
+          className="flex items-center gap-1.5 font-body text-xs text-text-secondary cursor-pointer select-none"
+          style={{
+            opacity: hoveredSeries === null || hoveredSeries === entry.dataKey ? 1 : 0.4,
+            transition: "opacity 200ms ease-in-out",
+          }}
+          onMouseEnter={() => onSeriesHover(entry.dataKey || null)}
+          onMouseLeave={() => onSeriesHover(null)}
         >
           <div
-            className="w-2.5 h-2.5 rounded-full shrink-0"
-            style={{ backgroundColor: entry.color }}
+            className="h-3 shrink-0 rounded-sm"
+            style={{
+              width: "10px",
+              backgroundColor: entry.color,
+            }}
           />
           <span>{entry.value}</span>
         </div>
@@ -141,6 +179,13 @@ export function ObservatoryBarChart({
   barSize,
   className,
 }: ObservatoryBarChartProps) {
+  // Hover state for legend interaction
+  const [hoveredSeries, setHoveredSeries] = useState<string | null>(null);
+
+  const handleSeriesHover = useCallback((dataKey: string | null) => {
+    setHoveredSeries(dataKey);
+  }, []);
+
   // Empty state
   if (!data || data.length === 0) {
     return (
@@ -178,6 +223,23 @@ export function ObservatoryBarChart({
           margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
           barCategoryGap="16%"
         >
+          {/* SVG gradient definitions for each series */}
+          <defs>
+            {resolvedSeries.map((s) => (
+              <linearGradient
+                key={`bar-gradient-${s.key}`}
+                id={`bar-gradient-${s.key}`}
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="1"
+              >
+                <stop offset="0%" stopColor={s.color} stopOpacity={0.9} />
+                <stop offset="100%" stopColor={s.color} stopOpacity={0.6} />
+              </linearGradient>
+            ))}
+          </defs>
+
           {showGrid && (
             <CartesianGrid
               stroke={GRID_PROPS.stroke}
@@ -221,20 +283,26 @@ export function ObservatoryBarChart({
 
           <Tooltip
             content={<CustomTooltip formatValue={formatValue} />}
-            cursor={{
-              fill: "var(--bg-elevated)",
-              opacity: 0.5,
-            }}
+            cursor={CURSOR_BAR_PROPS}
           />
 
-          {showLegend && <Legend content={<CustomLegend />} />}
+          {showLegend && (
+            <Legend
+              content={
+                <CustomLegend
+                  hoveredSeries={hoveredSeries}
+                  onSeriesHover={handleSeriesHover}
+                />
+              }
+            />
+          )}
 
           {resolvedSeries.map((s) => (
             <Bar
               key={s.key}
               dataKey={s.key}
               name={s.label}
-              fill={s.color}
+              fill={`url(#bar-gradient-${s.key})`}
               stackId={s.stackId}
               barSize={barSize}
               radius={
@@ -242,7 +310,13 @@ export function ObservatoryBarChart({
                   ? [4, 4, 0, 0]      // Rounded top for vertical bars
                   : [0, 4, 4, 0]      // Rounded right for horizontal bars
               }
-              style={{ cursor: "pointer", transition: "opacity 0.15s ease" }}
+              style={{
+                cursor: "pointer",
+                transition: "opacity 200ms ease-in-out",
+              }}
+              opacity={hoveredSeries === null || hoveredSeries === s.key ? 1 : 0.2}
+              animationDuration={ANIMATION_CONFIG.animationDuration}
+              animationEasing={ANIMATION_CONFIG.animationEasing}
             />
           ))}
         </BarChart>

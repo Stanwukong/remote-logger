@@ -9,6 +9,7 @@ import { PageHeader } from "@/components/shared/PageHeader";
 import { MetricCard } from "@/components/shared/MetricCard";
 import { SkeletonDashboard } from "@/components/shared/SkeletonDashboard";
 import { SignalDot } from "@/components/shared/SignalDot";
+import { ViewToggle, type ViewMode } from "@/components/shared/ViewToggle";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -80,6 +81,7 @@ export default function SessionsPage() {
   );
 
   const [page, setPage] = useState(1);
+  const [sessionsView, setSessionsView] = useState<ViewMode>("table");
   const limit = 20;
 
   // Data hooks
@@ -172,7 +174,15 @@ export default function SessionsPage() {
           />
         </div>
 
-        {/* Sessions Table */}
+        {/* Toolbar */}
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-display font-semibold text-text-primary">
+            Sessions
+          </h3>
+          <ViewToggle mode={sessionsView} onChange={setSessionsView} />
+        </div>
+
+        {/* Sessions List */}
         {sessionsLoading ? (
           <SkeletonDashboard />
         ) : sessionsError ? (
@@ -200,7 +210,7 @@ export default function SessionsPage() {
               </p>
             </div>
           </Card>
-        ) : (
+        ) : sessionsView === "table" ? (
           <div className="rounded-lg border border-border-subtle bg-bg-surface overflow-hidden">
             {/* Table Header */}
             <div className="grid grid-cols-[minmax(130px,1fr)_140px_100px_80px_80px_80px_90px] gap-4 px-4 py-3 border-b border-border-subtle bg-bg-base/50">
@@ -295,6 +305,86 @@ export default function SessionsPage() {
                       {isActive ? "Active" : "Ended"}
                     </Badge>
                   </span>
+                </Link>
+              );
+            })}
+          </div>
+        ) : (
+          /* Card View */
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {sessions.map((session: any) => {
+              const sessionId =
+                session.sessionId || session._id || session.id || "";
+              const startTime = session.startTime || session.firstSeen || session.timestamp;
+              const duration = session.duration ?? session.totalDuration ?? 0;
+              const eventCount = session.eventCount ?? session.events ?? session.logCount ?? 0;
+              const pageCount = session.pageCount ?? session.pages ?? session.uniquePages ?? 0;
+              const device = session.device || detectDevice(session.userAgent);
+              const hasErrors = session.hasErrors === true || (session.errorCount ?? 0) > 0;
+              const isActive =
+                session.status === "active" ||
+                session.isActive === true ||
+                (!session.endTime && !session.lastSeen);
+
+              return (
+                <Link
+                  key={sessionId}
+                  href={`/projects/${projectId}/sessions/${encodeURIComponent(sessionId)}`}
+                  className="block"
+                >
+                  <Card className="border-border-subtle bg-bg-surface hover:bg-bg-elevated/50 transition-colors cursor-pointer group p-4 space-y-3">
+                    {/* Top row: ID + status */}
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-mono text-sm text-text-primary group-hover:text-signal transition-colors truncate">
+                        {truncateId(sessionId)}
+                      </span>
+                      <div className="flex items-center gap-2 shrink-0">
+                        {hasErrors && (
+                          <SignalDot status="danger" size="sm" />
+                        )}
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            "text-xs",
+                            isActive
+                              ? "bg-status-ok/10 text-status-ok border-status-ok/30"
+                              : "bg-bg-elevated text-text-muted border-border-subtle"
+                          )}
+                        >
+                          {isActive ? "Active" : "Ended"}
+                        </Badge>
+                      </div>
+                    </div>
+
+                    {/* Start time + duration */}
+                    <div className="flex items-center gap-4 text-xs text-text-muted">
+                      <span className="flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {startTime
+                          ? formatDistanceToNow(new Date(startTime), { addSuffix: true })
+                          : "--"}
+                      </span>
+                      <span className="font-mono text-text-secondary">
+                        {formatDuration(duration)}
+                      </span>
+                    </div>
+
+                    {/* Stats row */}
+                    <div className="flex items-center gap-4 text-xs text-text-muted">
+                      <span className="flex items-center gap-1">
+                        <MousePointerClick className="h-3 w-3" />
+                        {eventCount} events
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <BarChart3 className="h-3 w-3" />
+                        {pageCount} pages
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <DeviceIcon device={device} />
+                        <span className="capitalize">{device}</span>
+                      </span>
+                    </div>
+                  </Card>
                 </Link>
               );
             })}

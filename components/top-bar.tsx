@@ -12,7 +12,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
@@ -37,6 +41,7 @@ import {
   Globe,
   RefreshCw,
   ChevronDown,
+  LayoutDashboard,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useWebsocket } from "@/hooks/useWebsocket";
@@ -99,7 +104,7 @@ const isObjectId = (str: string) => /^[a-f\d]{24}$/i.test(str);
 
 const getTimeRangeLabel = (
   value: string,
-  customRange?: { start: Date; end: Date } | null
+  customRange?: { start: Date; end: Date } | null,
 ) => {
   if (value === "custom" && customRange) {
     return `${format(customRange.start, "MMM d")} - ${format(customRange.end, "MMM d")}`;
@@ -150,13 +155,13 @@ export function TopBar({ onCommandOpen }: TopBarProps) {
   const setCustomTimeRange = useLogHiveStore((s) => s.setCustomTimeRange);
   const selectedEnvironment = useLogHiveStore((s) => s.selectedEnvironment);
   const setSelectedEnvironment = useLogHiveStore(
-    (s) => s.setSelectedEnvironment
+    (s) => s.setSelectedEnvironment,
   );
   const autoRefreshEnabled = useLogHiveStore((s) => s.autoRefreshEnabled);
   const autoRefreshInterval = useLogHiveStore((s) => s.autoRefreshInterval);
   const toggleAutoRefresh = useLogHiveStore((s) => s.toggleAutoRefresh);
   const setAutoRefreshInterval = useLogHiveStore(
-    (s) => s.setAutoRefreshInterval
+    (s) => s.setAutoRefreshInterval,
   );
 
   // Projects for breadcrumb ObjectId resolution
@@ -181,31 +186,31 @@ export function TopBar({ onCommandOpen }: TopBarProps) {
 
   // Handle real-time notifications from WebSocket
   useEffect(() => {
-    if (lastMessage) {
-      try {
-        const data = JSON.parse(lastMessage.data);
+    if (!lastMessage) return;
 
-        if (data.type === "error" || data.type === "alert") {
-          const newNotification: Notification = {
-            id: data.id || Date.now().toString(),
-            title: data.title || "New Alert",
-            message: data.message || "An issue has been detected",
-            time: "Just now",
-            type: data.severity === "high" ? "error" : "warning",
-            unread: true,
-            projectId: data.projectId,
-            logId: data.logId,
-            timestamp: Date.now(),
-          };
+    try {
+      // Socket.io messages arrive as objects: { type, payload }
+      const msgType = lastMessage.type;
+      const payload = lastMessage.payload;
 
-          setNotifications((prev) => [
-            newNotification,
-            ...prev.slice(0, 49),
-          ]);
-        }
-      } catch (error) {
-        console.error("Error parsing WebSocket message:", error);
+      if (msgType === "NOTIFICATION" || msgType === "NEW_ALERT") {
+        const data = payload?.alert || payload || {};
+        const newNotification: Notification = {
+          id: data._id || data.id || Date.now().toString(),
+          title: data.title || data.ruleName || "New Alert",
+          message: data.message || "An issue has been detected",
+          time: "Just now",
+          type: data.severity === "critical" || data.severity === "high" ? "error" : "warning",
+          unread: true,
+          projectId: data.projectId,
+          logId: data.logId,
+          timestamp: Date.now(),
+        };
+
+        setNotifications((prev) => [newNotification, ...prev.slice(0, 49)]);
       }
+    } catch (error) {
+      console.error("Error processing WebSocket message:", error);
     }
   }, [lastMessage]);
 
@@ -242,8 +247,8 @@ export function TopBar({ onCommandOpen }: TopBarProps) {
     (notification: Notification) => {
       setNotifications((prev) =>
         prev.map((n) =>
-          n.id === notification.id ? { ...n, unread: false } : n
-        )
+          n.id === notification.id ? { ...n, unread: false } : n,
+        ),
       );
 
       if (notification.projectId) {
@@ -252,7 +257,7 @@ export function TopBar({ onCommandOpen }: TopBarProps) {
         router.push(`/logs?logId=${notification.logId}`);
       }
     },
-    [router]
+    [router],
   );
 
   const markAllAsRead = useCallback(() => {
@@ -276,12 +281,12 @@ export function TopBar({ onCommandOpen }: TopBarProps) {
               href="/dashboard"
               className="text-text-muted hover:text-text-secondary"
             >
-              Dashboard
+              <LayoutDashboard />
             </BreadcrumbLink>
           </BreadcrumbItem>
           {breadcrumbs.map((breadcrumb) => (
             <div key={breadcrumb.href} className="flex items-center">
-              <BreadcrumbSeparator className="hidden md:block" />
+              <BreadcrumbSeparator className="hidden mr-2 md:block" />
               <BreadcrumbItem>
                 {breadcrumb.isLast ? (
                   <BreadcrumbPage className="text-text-primary">
@@ -356,56 +361,61 @@ export function TopBar({ onCommandOpen }: TopBarProps) {
                 setDatePickerOpen(true);
               }}
               className={
-                selectedTimeRange === "custom"
-                  ? "bg-signal/10 text-signal"
-                  : ""
+                selectedTimeRange === "custom" ? "bg-signal/10 text-signal" : ""
               }
             >
-              <Calendar className="w-4 h-4 mr-2" />
-              Custom range
+              <Popover open={datePickerOpen}>
+                <PopoverTrigger asChild>
+                  <span className="flex items-center">
+                    <Calendar className="w-4 h-4 mr-2" />
+                    Custom range
+                  </span>
+                </PopoverTrigger>
+                <PopoverContent
+                  className="w-auto p-0 bg-bg-surface border-border-subtle"
+                  align="end"
+                  sideOffset={8}
+                >
+                  <div className="p-3 border-b border-border-subtle">
+                    <p className="text-sm font-medium text-text-primary">
+                      Select date range
+                    </p>
+                    <p className="text-xs text-text-muted mt-0.5">
+                      {customTimeRange
+                        ? `${format(customTimeRange.start, "MMM d, yyyy")} - ${format(customTimeRange.end, "MMM d, yyyy")}`
+                        : "Pick a start and end date"}
+                    </p>
+                  </div>
+                  <CalendarComponent
+                    mode="range"
+                    defaultMonth={customTimeRange?.start ?? new Date()}
+                    selected={
+                      customTimeRange
+                        ? {
+                            from: customTimeRange.start,
+                            to: customTimeRange.end,
+                          }
+                        : undefined
+                    }
+                    onSelect={(range: DateRange | undefined) => {
+                      if (range?.from && range?.to) {
+                        setCustomTimeRange({
+                          start: range.from,
+                          end: range.to,
+                        });
+                      } else if (range?.from) {
+                        // Partial selection — wait for end date
+                      }
+                    }}
+                    numberOfMonths={2}
+                    disabled={{ after: new Date() }}
+                  />
+                </PopoverContent>
+              </Popover>
             </DropdownMenuItem>
+            {/* Custom Date Range Popover */}
           </DropdownMenuContent>
         </DropdownMenu>
-
-        {/* Custom Date Range Popover */}
-        <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
-          <PopoverTrigger asChild>
-            <span className="hidden" />
-          </PopoverTrigger>
-          <PopoverContent
-            className="w-auto p-0 bg-bg-surface border-border-subtle"
-            align="end"
-            sideOffset={8}
-          >
-            <div className="p-3 border-b border-border-subtle">
-              <p className="text-sm font-medium text-text-primary">Select date range</p>
-              <p className="text-xs text-text-muted mt-0.5">
-                {customTimeRange
-                  ? `${format(customTimeRange.start, "MMM d, yyyy")} - ${format(customTimeRange.end, "MMM d, yyyy")}`
-                  : "Pick a start and end date"}
-              </p>
-            </div>
-            <CalendarComponent
-              mode="range"
-              defaultMonth={customTimeRange?.start ?? new Date()}
-              selected={
-                customTimeRange
-                  ? { from: customTimeRange.start, to: customTimeRange.end }
-                  : undefined
-              }
-              onSelect={(range: DateRange | undefined) => {
-                if (range?.from && range?.to) {
-                  setCustomTimeRange({ start: range.from, end: range.to });
-                  setDatePickerOpen(false);
-                } else if (range?.from) {
-                  // Partial selection — wait for end date
-                }
-              }}
-              numberOfMonths={2}
-              disabled={{ after: new Date() }}
-            />
-          </PopoverContent>
-        </Popover>
 
         {/* Environment Filter */}
         <DropdownMenu>
@@ -457,7 +467,9 @@ export function TopBar({ onCommandOpen }: TopBarProps) {
           >
             <RefreshCw
               className={`w-4 h-4 ${autoRefreshEnabled ? "animate-spin" : ""}`}
-              style={autoRefreshEnabled ? { animationDuration: "3s" } : undefined}
+              style={
+                autoRefreshEnabled ? { animationDuration: "3s" } : undefined
+              }
             />
             {autoRefreshEnabled && (
               <span className="ml-1.5 text-xs">

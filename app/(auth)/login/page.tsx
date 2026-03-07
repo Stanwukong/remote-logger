@@ -59,7 +59,16 @@ export default function LoginPage() {
 
     setIsLoading(true);
     try {
-      await authService.signIn(email, password);
+      const result = await authService.signIn(email, password);
+
+      // Check if MFA is required
+      if (result?.requiresMfa && result?.mfaToken) {
+        // Store the short-lived MFA token for the verify page
+        sessionStorage.setItem("mfaToken", result.mfaToken);
+        router.push("/mfa-verify");
+        return;
+      }
+
       toast.success("Welcome back!");
       router.push("/dashboard");
     } catch (err: any) {
@@ -70,7 +79,23 @@ export default function LoginPage() {
   };
 
   const handleOAuth = (provider: "github" | "google") => {
-    toast.info(`${provider} authentication coming soon`);
+    const callbackUrl = `${window.location.origin}/callback`;
+
+    if (provider === "github") {
+      const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID;
+      if (!clientId) {
+        toast.error("GitHub OAuth is not configured.");
+        return;
+      }
+      window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(callbackUrl)}&scope=user:email&state=github`;
+    } else {
+      const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+      if (!clientId) {
+        toast.error("Google OAuth is not configured.");
+        return;
+      }
+      window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(callbackUrl)}&response_type=code&scope=email%20profile&state=google`;
+    }
   };
 
   return (

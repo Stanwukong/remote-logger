@@ -108,7 +108,23 @@ export default function SignupPage() {
   };
 
   const handleOAuth = (provider: "github" | "google") => {
-    toast.info(`${provider} authentication coming soon`);
+    const callbackUrl = `${window.location.origin}/callback`;
+
+    if (provider === "github") {
+      const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID;
+      if (!clientId) {
+        toast.error("GitHub OAuth is not configured.");
+        return;
+      }
+      window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(callbackUrl)}&scope=user:email&state=github`;
+    } else {
+      const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+      if (!clientId) {
+        toast.error("Google OAuth is not configured.");
+        return;
+      }
+      window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(callbackUrl)}&response_type=code&scope=email%20profile&state=google`;
+    }
   };
 
   const passwordStrength = (() => {

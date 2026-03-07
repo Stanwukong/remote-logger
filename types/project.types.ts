@@ -20,10 +20,9 @@ export type TeamMember = {
 
 // Integration settings for a project.
 export type IntegrationSettings = {
-  id: string;
-  name: string;
-  isEnabled: boolean;
-  config: Record<string, any>;
+  slack?: { webhookUrl?: string };
+  email?: { recipients?: string[] };
+  webhook?: { url?: string; headers?: Record<string, string> };
 };
 
 // The main project data structure.
@@ -57,6 +56,7 @@ export type Project = {
       burstLimit: number;
     };
     tags: string[];
+    integrationSettings?: IntegrationSettings;
     createdAt: string;
     updatedAt: string;
   };

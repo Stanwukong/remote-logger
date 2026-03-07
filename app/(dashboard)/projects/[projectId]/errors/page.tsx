@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { AlertTriangle, TrendingUp, TrendingDown, Clock, Hash } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
@@ -21,7 +21,9 @@ import { TimeSeriesChart } from "@/components/shared/TimeSeriesChart";
 import { DistributionChart } from "@/components/shared/DistributionChart";
 import { SkeletonDashboard } from "@/components/shared/SkeletonDashboard";
 import { SignalDot } from "@/components/shared/SignalDot";
+import { ViewToggle, type ViewMode } from "@/components/shared/ViewToggle";
 import { CHART_COLORS } from "@/lib/charts/observatory-theme";
+import { useAnomalies } from "@/hooks/anomaly.hook";
 
 // ---------------------------------------------------------------------------
 // Types for API response shapes
@@ -110,9 +112,11 @@ function formatChartTimestamp(value: string): string {
 function TopErrorsTable({
   errors,
   projectId,
+  viewMode = "table",
 }: {
   errors: TopError[];
   projectId: string;
+  viewMode?: ViewMode;
 }) {
   const router = useRouter();
 
@@ -124,6 +128,64 @@ function TopErrorsTable({
         <p className="text-text-muted text-xs mt-1">
           Errors will appear here when your application reports them.
         </p>
+      </div>
+    );
+  }
+
+  if (viewMode === "cards") {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {errors.map((error) => (
+          <button
+            key={error._id}
+            onClick={() => router.push(`/projects/${projectId}/errors/${error._id}`)}
+            className="rounded-lg border border-border-subtle bg-bg-surface hover:bg-bg-elevated/50 transition-colors cursor-pointer group p-4 text-left space-y-3"
+          >
+            {/* Top row: name + count badge */}
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0 flex-1">
+                <p className="text-sm text-text-primary font-medium truncate group-hover:text-signal transition-colors">
+                  {error.name}
+                </p>
+                <p className="text-xs text-text-muted truncate mt-0.5">{error.message}</p>
+              </div>
+              <span className="shrink-0 text-sm font-mono font-semibold text-status-danger bg-status-danger/10 px-2 py-0.5 rounded">
+                {formatCompact(error.count)}
+              </span>
+            </div>
+
+            {/* Timestamps */}
+            <div className="flex items-center gap-4 text-xs text-text-muted">
+              <span>
+                First:{" "}
+                {error.firstSeen
+                  ? formatDistanceToNow(new Date(error.firstSeen), { addSuffix: true })
+                  : "--"}
+              </span>
+              <span>
+                Last:{" "}
+                {error.lastSeen
+                  ? formatDistanceToNow(new Date(error.lastSeen), { addSuffix: true })
+                  : "--"}
+              </span>
+            </div>
+
+            {/* Status */}
+            <div>
+              {error.status === "resolved" ? (
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-status-ok/10 text-status-ok text-xs">
+                  <SignalDot status="ok" size="sm" pulse={false} />
+                  Resolved
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-status-danger/10 text-status-danger text-xs">
+                  <SignalDot status="danger" size="sm" />
+                  Active
+                </span>
+              )}
+            </div>
+          </button>
+        ))}
       </div>
     );
   }
@@ -192,6 +254,7 @@ export default function ErrorAnalyticsPage() {
   const params = useParams<{ projectId: string }>();
   const projectId = typeof params?.projectId === "string" ? params.projectId : "";
 
+  const [topErrorsView, setTopErrorsView] = useState<ViewMode>("table");
   const selectedTimeRange = useLogHiveStore((s) => s.selectedTimeRange);
   const customTimeRange = useLogHiveStore((s) => s.customTimeRange);
   const timeRangeParams = useMemo(
@@ -224,6 +287,22 @@ export default function ErrorAnalyticsPage() {
     data: trendsData,
     isLoading: trendsLoading,
   } = useErrorTrends(projectId, timeRangeParams);
+
+  // Anomaly data for chart overlays
+  const { data: anomalyData } = useAnomalies(projectId, {
+    type: "error_rate_increase",
+    resolved: false,
+    limit: 20,
+  });
+
+  const anomalyMarkers = useMemo(() => {
+    const anomalies = Array.isArray(anomalyData) ? anomalyData : (anomalyData as any)?.data ?? [];
+    return anomalies.map((a: any) => ({
+      timestamp: a.detectedAt,
+      severity: a.severity as "critical" | "warning" | "info",
+      label: "!",
+    }));
+  }, [anomalyData]);
 
   // Normalize data — handle both raw arrays and wrapped objects from API
   const extractArray = <T,>(raw: unknown, ...keys: string[]): T[] => {
@@ -375,6 +454,7 @@ export default function ErrorAnalyticsPage() {
                   height={320}
                   formatXAxis={formatChartTimestamp}
                   showLegend={false}
+                  anomalies={anomalyMarkers}
                 />
               </div>
             );
@@ -430,10 +510,13 @@ export default function ErrorAnalyticsPage() {
             }
             return (
               <div>
-                <h3 className="text-sm font-display font-semibold text-text-primary mb-4">
-                  Top Errors by Occurrence
-                </h3>
-                <TopErrorsTable errors={topErrors} projectId={projectId} />
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-display font-semibold text-text-primary">
+                    Top Errors by Occurrence
+                  </h3>
+                  <ViewToggle mode={topErrorsView} onChange={setTopErrorsView} />
+                </div>
+                <TopErrorsTable errors={topErrors} projectId={projectId} viewMode={topErrorsView} />
               </div>
             );
           }

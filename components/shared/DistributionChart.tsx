@@ -66,16 +66,38 @@ interface ChartTooltipProps {
 function CustomTooltip({ active, payload, formatValue }: ChartTooltipProps) {
   if (!active || !payload?.length) return null;
   const entry = payload[0];
+  const color = entry.payload.fill || entry.payload.color;
+
+  // Calculate total and percentage
+  const total = payload.reduce((sum, p) => sum + p.value, 0);
+  const percentage = total > 0 ? ((entry.value / total) * 100).toFixed(1) : "0.0";
+
   return (
-    <div className="bg-bg-surface border border-border-subtle rounded-lg shadow-xl p-3 text-sm">
-      <div className="flex items-center gap-2">
-        <div
-          className="w-2.5 h-2.5 rounded-full shrink-0"
-          style={{ backgroundColor: entry.payload.fill || entry.payload.color }}
-        />
-        <span className="text-text-secondary">{entry.name}:</span>
-        <span className="text-text-primary font-semibold font-mono">
-          {formatValue ? formatValue(entry.value) : entry.value.toLocaleString()}
+    <div
+      className="border border-border-subtle rounded-lg p-3 text-sm"
+      style={{
+        backgroundColor: "rgba(11, 18, 32, 0.85)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255,255,255,0.04)",
+      }}
+    >
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <div
+            className="w-2.5 h-2.5 rounded-full shrink-0"
+            style={{
+              backgroundColor: color,
+              boxShadow: `0 0 6px ${color}`,
+            }}
+          />
+          <span className="text-text-secondary">{entry.name}</span>
+        </div>
+        <span
+          className="text-text-primary font-semibold font-mono"
+          style={{ fontVariantNumeric: "tabular-nums" }}
+        >
+          {formatValue ? formatValue(entry.value) : entry.value.toLocaleString()} ({percentage}%)
         </span>
       </div>
     </div>
@@ -101,8 +123,12 @@ function CustomLegend({ payload }: { payload?: LegendEntry[] }) {
           className="flex items-center gap-1.5 font-body text-xs text-text-secondary"
         >
           <div
-            className="w-2.5 h-2.5 rounded-full shrink-0"
-            style={{ backgroundColor: entry.color }}
+            className="shrink-0 rounded"
+            style={{
+              width: "10px",
+              height: "3px",
+              backgroundColor: entry.color,
+            }}
           />
           <span>{entry.value}</span>
         </div>
@@ -143,7 +169,7 @@ function renderActiveShape(props: unknown): React.JSX.Element {
       startAngle={startAngle}
       endAngle={endAngle}
       fill={fill}
-      style={{ filter: "drop-shadow(0 0 6px rgba(0,0,0,0.4))", transition: "all 0.2s ease" }}
+      style={{ filter: `drop-shadow(0 0 8px ${fill})`, transition: "all 0.2s ease" }}
     />
   );
 }
@@ -260,6 +286,8 @@ export function DistributionChart({
             label={showLabels ? renderLabel : undefined}
             labelLine={showLabels}
             strokeWidth={0}
+            animationDuration={800}
+            animationEasing="ease-out"
           >
             {resolvedData.map((entry, index) => (
               <Cell
@@ -287,7 +315,7 @@ export function DistributionChart({
         >
           <span
             className="text-text-primary font-display font-bold"
-            style={{ fontSize: 22, lineHeight: 1 }}
+            style={{ fontSize: 22, lineHeight: 1, fontVariantNumeric: "tabular-nums" }}
           >
             {formatValue ? formatValue(total) : total.toLocaleString()}
           </span>

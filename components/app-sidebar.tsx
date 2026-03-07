@@ -40,15 +40,26 @@ import {
   MousePointerClick,
   Eye,
   Terminal,
+  Lightbulb,
+  Shield,
+  BarChart3,
+  Building2,
+  Server,
+  UsersRound,
+  CreditCard,
+  Plug,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { SignalDot } from "@/components/shared/SignalDot";
+import { OrgSwitcher } from "@/components/shared/OrgSwitcher";
 import { useProjects } from "@/hooks/project.hooks";
 import { useUserAlertStats } from "@/hooks/alerts.hook";
 import { useLogHiveStore } from "@/store/loghive-store";
+import { useOrganizationStore } from "@/store/organization-store";
+import { useProfile } from "@/hooks/user.hook";
 
 // Helper function to get project status based on health metrics.
 // The list endpoint returns flat project objects (not wrapped in Project type).
@@ -80,6 +91,7 @@ const projectSubNavItems = [
   { title: "Funnels", path: "/funnels", icon: Filter },
   { title: "Regressions", path: "/regressions", icon: TrendingDown },
   { title: "Environments", path: "/environments", icon: Globe },
+  { title: "Insights", path: "/insights", icon: Lightbulb },
   { title: "Alerts", path: "/alerts", icon: AlertTriangle },
   { title: "Source Maps", path: "/source-maps", icon: FileCode },
   { title: "Settings", path: "/settings", icon: Settings },
@@ -89,6 +101,7 @@ export function AppSidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const currentProjectId = useLogHiveStore((s) => s.currentProjectId);
+  const currentOrgId = useOrganizationStore((s) => s.currentOrgId);
 
   // Fetch projects
   const { data: projectsResponse } = useProjects({
@@ -97,6 +110,10 @@ export function AppSidebar() {
 
   // Fetch user alert statistics
   const { data: alertStats } = useUserAlertStats();
+
+  // Fetch user profile to check admin role
+  const { data: userProfile } = useProfile();
+  const isAdmin = userProfile?.role === "admin";
 
   // Calculate active alert count
   const activeAlertCount = alertStats?.data?.active || 0;
@@ -229,6 +246,10 @@ export function AppSidebar() {
             <p className="text-xs text-text-muted">Developer Console</p>
           </div>
         </div>
+        {/* Organization Switcher */}
+        <div className="mt-2 pt-2 border-t border-border-subtle/50">
+          <OrgSwitcher />
+        </div>
       </SidebarHeader>
 
       <SidebarContent className="overflow-x-clip">
@@ -338,7 +359,56 @@ export function AppSidebar() {
 
         <SidebarSeparator />
 
-        {/* Section 3: Footer links (SDK Docs, Settings) */}
+        {/* Section 3: Admin (only for admin users) */}
+        {isAdmin && (
+          <>
+            <SidebarGroup>
+              <SidebarGroupLabel className="text-text-muted uppercase text-[11px] tracking-wider font-display">
+                Admin
+              </SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {[
+                    { title: "Overview", url: "/admin", icon: BarChart3 },
+                    { title: "Users", url: "/admin/users", icon: Users },
+                    { title: "Organizations", url: "/admin/organizations", icon: Building2 },
+                    { title: "System", url: "/admin/system", icon: Server },
+                  ].map((item) => {
+                    const active =
+                      item.url === "/admin"
+                        ? pathname === "/admin"
+                        : pathname.startsWith(item.url);
+                    return (
+                      <SidebarMenuItem key={item.title}>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={active}
+                          className={
+                            active
+                              ? "bg-signal/10 text-signal font-medium border-l-2 border-signal"
+                              : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated/50"
+                          }
+                        >
+                          <Link href={item.url}>
+                            {item.url === "/admin" && !active ? (
+                              <Shield className="w-4 h-4" />
+                            ) : (
+                              <item.icon className="w-4 h-4" />
+                            )}
+                            <span>{item.title}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  })}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+            <SidebarSeparator />
+          </>
+        )}
+
+        {/* Section 4: Footer links (SDK Docs, Settings) */}
         <SidebarGroup>
           <SidebarGroupLabel className="text-text-muted uppercase text-[11px] tracking-wider font-display">
             Resources
@@ -364,6 +434,38 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
+                  isActive={pathname.startsWith("/billing")}
+                  className={
+                    pathname.startsWith("/billing")
+                      ? "bg-signal/10 text-signal font-medium border-l-2 border-signal"
+                      : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated/50"
+                  }
+                >
+                  <Link href="/billing">
+                    <CreditCard className="w-4 h-4" />
+                    <span>Billing</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname.startsWith("/integrations")}
+                  className={
+                    pathname.startsWith("/integrations")
+                      ? "bg-signal/10 text-signal font-medium border-l-2 border-signal"
+                      : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated/50"
+                  }
+                >
+                  <Link href="/integrations">
+                    <Plug className="w-4 h-4" />
+                    <span>Integrations</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
                   isActive={pathname.startsWith("/settings")}
                   className={
                     pathname.startsWith("/settings")
@@ -380,6 +482,48 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {/* Section: Organization (shown when user has an org selected) */}
+        {currentOrgId && (
+          <>
+            <SidebarSeparator />
+            <SidebarGroup>
+              <SidebarGroupLabel className="text-text-muted uppercase text-[11px] tracking-wider font-display">
+                Organization
+              </SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {[
+                    { title: "General", url: "/organization/general", icon: Building2 },
+                    { title: "Members", url: "/organization/members", icon: Users },
+                    { title: "Teams", url: "/organization/teams", icon: UsersRound },
+                    { title: "Audit Log", url: "/organization/audit-log", icon: ScrollText },
+                  ].map((item) => {
+                    const active = pathname.startsWith(item.url);
+                    return (
+                      <SidebarMenuItem key={item.title}>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={active}
+                          className={
+                            active
+                              ? "bg-signal/10 text-signal font-medium border-l-2 border-signal"
+                              : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated/50"
+                          }
+                        >
+                          <Link href={item.url}>
+                            <item.icon className="w-4 h-4" />
+                            <span>{item.title}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  })}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </>
+        )}
       </SidebarContent>
 
       {/* Footer */}

@@ -121,4 +121,47 @@ export const userService = {
       handleApiError(error);
     }
   },
+
+  /**
+   * Export all user data as a ZIP file download (GDPR).
+   * Returns a Blob that can be downloaded by the client.
+   */
+  exportData: async (): Promise<Blob> => {
+    try {
+      const response = await apiClient.post(
+        "/users/data-export",
+        {},
+        { responseType: "blob", timeout: 120000 }
+      );
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+      throw error; // unreachable but satisfies TS
+    }
+  },
+
+  /**
+   * Permanently delete the user's account and all associated data (GDPR).
+   * @param confirmEmail - The user must type their email to confirm deletion.
+   */
+  deleteAccount: async (confirmEmail: string) => {
+    try {
+      const response = await apiClient.post<ApiResponse>(
+        "/users/data-deletion",
+        { confirmEmail }
+      );
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to delete account",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return response.data.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
 };
