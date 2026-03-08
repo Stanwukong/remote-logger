@@ -26,35 +26,6 @@ export default function AdminLayout({
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)]">
-      {/* Left sidebar navigation */}
-      <nav className="w-56 shrink-0 border-r border-border-subtle space-y-1 pt-2">
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-text-muted mb-4 px-3">
-          Admin Dashboard
-        </h2>
-        {adminTabs.map((tab) => {
-          const isActive =
-            tab.href === "/admin"
-              ? pathname === "/admin"
-              : pathname.startsWith(tab.href);
-          const Icon = tab.icon;
-
-          return (
-            <Link
-              key={tab.href}
-              href={tab.href}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 text-sm font-medium transition-colors duration-150",
-                isActive
-                  ? "bg-signal/10 text-signal border-l-2 border-signal"
-                  : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated"
-              )}
-            >
-              <Icon className="w-4 h-4 shrink-0" />
-              {tab.name}
-            </Link>
-          );
-        })}
-      </nav>
 
       {/* Content area */}
       <div className="flex-1 p-8 overflow-auto">{children}</div>

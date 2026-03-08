@@ -62,24 +62,48 @@ import { FeatureShowcase } from "@/components/sdk/feature-showcase";
 
 export default function SDKPage() {
   return (
-    <div className="min-h-screen scrollbar-hide bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-border/40 backdrop-blur-sm bg-background/95">
+    <div className="min-h-screen scrollbar-hide bg-bg-void">
+      {/* ================================================================
+          HEADER — Glassmorphism nav with Monita SVG logo
+          ================================================================ */}
+      <header className="sticky top-0 z-50 glass-nav border-b border-border-faint">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Link href="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <Code className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <span className="text-xl font-semibold">Monita</span>
+            <Link href="/" className="flex items-center gap-2.5">
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 28 28"
+                fill="none"
+                className="text-signal"
+              >
+                <path
+                  d="M4 20L4 16L8 12L12 18L18 8L22 14L24 10"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <circle cx="4" cy="20" r="2" fill="currentColor" />
+                <circle cx="24" cy="10" r="2" fill="currentColor" />
+              </svg>
+              <span className="font-display font-semibold text-lg text-text-primary tracking-[-0.02em]">
+                monita
+              </span>
             </Link>
             <div className="items-center space-x-2 ml-4 hidden md:flex">
-              <Badge variant="secondary" className="text-xs">
+              <Badge
+                variant="secondary"
+                className="text-xs bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm"
+              >
                 <Package className="w-3 h-3 mr-1" />
                 v1.0.3
               </Badge>
-              <Badge variant="outline" className="text-xs">
-                <Star className="w-3 h-3 mr-1 text-yellow-500" />
+              <Badge
+                variant="outline"
+                className="text-xs border-white/[0.06]"
+              >
+                <Star className="w-3 h-3 mr-1 text-data" />
                 MIT
               </Badge>
             </div>
@@ -87,149 +111,194 @@ export default function SDKPage() {
           <nav className="hidden md:flex items-center space-x-6">
             <a
               href="#quickstart"
-              className="text-sm font-medium hover:text-primary transition-colors"
+              className="text-sm font-medium text-text-secondary hover:text-signal transition-colors duration-150"
             >
               Quick Start
             </a>
             <a
               href="#features"
-              className="text-sm font-medium hover:text-primary transition-colors"
+              className="text-sm font-medium text-text-secondary hover:text-signal transition-colors duration-150"
             >
               Features
             </a>
             <a
               href="#examples"
-              className="text-sm font-medium hover:text-primary transition-colors"
+              className="text-sm font-medium text-text-secondary hover:text-signal transition-colors duration-150"
             >
               Examples
             </a>
             <a
               href="#reference"
-              className="text-sm font-medium hover:text-primary transition-colors"
+              className="text-sm font-medium text-text-secondary hover:text-signal transition-colors duration-150"
             >
               API Reference
             </a>
           </nav>
           <div className="flex items-center space-x-4">
             <ThemeToggle />
-            <Button variant="default" asChild>
+            <Button variant="signal" size="sm" asChild>
               <Link href="/dashboard">Dashboard</Link>
             </Button>
           </div>
         </div>
+        {/* Subtle glow line under header */}
+        <div
+          className="absolute bottom-0 left-0 right-0 h-px"
+          style={{
+            background:
+              "linear-gradient(90deg, transparent 0%, var(--signal) 50%, transparent 100%)",
+            opacity: 0.15,
+          }}
+        />
       </header>
 
       <div className="container mx-auto px-3 sm:px-4 py-12 max-w-full overflow-hidden scrollbar-hide">
-        {/* Hero Section */}
-        <div className="text-center mb-16">
-          <Badge variant="secondary" className="mb-6">
-            <Sparkles className="w-3 h-3 mr-1" />
-            Zero-Config Auto-Instrumentation
-          </Badge>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-6 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent px-2">
-            Monita SDK {" "}
-            <br className="md:hidden"/>
-            <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-              Intelligent Logging
-            </span>
-          </h1>
-          <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 leading-relaxed px-4 sm:px-0">
-            A powerful, TypeScript-first logging SDK with automatic error
-            tracking, performance monitoring, and user interaction capture.
-            Similar to Sentry and LogRocket, but with full control over your
-            data.
-          </p>
+        {/* ================================================================
+            HERO SECTION — Observatory dark gradient with dot-grid
+            ================================================================ */}
+        <div
+          className="relative text-center mb-16 -mx-3 sm:-mx-4 px-3 sm:px-4 py-16 sm:py-24 overflow-hidden"
+          style={{
+            background:
+              "linear-gradient(180deg, var(--bg-void) 0%, var(--bg-base) 50%, var(--bg-surface) 100%)",
+          }}
+        >
+          {/* Background dot grid */}
+          <div className="absolute inset-0 bg-dot-grid opacity-30" />
 
-          {/* Feature Highlights */}
-          <div className="flex flex-wrap justify-center gap-3 sm:gap-6 mb-12 text-xs sm:text-sm px-4 sm:px-0">
-            <div className="flex items-center space-x-2">
-              <Bug className="w-3 h-3 sm:w-4 sm:h-4 text-red-500 flex-shrink-0" />
-              <span className="font-medium">Auto Error Tracking</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Gauge className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 flex-shrink-0" />
-              <span className="font-medium">Performance Monitoring</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Network className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 flex-shrink-0" />
-              <span className="font-medium">Network Tracking</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <MousePointer className="w-3 h-3 sm:w-4 sm:h-4 text-purple-500 flex-shrink-0" />
-              <span className="font-medium">User Interactions</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Lock className="w-3 h-3 sm:w-4 sm:h-4 text-orange-500 flex-shrink-0" />
-              <span className="font-medium">Privacy-First</span>
-            </div>
-          </div>
+          {/* Radial glow behind hero */}
+          <div
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] pointer-events-none"
+            style={{
+              background:
+                "radial-gradient(ellipse at center, var(--signal-glow) 0%, transparent 70%)",
+              opacity: 0.4,
+            }}
+          />
 
-          {/* Quick Stats */}
-          <div className="flex flex-wrap justify-center gap-4 sm:gap-8 mb-12 text-xs sm:text-sm px-4 sm:px-0">
-            {/* <div className="flex items-center space-x-2">
-              <Download className="w-4 h-4 text-green-500" />
-              <span className="font-medium">500K+</span>
-              <span className="text-muted-foreground">Downloads</span>
-            </div> */}
-            <div className="flex items-center space-x-2">
-              <Package className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 flex-shrink-0" />
-              <span className="font-medium">~50KB</span>
-              <span className="text-muted-foreground">Gzipped</span>
+          <div className="relative z-10">
+            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-signal/20 bg-signal-muted backdrop-blur-sm mb-6">
+              <Sparkles className="w-3 h-3 text-signal" />
+              <span className="text-xs font-display font-semibold uppercase tracking-[0.08em] text-signal">
+                Zero-Config Auto-Instrumentation
+              </span>
             </div>
-            <div className="flex items-center space-x-2">
-              <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-purple-500 flex-shrink-0" />
-              <span className="font-medium">{"<30s"}</span>
-              <span className="text-muted-foreground">Setup Time</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Zap className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500 flex-shrink-0" />
-              <span className="font-medium">Zero Config</span>
-              <span className="text-muted-foreground">Required</span>
-            </div>
-          </div>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 sm:px-0">
-            <Button size="lg" className="text-sm sm:text-base w-full sm:w-auto" asChild>
-              <Link href="#quickstart">
-                <Rocket className="mr-2 w-4 h-4" />
-                Quick Start Guide
-              </Link>
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="text-sm sm:text-base bg-transparent w-full sm:w-auto"
-              asChild
-            >
-              <Link href="#demo">
-                <Play className="mr-2 w-4 h-4" />
-                Try Interactive Demo
-              </Link>
-            </Button>
-            <Button size="lg" variant="ghost" className="text-sm sm:text-base w-full sm:w-auto" asChild>
-              <Link
-                href="https://github.com/Stanwukong/loghive-sdk"
-                target="_blank"
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-extrabold tracking-[-0.03em] mb-6 px-2">
+              <span className="text-text-primary">Monita SDK </span>
+              <br className="md:hidden" />
+              <span className="gradient-text-signal">
+                Intelligent Logging
+              </span>
+            </h1>
+
+            <p className="text-base sm:text-lg md:text-xl text-text-secondary max-w-3xl mx-auto mb-10 leading-relaxed px-4 sm:px-0">
+              A powerful, TypeScript-first logging SDK with automatic error
+              tracking, performance monitoring, and user interaction capture.
+              Similar to Sentry and LogRocket, but with full control over your
+              data.
+            </p>
+
+            {/* Feature Highlights */}
+            <div className="flex flex-wrap justify-center gap-3 sm:gap-6 mb-12 text-xs sm:text-sm px-4 sm:px-0">
+              <div className="flex items-center space-x-2">
+                <Bug className="w-3 h-3 sm:w-4 sm:h-4 text-status-danger flex-shrink-0" />
+                <span className="font-medium text-text-primary">Auto Error Tracking</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Gauge className="w-3 h-3 sm:w-4 sm:h-4 text-data flex-shrink-0" />
+                <span className="font-medium text-text-primary">Performance Monitoring</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Network className="w-3 h-3 sm:w-4 sm:h-4 text-signal flex-shrink-0" />
+                <span className="font-medium text-text-primary">Network Tracking</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <MousePointer className="w-3 h-3 sm:w-4 sm:h-4 text-data-bright flex-shrink-0" />
+                <span className="font-medium text-text-primary">User Interactions</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Lock className="w-3 h-3 sm:w-4 sm:h-4 text-status-warn flex-shrink-0" />
+                <span className="font-medium text-text-primary">Privacy-First</span>
+              </div>
+            </div>
+
+            {/* Quick Stats — Glass cards */}
+            <div className="flex flex-wrap justify-center gap-4 sm:gap-6 mb-12 text-xs sm:text-sm px-4 sm:px-0">
+              <div className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm">
+                <Package className="w-3 h-3 sm:w-4 sm:h-4 text-data flex-shrink-0" />
+                <span className="font-medium text-text-primary">~50KB</span>
+                <span className="text-text-muted">Gzipped</span>
+              </div>
+              <div className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm">
+                <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-data-bright flex-shrink-0" />
+                <span className="font-medium text-text-primary">{"<30s"}</span>
+                <span className="text-text-muted">Setup Time</span>
+              </div>
+              <div className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm">
+                <Zap className="w-3 h-3 sm:w-4 sm:h-4 text-signal flex-shrink-0" />
+                <span className="font-medium text-text-primary">Zero Config</span>
+                <span className="text-text-muted">Required</span>
+              </div>
+            </div>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 sm:px-0">
+              <Button
+                variant="signal"
+                size="lg"
+                className="text-sm sm:text-base font-display font-bold w-full sm:w-auto"
+                asChild
               >
-                <Github className="mr-2 w-4 h-4" />
-                View on GitHub
-              </Link>
-            </Button>
+                <Link href="#quickstart">
+                  <Rocket className="mr-2 w-4 h-4" />
+                  Quick Start Guide
+                </Link>
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="text-sm sm:text-base bg-white/[0.03] border-white/[0.08] hover:bg-white/[0.06] hover:border-signal/30 transition-all duration-200 w-full sm:w-auto"
+                asChild
+              >
+                <Link href="#demo">
+                  <Play className="mr-2 w-4 h-4" />
+                  Try Interactive Demo
+                </Link>
+              </Button>
+              <Button
+                size="lg"
+                variant="ghost"
+                className="text-sm sm:text-base text-text-secondary hover:text-text-primary w-full sm:w-auto"
+                asChild
+              >
+                <Link
+                  href="https://github.com/Stanwukong/loghive-sdk"
+                  target="_blank"
+                >
+                  <Github className="mr-2 w-4 h-4" />
+                  View on GitHub
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
 
-        {/* Auto-Capture Features */}
+        {/* ================================================================
+            AUTO-CAPTURE FEATURES — Glass-morphism cards
+            ================================================================ */}
         <section id="features" className="mb-24">
           <div className="text-center mb-12">
-            <Badge variant="outline" className="mb-4">
-              <Brain className="w-3 h-3 mr-1" />
-              Auto-Instrumentation
-            </Badge>
-            <h2 className="text-3xl font-bold mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-signal/20 bg-signal-muted backdrop-blur-sm mb-4">
+              <Brain className="w-3 h-3 text-signal" />
+              <span className="text-xs font-display font-semibold uppercase tracking-[0.06em] text-signal">
+                Auto-Instrumentation
+              </span>
+            </div>
+            <h2 className="text-3xl font-display font-bold mb-4 text-text-primary">
               What Gets Captured Automatically
             </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            <p className="text-text-secondary text-lg max-w-2xl mx-auto">
               With zero configuration, the SDK automatically captures
               comprehensive telemetry data
             </p>
@@ -242,8 +311,8 @@ export default function SDKPage() {
                 title: "Errors",
                 description: "Uncaught exceptions, promise rejections",
                 level: "ERROR",
-                color: "text-red-500",
-                bgColor: "bg-red-500/10",
+                color: "text-status-danger",
+                bgColor: "bg-status-danger/5",
                 features: [
                   "JavaScript errors",
                   "Promise rejections",
@@ -256,8 +325,8 @@ export default function SDKPage() {
                 title: "Performance",
                 description: "Page loads, resource timing, Core Web Vitals",
                 level: "DEBUG/INFO/WARN",
-                color: "text-blue-500",
-                bgColor: "bg-blue-500/10",
+                color: "text-data",
+                bgColor: "bg-data/5",
                 features: [
                   "Core Web Vitals",
                   "Resource timing",
@@ -270,8 +339,8 @@ export default function SDKPage() {
                 title: "Network",
                 description: "Fetch/XHR requests with status and timing",
                 level: "DEBUG/WARN/ERROR",
-                color: "text-green-500",
-                bgColor: "bg-green-500/10",
+                color: "text-signal",
+                bgColor: "bg-signal/5",
                 features: [
                   "HTTP requests",
                   "Response times",
@@ -284,8 +353,8 @@ export default function SDKPage() {
                 title: "Page Views",
                 description: "Navigation and SPA route changes",
                 level: "INFO",
-                color: "text-purple-500",
-                bgColor: "bg-purple-500/10",
+                color: "text-data-bright",
+                bgColor: "bg-data-bright/5",
                 features: [
                   "Page navigation",
                   "SPA routing",
@@ -298,8 +367,8 @@ export default function SDKPage() {
                 title: "Console",
                 description: "console.error() and console.warn() calls",
                 level: "ERROR/WARN",
-                color: "text-orange-500",
-                bgColor: "bg-orange-500/10",
+                color: "text-status-warn",
+                bgColor: "bg-status-warn/5",
                 features: [
                   "Console errors",
                   "Console warnings",
@@ -312,8 +381,8 @@ export default function SDKPage() {
                 title: "Interactions",
                 description: "User clicks, scrolls (optional)",
                 level: "DEBUG/TRACE",
-                color: "text-pink-500",
-                bgColor: "bg-pink-500/10",
+                color: "text-pink-400",
+                bgColor: "bg-pink-400/5",
                 features: [
                   "Click events",
                   "Scroll tracking",
@@ -322,7 +391,10 @@ export default function SDKPage() {
                 ],
               },
             ].map((feature, index) => (
-              <Card key={index} className="hover:shadow-md transition-shadow">
+              <Card
+                key={index}
+                className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06] hover:border-signal/20 hover:bg-white/[0.05] transition-all duration-300"
+              >
                 <CardHeader className="pb-3">
                   <div className="flex items-start space-x-3">
                     <div
@@ -331,13 +403,18 @@ export default function SDKPage() {
                       <feature.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${feature.color}`} />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <CardTitle className="text-base sm:text-lg leading-tight">{feature.title}</CardTitle>
-                      <Badge variant="outline" className="text-xs mt-1">
+                      <CardTitle className="text-base sm:text-lg leading-tight text-text-primary">
+                        {feature.title}
+                      </CardTitle>
+                      <Badge
+                        variant="outline"
+                        className="text-xs mt-1 border-white/[0.08] text-text-secondary"
+                      >
                         {feature.level}
                       </Badge>
                     </div>
                   </div>
-                  <CardDescription className="text-sm mt-3">
+                  <CardDescription className="text-sm mt-3 text-text-secondary">
                     {feature.description}
                   </CardDescription>
                 </CardHeader>
@@ -346,9 +423,9 @@ export default function SDKPage() {
                     {feature.features.map((item, idx) => (
                       <li
                         key={idx}
-                        className="flex items-start text-xs sm:text-sm text-muted-foreground"
+                        className="flex items-start text-xs sm:text-sm text-text-secondary"
                       >
-                        <CheckCircle2 className="w-3 h-3 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-3 h-3 text-signal mr-2 flex-shrink-0 mt-0.5" />
                         <span className="leading-relaxed">{item}</span>
                       </li>
                     ))}
@@ -359,15 +436,21 @@ export default function SDKPage() {
           </div>
         </section>
 
-        {/* Interactive Demo Section */}
+        {/* ================================================================
+            INTERACTIVE DEMO SECTION
+            ================================================================ */}
         <section id="demo" className="mb-24">
           <div className="text-center mb-12 px-4 sm:px-0">
-            <Badge variant="outline" className="mb-4">
-              <Play className="w-3 h-3 mr-1" />
-              Interactive Demo
-            </Badge>
-            <h2 className="text-2xl sm:text-3xl font-bold mb-4">Try Monita Live</h2>
-            <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-signal/20 bg-signal-muted backdrop-blur-sm mb-4">
+              <Play className="w-3 h-3 text-signal" />
+              <span className="text-xs font-display font-semibold uppercase tracking-[0.06em] text-signal">
+                Interactive Demo
+              </span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-display font-bold mb-4 text-text-primary">
+              Try Monita Live
+            </h2>
+            <p className="text-text-secondary text-base sm:text-lg max-w-2xl mx-auto">
               Experience auto-instrumentation in action. Trigger events and see
               real-time capture.
             </p>
@@ -377,48 +460,52 @@ export default function SDKPage() {
           </div>
         </section>
 
-        {/* Quick Start Section */}
+        {/* ================================================================
+            QUICK START SECTION — Glass tabs, signal-green steps
+            ================================================================ */}
         <section id="quickstart" className="mb-24">
           <div className="text-center mb-12">
-            <Badge variant="outline" className="mb-4">
-              <Zap className="w-3 h-3 mr-1" />
-              Zero-Config Setup
-            </Badge>
-            <h2 className="text-3xl font-bold mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-signal/20 bg-signal-muted backdrop-blur-sm mb-4">
+              <Zap className="w-3 h-3 text-signal" />
+              <span className="text-xs font-display font-semibold uppercase tracking-[0.06em] text-signal">
+                Zero-Config Setup
+              </span>
+            </div>
+            <h2 className="text-3xl font-display font-bold mb-4 text-text-primary">
               Get Started in 30 Seconds
             </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            <p className="text-text-secondary text-lg max-w-2xl mx-auto">
               Install, initialize, and start capturing events automatically
             </p>
           </div>
 
           <Tabs defaultValue="basic" className="w-full">
             <div className="flex justify-center mb-8">
-              <TabsList className="grid grid-cols-2 gap-1 sm:gap-2 md:grid-cols-4 w-full max-w-full mb-4 px-2 sm:px-0">
+              <TabsList className="grid grid-cols-2 gap-1 sm:gap-2 md:grid-cols-4 w-full max-w-full mb-4 px-2 sm:px-0 bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm">
                 <TabsTrigger
                   value="basic"
-                  className="flex items-center space-x-1 sm:space-x-2 py-2 sm:py-3 text-xs sm:text-sm"
+                  className="flex items-center space-x-1 sm:space-x-2 py-2 sm:py-3 text-xs sm:text-sm data-[state=active]:bg-signal/10 data-[state=active]:text-signal transition-all duration-200"
                 >
                   <Rocket className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                   <span className="truncate">Basic Setup</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="advanced"
-                  className="flex items-center space-x-1 sm:space-x-2 py-2 sm:py-3 text-xs sm:text-sm"
+                  className="flex items-center space-x-1 sm:space-x-2 py-2 sm:py-3 text-xs sm:text-sm data-[state=active]:bg-signal/10 data-[state=active]:text-signal transition-all duration-200"
                 >
                   <Settings className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                   <span className="truncate">Advanced</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="frameworks"
-                  className="flex items-center space-x-1 sm:space-x-2 py-2 sm:py-3 text-xs sm:text-sm"
+                  className="flex items-center space-x-1 sm:space-x-2 py-2 sm:py-3 text-xs sm:text-sm data-[state=active]:bg-signal/10 data-[state=active]:text-signal transition-all duration-200"
                 >
                   <Layers className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                   <span className="truncate">Frameworks</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="environments"
-                  className="flex items-center space-x-1 sm:space-x-2 py-2 sm:py-3 text-xs sm:text-sm"
+                  className="flex items-center space-x-1 sm:space-x-2 py-2 sm:py-3 text-xs sm:text-sm data-[state=active]:bg-signal/10 data-[state=active]:text-signal transition-all duration-200"
                 >
                   <Globe className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                   <span className="truncate">Environments</span>
@@ -429,10 +516,10 @@ export default function SDKPage() {
             <TabsContent value="basic" className="space-y-8 mt-4 w-full">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
                 <div className="space-y-6">
-                  <Card>
+                  <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
                     <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                      <CardTitle className="flex items-center space-x-2 text-text-primary">
+                        <div className="w-6 h-6 bg-signal rounded-full flex items-center justify-center text-bg-void text-xs font-bold">
                           1
                         </div>
                         <span>Install the SDK</span>
@@ -445,22 +532,22 @@ export default function SDKPage() {
                         showCopy
                         title="Terminal"
                       />
-                      <div className="flex gap-2 mt-3 text-sm text-muted-foreground">
+                      <div className="flex gap-2 mt-3 text-sm text-text-secondary">
                         <span>Or:</span>
-                        <code className="bg-muted px-1 rounded">
+                        <code className="bg-bg-elevated px-1 rounded font-mono text-text-code">
                           yarn add monita
                         </code>
-                        <code className="bg-muted px-1 rounded">
+                        <code className="bg-bg-elevated px-1 rounded font-mono text-text-code">
                           pnpm add monita
                         </code>
                       </div>
                     </CardContent>
                   </Card>
 
-                  <Card>
+                  <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
                     <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                      <CardTitle className="flex items-center space-x-2 text-text-primary">
+                        <div className="w-6 h-6 bg-signal rounded-full flex items-center justify-center text-bg-void text-xs font-bold">
                           2
                         </div>
                         <span>Initialize with Auto-Instrumentation</span>
@@ -490,10 +577,10 @@ const logger = new Monita({
                     </CardContent>
                   </Card>
 
-                  <Card>
+                  <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
                     <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                      <CardTitle className="flex items-center space-x-2 text-text-primary">
+                        <div className="w-6 h-6 bg-signal rounded-full flex items-center justify-center text-bg-void text-xs font-bold">
                           3
                         </div>
                         <span>Optional Manual Logging</span>
@@ -526,65 +613,77 @@ logger.captureException(new Error("Something broke"), {
                 </div>
 
                 <div className="space-y-6">
-                  <Alert>
-                    <Sparkles className="h-4 w-4" />
-                    <AlertDescription>
-                      <strong>Zero Configuration Required!</strong> The SDK
+                  <Alert className="bg-signal/5 border-signal/20">
+                    <Sparkles className="h-4 w-4 text-signal" />
+                    <AlertDescription className="text-text-secondary">
+                      <strong className="text-text-primary">Zero Configuration Required!</strong> The SDK
                       automatically starts capturing errors, performance
                       metrics, network requests, and page views as soon as you
                       initialize it.
                     </AlertDescription>
                   </Alert>
 
-                  <Card>
+                  {/* "What Happens Automatically" card with subtle glow border */}
+                  <Card
+                    className="bg-white/[0.03] backdrop-blur-md border border-signal/10 relative overflow-hidden"
+                  >
+                    {/* Top signal-green accent line */}
+                    <div
+                      className="absolute top-0 left-0 right-0 h-px"
+                      style={{
+                        background:
+                          "linear-gradient(90deg, transparent 0%, var(--signal) 50%, transparent 100%)",
+                        opacity: 0.3,
+                      }}
+                    />
                     <CardHeader>
-                      <CardTitle>What Happens Automatically</CardTitle>
-                      <CardDescription>
+                      <CardTitle className="text-text-primary font-display">What Happens Automatically</CardTitle>
+                      <CardDescription className="text-text-secondary">
                         Events captured without any additional code
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="space-y-3">
                         <div className="flex items-center space-x-3">
-                          <Bug className="w-4 h-4 text-red-500" />
+                          <Bug className="w-4 h-4 text-status-danger" />
                           <div>
-                            <h4 className="font-semibold text-sm">
+                            <h4 className="font-semibold text-sm text-text-primary">
                               Error Tracking
                             </h4>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-xs text-text-secondary">
                               Uncaught exceptions and promise rejections
                             </p>
                           </div>
                         </div>
                         <div className="flex items-center space-x-3">
-                          <Gauge className="w-4 h-4 text-blue-500" />
+                          <Gauge className="w-4 h-4 text-data" />
                           <div>
-                            <h4 className="font-semibold text-sm">
+                            <h4 className="font-semibold text-sm text-text-primary">
                               Performance Monitoring
                             </h4>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-xs text-text-secondary">
                               Core Web Vitals, page load times
                             </p>
                           </div>
                         </div>
                         <div className="flex items-center space-x-3">
-                          <Network className="w-4 h-4 text-green-500" />
+                          <Network className="w-4 h-4 text-signal" />
                           <div>
-                            <h4 className="font-semibold text-sm">
+                            <h4 className="font-semibold text-sm text-text-primary">
                               Network Requests
                             </h4>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-xs text-text-secondary">
                               Fetch/XHR monitoring with timing
                             </p>
                           </div>
                         </div>
                         <div className="flex items-center space-x-3">
-                          <Globe className="w-4 h-4 text-purple-500" />
+                          <Globe className="w-4 h-4 text-data-bright" />
                           <div>
-                            <h4 className="font-semibold text-sm">
+                            <h4 className="font-semibold text-sm text-text-primary">
                               Page Views
                             </h4>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-xs text-text-secondary">
                               Navigation and SPA route changes
                             </p>
                           </div>
@@ -593,26 +692,27 @@ logger.captureException(new Error("Something broke"), {
                     </CardContent>
                   </Card>
 
-                  <Card>
+                  {/* Bundle Impact — Signal green metrics */}
+                  <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
                     <CardHeader>
-                      <CardTitle>Bundle Impact</CardTitle>
-                      <CardDescription>
+                      <CardTitle className="text-text-primary font-display">Bundle Impact</CardTitle>
+                      <CardDescription className="text-text-secondary">
                         Lightweight and performant
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="grid grid-cols-2 gap-4 text-center">
-                        <div className="p-3 bg-muted/50 rounded-lg">
-                          <Package className="w-6 h-6 mx-auto mb-2 text-blue-500" />
-                          <div className="font-semibold">~50KB</div>
-                          <div className="text-xs text-muted-foreground">
+                        <div className="p-3 bg-white/[0.03] border border-white/[0.06] rounded-lg">
+                          <Package className="w-6 h-6 mx-auto mb-2 text-signal" />
+                          <div className="font-semibold text-text-primary">~50KB</div>
+                          <div className="text-xs text-text-muted">
                             Gzipped
                           </div>
                         </div>
-                        <div className="p-3 bg-muted/50 rounded-lg">
-                          <Activity className="w-6 h-6 mx-auto mb-2 text-green-500" />
-                          <div className="font-semibold">Minimal</div>
-                          <div className="text-xs text-muted-foreground">
+                        <div className="p-3 bg-white/[0.03] border border-white/[0.06] rounded-lg">
+                          <Activity className="w-6 h-6 mx-auto mb-2 text-signal" />
+                          <div className="font-semibold text-text-primary">Minimal</div>
+                          <div className="text-xs text-text-muted">
                             CPU Impact
                           </div>
                         </div>
@@ -626,10 +726,10 @@ logger.captureException(new Error("Something broke"), {
             <TabsContent value="advanced" className="space-y-8">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
                 <div className="space-y-6">
-                  <Card>
+                  <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
                     <CardHeader>
-                      <CardTitle>Auto-Capture Configuration</CardTitle>
-                      <CardDescription>
+                      <CardTitle className="text-text-primary font-display">Auto-Capture Configuration</CardTitle>
+                      <CardDescription className="text-text-secondary">
                         Fine-tune what gets captured automatically
                       </CardDescription>
                     </CardHeader>
@@ -641,7 +741,7 @@ logger.captureException(new Error("Something broke"), {
 const logger = new Monita({
   apiKey: "your-api-key",
   projectId: "your-project-id",
-  
+
   // Configure auto-capture behavior
   autoCapture: {
     errors: true, // Uncaught errors (recommended)
@@ -650,7 +750,7 @@ const logger = new Monita({
     pageViews: true, // Page navigation (recommended)
     consoleMessages: false, // Console.error/warn (can be noisy)
     userInteractions: false, // Clicks, scrolls (very verbose)
-    
+
     // Customize log levels for different events
     logLevels: {
       networkSuccess: LogLevel.TRACE, // Quiet successful requests
@@ -669,10 +769,10 @@ const logger = new Monita({
                     </CardContent>
                   </Card>
 
-                  <Card>
+                  <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
                     <CardHeader>
-                      <CardTitle>Context Management</CardTitle>
-                      <CardDescription>
+                      <CardTitle className="text-text-primary font-display">Context Management</CardTitle>
+                      <CardDescription className="text-text-secondary">
                         Global context included in all events
                       </CardDescription>
                     </CardHeader>
@@ -710,10 +810,10 @@ logger.captureException(new Error("Payment processing failed"), {
                 </div>
 
                 <div className="space-y-6">
-                  <Card>
+                  <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
                     <CardHeader>
-                      <CardTitle>Performance Optimization</CardTitle>
-                      <CardDescription>
+                      <CardTitle className="text-text-primary font-display">Performance Optimization</CardTitle>
+                      <CardDescription className="text-text-secondary">
                         Configure batching and delivery
                       </CardDescription>
                     </CardHeader>
@@ -723,24 +823,24 @@ logger.captureException(new Error("Payment processing failed"), {
                         code={`const logger = new Monita({
   apiKey: "your-api-key",
   projectId: "your-project-id",
-  
+
   // Performance settings
   batchSize: 50, // Batch events for efficiency
   flushInterval: 3000, // Flush every 3 seconds
   maxRetries: 3, // Retry failed requests
-  
+
   // Memory management
   maxBreadcrumbs: 50, // Limit breadcrumb history
   maxEvents: 100, // Limit event buffer
-  
+
   // Network optimization
   compression: true, // Compress payloads
   timeout: 10000, // Request timeout
-  
+
   // Privacy settings
   sanitizeUrls: true, // Remove sensitive URL params
   sanitizeForms: true, // Protect form data
-  
+
   // Error handling
   onError: (error) => {
     console.warn('Monita SDK error:', error);
@@ -752,57 +852,57 @@ logger.captureException(new Error("Payment processing failed"), {
                     </CardContent>
                   </Card>
 
-                  <Card>
+                  <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
                     <CardHeader>
-                      <CardTitle>Privacy & Security</CardTitle>
-                      <CardDescription>
+                      <CardTitle className="text-text-primary font-display">Privacy & Security</CardTitle>
+                      <CardDescription className="text-text-secondary">
                         Built-in data protection
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="space-y-3">
                         <div className="flex items-start space-x-3">
-                          <Lock className="w-4 h-4 text-green-500 mt-0.5" />
+                          <Lock className="w-4 h-4 text-signal mt-0.5" />
                           <div>
-                            <h4 className="font-semibold text-sm">
+                            <h4 className="font-semibold text-sm text-text-primary">
                               URL Sanitization
                             </h4>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-xs text-text-secondary">
                               Removes token, key, password, secret query
                               parameters
                             </p>
                           </div>
                         </div>
                         <div className="flex items-start space-x-3">
-                          <Fingerprint className="w-4 h-4 text-green-500 mt-0.5" />
+                          <Fingerprint className="w-4 h-4 text-signal mt-0.5" />
                           <div>
-                            <h4 className="font-semibold text-sm">
+                            <h4 className="font-semibold text-sm text-text-primary">
                               Form Protection
                             </h4>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-xs text-text-secondary">
                               Keyboard events don&apos;t capture actual
                               keystrokes
                             </p>
                           </div>
                         </div>
                         <div className="flex items-start space-x-3">
-                          <Eye className="w-4 h-4 text-green-500 mt-0.5" />
+                          <Eye className="w-4 h-4 text-signal mt-0.5" />
                           <div>
-                            <h4 className="font-semibold text-sm">
+                            <h4 className="font-semibold text-sm text-text-primary">
                               Element Safety
                             </h4>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-xs text-text-secondary">
                               Uses CSS selectors, not text content
                             </p>
                           </div>
                         </div>
                         <div className="flex items-start space-x-3">
-                          <Database className="w-4 h-4 text-green-500 mt-0.5" />
+                          <Database className="w-4 h-4 text-signal mt-0.5" />
                           <div>
-                            <h4 className="font-semibold text-sm">
+                            <h4 className="font-semibold text-sm text-text-primary">
                               No Storage
                             </h4>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-xs text-text-secondary">
                               No localStorage/sessionStorage usage
                             </p>
                           </div>
@@ -817,15 +917,15 @@ logger.captureException(new Error("Payment processing failed"), {
             <TabsContent value="frameworks" className="space-y-8">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
                 <div className="space-y-6">
-                  <Card>
+                  <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
                     <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <div className="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center">
-                          <Layers className="w-4 h-4 text-blue-500" />
+                      <CardTitle className="flex items-center space-x-2 text-text-primary">
+                        <div className="w-8 h-8 bg-data/5 rounded-lg flex items-center justify-center">
+                          <Layers className="w-4 h-4 text-data" />
                         </div>
                         <span>React Integration</span>
                       </CardTitle>
-                      <CardDescription>
+                      <CardDescription className="text-text-secondary">
                         Error boundaries and hooks
                       </CardDescription>
                     </CardHeader>
@@ -876,15 +976,15 @@ function useMonitaContext(userId: string, userPlan: string) {
                     </CardContent>
                   </Card>
 
-                  <Card>
+                  <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
                     <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <div className="w-8 h-8 bg-green-500/10 rounded-lg flex items-center justify-center">
-                          <Zap className="w-4 h-4 text-green-500" />
+                      <CardTitle className="flex items-center space-x-2 text-text-primary">
+                        <div className="w-8 h-8 bg-signal/5 rounded-lg flex items-center justify-center">
+                          <Zap className="w-4 h-4 text-signal" />
                         </div>
                         <span>Vue.js Integration</span>
                       </CardTitle>
-                      <CardDescription>
+                      <CardDescription className="text-text-secondary">
                         Global error handler and composition API
                       </CardDescription>
                     </CardHeader>
@@ -933,15 +1033,15 @@ export function useMonita() {
                 </div>
 
                 <div className="space-y-6">
-                  <Card>
+                  <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
                     <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <div className="w-8 h-8 bg-purple-500/10 rounded-lg flex items-center justify-center">
-                          <Server className="w-4 h-4 text-purple-500" />
+                      <CardTitle className="flex items-center space-x-2 text-text-primary">
+                        <div className="w-8 h-8 bg-data-bright/5 rounded-lg flex items-center justify-center">
+                          <Server className="w-4 h-4 text-data-bright" />
                         </div>
                         <span>Next.js Integration</span>
                       </CardTitle>
-                      <CardDescription>
+                      <CardDescription className="text-text-secondary">
                         App Router and Pages Router support
                       </CardDescription>
                     </CardHeader>
@@ -992,29 +1092,32 @@ export async function GET(request: Request) {
                     </CardContent>
                   </Card>
 
-                  <Card>
+                  <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
                     <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <div className="w-8 h-8 bg-orange-500/10 rounded-lg flex items-center justify-center">
-                          <Smartphone className="w-4 h-4 text-orange-500" />
+                      <CardTitle className="flex items-center space-x-2 text-text-primary">
+                        <div className="w-8 h-8 bg-status-warn/5 rounded-lg flex items-center justify-center">
+                          <Smartphone className="w-4 h-4 text-status-warn" />
                         </div>
                         <span>React Native (Coming Soon)</span>
                       </CardTitle>
-                      <CardDescription>
+                      <CardDescription className="text-text-secondary">
                         Mobile app monitoring and crash reporting
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="text-center py-8">
-                        <Rocket className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                        <h3 className="font-semibold mb-2">
+                        <Rocket className="w-12 h-12 mx-auto mb-4 text-text-muted" />
+                        <h3 className="font-semibold mb-2 text-text-primary">
                           React Native Support
                         </h3>
-                        <p className="text-sm text-muted-foreground mb-4">
+                        <p className="text-sm text-text-secondary mb-4">
                           Full React Native support is coming soon with native
                           crash reporting and performance monitoring.
                         </p>
-                        <Badge variant="outline">
+                        <Badge
+                          variant="outline"
+                          className="border-white/[0.08] text-text-secondary"
+                        >
                           <Clock className="w-3 h-3 mr-1" />
                           Coming soon.
                         </Badge>
@@ -1028,15 +1131,15 @@ export async function GET(request: Request) {
             <TabsContent value="environments" className="space-y-8">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
                 <div className="space-y-6">
-                  <Card>
+                  <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
                     <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <div className="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center">
-                          <Code className="w-4 h-4 text-blue-500" />
+                      <CardTitle className="flex items-center space-x-2 text-text-primary">
+                        <div className="w-8 h-8 bg-data/5 rounded-lg flex items-center justify-center">
+                          <Code className="w-4 h-4 text-data" />
                         </div>
                         <span>Development Configuration</span>
                       </CardTitle>
-                      <CardDescription>
+                      <CardDescription className="text-text-secondary">
                         Verbose logging for debugging
                       </CardDescription>
                     </CardHeader>
@@ -1049,10 +1152,10 @@ const devLogger = new Monita({
   apiKey: process.env.MONITA_DEV_API_KEY,
   projectId: "my-app-dev",
   environment: "development",
-  
+
   // Development-specific settings
   minLogLevel: LogLevel.DEBUG, // Capture everything
-  
+
   autoCapture: {
     errors: true,
     performance: true,
@@ -1061,14 +1164,14 @@ const devLogger = new Monita({
     consoleMessages: true, // Capture all console output
     userInteractions: true, // Useful for debugging UX
   },
-  
+
   // More verbose in development
   batchSize: 1, // Send immediately
   flushInterval: 1000, // Flush every second
-  
+
   // Debug mode
   debug: true, // Enable SDK debug logs
-  
+
   onError: (error) => {
     console.error('Monita SDK error:', error);
   },
@@ -1079,15 +1182,15 @@ const devLogger = new Monita({
                     </CardContent>
                   </Card>
 
-                  <Card>
+                  <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
                     <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <div className="w-8 h-8 bg-yellow-500/10 rounded-lg flex items-center justify-center">
-                          <TestTube className="w-4 h-4 text-yellow-500" />
+                      <CardTitle className="flex items-center space-x-2 text-text-primary">
+                        <div className="w-8 h-8 bg-status-warn/5 rounded-lg flex items-center justify-center">
+                          <TestTube className="w-4 h-4 text-status-warn" />
                         </div>
                         <span>Staging Configuration</span>
                       </CardTitle>
-                      <CardDescription>
+                      <CardDescription className="text-text-secondary">
                         Production-like with extra debugging
                       </CardDescription>
                     </CardHeader>
@@ -1098,10 +1201,10 @@ const devLogger = new Monita({
   apiKey: process.env.MONITA_STAGING_API_KEY,
   projectId: "my-app-staging",
   environment: "staging",
-  
+
   // Staging-specific settings
   minLogLevel: LogLevel.INFO, // Skip debug logs
-  
+
   autoCapture: {
     errors: true,
     performance: true,
@@ -1110,11 +1213,11 @@ const devLogger = new Monita({
     consoleMessages: true, // Still useful for testing
     userInteractions: false, // Reduce noise
   },
-  
+
   // Balanced performance
   batchSize: 25,
   flushInterval: 2000,
-  
+
   // Additional context for staging
   defaultContext: {
     buildId: process.env.BUILD_ID,
@@ -1130,15 +1233,15 @@ const devLogger = new Monita({
                 </div>
 
                 <div className="space-y-6">
-                  <Card>
+                  <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
                     <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <div className="w-8 h-8 bg-green-500/10 rounded-lg flex items-center justify-center">
-                          <Shield className="w-4 h-4 text-green-500" />
+                      <CardTitle className="flex items-center space-x-2 text-text-primary">
+                        <div className="w-8 h-8 bg-signal/5 rounded-lg flex items-center justify-center">
+                          <Shield className="w-4 h-4 text-signal" />
                         </div>
                         <span>Production Configuration</span>
                       </CardTitle>
-                      <CardDescription>
+                      <CardDescription className="text-text-secondary">
                         Optimized for performance and reliability
                       </CardDescription>
                     </CardHeader>
@@ -1149,10 +1252,10 @@ const devLogger = new Monita({
   apiKey: process.env.MONITA_PROD_API_KEY,
   projectId: "my-app-prod",
   environment: "production",
-  
+
   // Production-optimized settings
   minLogLevel: LogLevel.WARN, // Only warnings and errors
-  
+
   autoCapture: {
     errors: true, // Critical for production
     performance: true, // Monitor performance
@@ -1161,19 +1264,19 @@ const devLogger = new Monita({
     consoleMessages: false, // Skip in production
     userInteractions: false, // Reduce noise
   },
-  
+
   // Optimized for performance
   batchSize: 100, // Larger batches
   flushInterval: 5000, // Less frequent flushes
   maxRetries: 5, // More resilient
-  
+
   // Production context
   defaultContext: {
     version: process.env.APP_VERSION,
     region: process.env.AWS_REGION,
     instance: process.env.INSTANCE_ID,
   },
-  
+
   // Graceful error handling
   onError: () => {
     // Silent in production
@@ -1185,10 +1288,10 @@ const devLogger = new Monita({
                     </CardContent>
                   </Card>
 
-                  <Card>
+                  <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
                     <CardHeader>
-                      <CardTitle>Environment Comparison</CardTitle>
-                      <CardDescription>
+                      <CardTitle className="text-text-primary font-display">Environment Comparison</CardTitle>
+                      <CardDescription className="text-text-secondary">
                         Configuration differences at a glance
                       </CardDescription>
                     </CardHeader>
@@ -1197,33 +1300,33 @@ const devLogger = new Monita({
                         <div className="min-w-full px-4 sm:px-0">
                           <table className="w-full text-sm">
                             <thead>
-                              <tr className="border-b">
-                                <th className="text-left py-2 pr-2">Setting</th>
-                                <th className="text-center py-2 px-1 sm:px-2">Dev</th>
-                                <th className="text-center py-2 px-1 sm:px-2">Staging</th>
-                                <th className="text-center py-2 px-1 sm:px-2">Prod</th>
+                              <tr className="border-b border-white/[0.06]">
+                                <th className="text-left py-2 pr-2 text-text-primary">Setting</th>
+                                <th className="text-center py-2 px-1 sm:px-2 text-text-primary">Dev</th>
+                                <th className="text-center py-2 px-1 sm:px-2 text-text-primary">Staging</th>
+                                <th className="text-center py-2 px-1 sm:px-2 text-text-primary">Prod</th>
                               </tr>
                             </thead>
-                            <tbody className="space-y-2">
-                              <tr className="border-b">
+                            <tbody className="space-y-2 text-text-secondary">
+                              <tr className="border-b border-white/[0.04]">
                                 <td className="py-2 pr-2 text-xs sm:text-sm">Min Log Level</td>
                                 <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">DEBUG</td>
                                 <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">INFO</td>
                                 <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">WARN</td>
                               </tr>
-                              <tr className="border-b">
+                              <tr className="border-b border-white/[0.04]">
                                 <td className="py-2 pr-2 text-xs sm:text-sm">Console Messages</td>
-                                <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">✅</td>
-                                <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">✅</td>
-                                <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">❌</td>
+                                <td className="text-center px-1 sm:px-2 text-xs sm:text-sm text-signal">&#10003;</td>
+                                <td className="text-center px-1 sm:px-2 text-xs sm:text-sm text-signal">&#10003;</td>
+                                <td className="text-center px-1 sm:px-2 text-xs sm:text-sm text-status-danger">&#10007;</td>
                               </tr>
-                              <tr className="border-b">
+                              <tr className="border-b border-white/[0.04]">
                                 <td className="py-2 pr-2 text-xs sm:text-sm">User Interactions</td>
-                                <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">✅</td>
-                                <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">❌</td>
-                                <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">❌</td>
+                                <td className="text-center px-1 sm:px-2 text-xs sm:text-sm text-signal">&#10003;</td>
+                                <td className="text-center px-1 sm:px-2 text-xs sm:text-sm text-status-danger">&#10007;</td>
+                                <td className="text-center px-1 sm:px-2 text-xs sm:text-sm text-status-danger">&#10007;</td>
                               </tr>
-                              <tr className="border-b">
+                              <tr className="border-b border-white/[0.04]">
                                 <td className="py-2 pr-2 text-xs sm:text-sm">Batch Size</td>
                                 <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">1</td>
                                 <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">25</td>
@@ -1247,15 +1350,21 @@ const devLogger = new Monita({
           </Tabs>
         </section>
 
-        {/* Feature Showcase */}
+        {/* ================================================================
+            FEATURE SHOWCASE
+            ================================================================ */}
         <section className="mb-24">
           <div className="text-center mb-12 px-4 sm:px-0">
-            <Badge variant="outline" className="mb-4">
-              <Target className="w-3 h-3 mr-1" />
-              Advanced Capabilities
-            </Badge>
-            <h2 className="text-2xl sm:text-3xl font-bold mb-4">Beyond Basic Logging</h2>
-            <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-signal/20 bg-signal-muted backdrop-blur-sm mb-4">
+              <Target className="w-3 h-3 text-signal" />
+              <span className="text-xs font-display font-semibold uppercase tracking-[0.06em] text-signal">
+                Advanced Capabilities
+              </span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-display font-bold mb-4 text-text-primary">
+              Beyond Basic Logging
+            </h2>
+            <p className="text-text-secondary text-base sm:text-lg max-w-2xl mx-auto">
               Comprehensive observability with intelligent automation and
               privacy protection
             </p>
@@ -1265,179 +1374,147 @@ const devLogger = new Monita({
           </div>
         </section>
 
-        {/* API Reference */}
+        {/* ================================================================
+            API REFERENCE — Glass cards with hover glow
+            ================================================================ */}
         <section id="reference" className="mb-24">
           <div className="text-center mb-12 px-4 sm:px-0">
-            <Badge variant="outline" className="mb-4">
-              <BookOpen className="w-3 h-3 mr-1" />
-              API Reference
-            </Badge>
-            <h2 className="text-2xl sm:text-3xl font-bold mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-signal/20 bg-signal-muted backdrop-blur-sm mb-4">
+              <BookOpen className="w-3 h-3 text-signal" />
+              <span className="text-xs font-display font-semibold uppercase tracking-[0.06em] text-signal">
+                API Reference
+              </span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-display font-bold mb-4 text-text-primary">
               Complete API Documentation
             </h2>
-            <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
+            <p className="text-text-secondary text-base sm:text-lg max-w-2xl mx-auto">
               Comprehensive reference for all methods, options, and
               configuration
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center space-x-2">
-                  <Rocket className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 flex-shrink-0" />
-                  <span className="text-sm sm:text-base">Core Methods</span>
-                </CardTitle>
-                <CardDescription className="text-xs sm:text-sm">Essential logging methods</CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0 space-y-2">
-                <div className="space-y-2">
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    logger.info(message, data?)
-                  </code>
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    logger.warn(message, data?)
-                  </code>
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    logger.error(message, error?)
-                  </code>
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    logger.debug(message, data?)
-                  </code>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center space-x-2">
-                  <Bug className="w-4 h-4 sm:w-5 sm:h-5 text-red-500 flex-shrink-0" />
-                  <span className="text-sm sm:text-base">Exception Handling</span>
-                </CardTitle>
-                <CardDescription className="text-xs sm:text-sm">Advanced error capture</CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0 space-y-2">
-                <div className="space-y-2">
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    captureException(error, context?)
-                  </code>
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    captureMessage(message, level, data?)
-                  </code>
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    addBreadcrumb(message, category?)
-                  </code>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center space-x-2">
-                  <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0" />
-                  <span className="text-sm sm:text-base">Context Management</span>
-                </CardTitle>
-                <CardDescription className="text-xs sm:text-sm">Global and scoped context</CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0 space-y-2">
-                <div className="space-y-2">
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    setContext(context)
-                  </code>
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    clearContext()
-                  </code>
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    withContext(context, callback)
-                  </code>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center space-x-2">
-                  <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 flex-shrink-0" />
-                  <span className="text-sm sm:text-base">Performance</span>
-                </CardTitle>
-                <CardDescription className="text-xs sm:text-sm">
-                  Performance monitoring methods
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0 space-y-2">
-                <div className="space-y-2">
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    startTimer(name)
-                  </code>
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    endTimer(name)
-                  </code>
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    measureFunction(fn, name?)
-                  </code>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center space-x-2">
-                  <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0" />
-                  <span className="text-sm sm:text-base">Lifecycle</span>
-                </CardTitle>
-                <CardDescription className="text-xs sm:text-sm">SDK lifecycle management</CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0 space-y-2">
-                <div className="space-y-2">
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    logger.flush()
-                  </code>
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    logger.close()
-                  </code>
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    logger.isEnabled()
-                  </code>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center space-x-2">
-                  <Workflow className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 flex-shrink-0" />
-                  <span className="text-sm sm:text-base">Configuration</span>
-                </CardTitle>
-                <CardDescription className="text-xs sm:text-sm">Runtime configuration</CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0 space-y-2">
-                <div className="space-y-2">
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    logger.setLogLevel(level)
-                  </code>
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    logger.enable() / logger.disable()
-                  </code>
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    logger.updateConfig(config)
-                  </code>
-                </div>
-              </CardContent>
-            </Card>
+            {[
+              {
+                icon: Rocket,
+                title: "Core Methods",
+                description: "Essential logging methods",
+                color: "text-data",
+                bgColor: "bg-data/5",
+                methods: [
+                  "logger.info(message, data?)",
+                  "logger.warn(message, data?)",
+                  "logger.error(message, error?)",
+                  "logger.debug(message, data?)",
+                ],
+              },
+              {
+                icon: Bug,
+                title: "Exception Handling",
+                description: "Advanced error capture",
+                color: "text-status-danger",
+                bgColor: "bg-status-danger/5",
+                methods: [
+                  "captureException(error, context?)",
+                  "captureMessage(message, level, data?)",
+                  "addBreadcrumb(message, category?)",
+                ],
+              },
+              {
+                icon: Settings,
+                title: "Context Management",
+                description: "Global and scoped context",
+                color: "text-signal",
+                bgColor: "bg-signal/5",
+                methods: [
+                  "setContext(context)",
+                  "clearContext()",
+                  "withContext(context, callback)",
+                ],
+              },
+              {
+                icon: Activity,
+                title: "Performance",
+                description: "Performance monitoring methods",
+                color: "text-data-bright",
+                bgColor: "bg-data-bright/5",
+                methods: [
+                  "startTimer(name)",
+                  "endTimer(name)",
+                  "measureFunction(fn, name?)",
+                ],
+              },
+              {
+                icon: RefreshCw,
+                title: "Lifecycle",
+                description: "SDK lifecycle management",
+                color: "text-status-warn",
+                bgColor: "bg-status-warn/5",
+                methods: [
+                  "logger.flush()",
+                  "logger.close()",
+                  "logger.isEnabled()",
+                ],
+              },
+              {
+                icon: Workflow,
+                title: "Configuration",
+                description: "Runtime configuration",
+                color: "text-text-secondary",
+                bgColor: "bg-white/[0.03]",
+                methods: [
+                  "logger.setLogLevel(level)",
+                  "logger.enable() / logger.disable()",
+                  "logger.updateConfig(config)",
+                ],
+              },
+            ].map((section, index) => (
+              <Card
+                key={index}
+                className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06] hover:border-signal/20 hover:bg-white/[0.05] transition-all duration-300"
+              >
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center space-x-2 text-text-primary">
+                    <section.icon className={`w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 ${section.color}`} />
+                    <span className="text-sm sm:text-base">{section.title}</span>
+                  </CardTitle>
+                  <CardDescription className="text-xs sm:text-sm text-text-secondary">
+                    {section.description}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="pt-0 space-y-2">
+                  <div className="space-y-2">
+                    {section.methods.map((method, idx) => (
+                      <code
+                        key={idx}
+                        className="text-xs sm:text-sm bg-bg-elevated px-2 py-1 rounded block break-all font-mono text-text-code"
+                      >
+                        {method}
+                      </code>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </section>
 
-        {/* Best Practices */}
+        {/* ================================================================
+            BEST PRACTICES — Observatory tokens
+            ================================================================ */}
         <section className="mb-24">
           <div className="text-center mb-12 px-4 sm:px-0">
-            <Badge variant="outline" className="mb-4">
-              <Lightbulb className="w-3 h-3 mr-1" />
-              Best Practices
-            </Badge>
-            <h2 className="text-2xl sm:text-3xl font-bold mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-signal/20 bg-signal-muted backdrop-blur-sm mb-4">
+              <Lightbulb className="w-3 h-3 text-signal" />
+              <span className="text-xs font-display font-semibold uppercase tracking-[0.06em] text-signal">
+                Best Practices
+              </span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-display font-bold mb-4 text-text-primary">
               Production-Ready Implementation
             </h2>
-            <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
+            <p className="text-text-secondary text-base sm:text-lg max-w-2xl mx-auto">
               Follow these guidelines to maximize the value of
               auto-instrumentation
             </p>
@@ -1445,162 +1522,116 @@ const devLogger = new Monita({
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
             <div className="space-y-6">
-              <Card>
+              <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
                 <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center space-x-2">
-                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0" />
+                  <CardTitle className="flex items-center space-x-2 text-text-primary">
+                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-signal flex-shrink-0" />
                     <span className="text-sm sm:text-base">Recommended Practices</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0 space-y-4">
-                  <div className="flex items-start space-x-3">
-                    <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 mt-1 flex-shrink-0" />
-                    <div className="min-w-0">
-                      <h4 className="font-semibold text-xs sm:text-sm">
-                        Trust auto-instrumentation
-                      </h4>
-                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                        Let the SDK capture most events automatically - manual
-                        logging should be minimal
-                      </p>
+                  {[
+                    {
+                      title: "Trust auto-instrumentation",
+                      desc: "Let the SDK capture most events automatically - manual logging should be minimal",
+                    },
+                    {
+                      title: "Set meaningful context",
+                      desc: "Use setContext() to add user ID, feature flags, and business context",
+                    },
+                    {
+                      title: "Configure by environment",
+                      desc: "Use different log levels and capture settings for dev/staging/prod",
+                    },
+                    {
+                      title: "Add breadcrumbs for complex flows",
+                      desc: "Use breadcrumbs to trace user journeys through multi-step processes",
+                    },
+                    {
+                      title: "Monitor bundle size impact",
+                      desc: "The SDK is lightweight (~50KB) but monitor your bundle analyzer",
+                    },
+                  ].map((item, idx) => (
+                    <div key={idx} className="flex items-start space-x-3">
+                      <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-signal mt-1 flex-shrink-0" />
+                      <div className="min-w-0">
+                        <h4 className="font-semibold text-xs sm:text-sm text-text-primary">
+                          {item.title}
+                        </h4>
+                        <p className="text-xs sm:text-sm text-text-secondary leading-relaxed">
+                          {item.desc}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 mt-1 flex-shrink-0" />
-                    <div className="min-w-0">
-                      <h4 className="font-semibold text-xs sm:text-sm">
-                        Set meaningful context
-                      </h4>
-                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                        Use setContext() to add user ID, feature flags, and
-                        business context
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 mt-1 flex-shrink-0" />
-                    <div className="min-w-0">
-                      <h4 className="font-semibold text-xs sm:text-sm">
-                        Configure by environment
-                      </h4>
-                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                        Use different log levels and capture settings for
-                        dev/staging/prod
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 mt-1 flex-shrink-0" />
-                    <div className="min-w-0">
-                      <h4 className="font-semibold text-xs sm:text-sm">
-                        Add breadcrumbs for complex flows
-                      </h4>
-                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                        Use breadcrumbs to trace user journeys through
-                        multi-step processes
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 mt-1 flex-shrink-0" />
-                    <div className="min-w-0">
-                      <h4 className="font-semibold text-xs sm:text-sm">
-                        Monitor bundle size impact
-                      </h4>
-                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                        The SDK is lightweight (~50KB) but monitor your bundle
-                        analyzer
-                      </p>
-                    </div>
-                  </div>
+                  ))}
                 </CardContent>
               </Card>
             </div>
 
             <div className="space-y-6">
-              <Card>
+              <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
                 <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center space-x-2">
-                    <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-red-500 flex-shrink-0" />
+                  <CardTitle className="flex items-center space-x-2 text-text-primary">
+                    <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-status-danger flex-shrink-0" />
                     <span className="text-sm sm:text-base">Common Pitfalls</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0 space-y-4">
-                  <div className="flex items-start space-x-3">
-                    <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4 text-red-500 mt-1 flex-shrink-0" />
-                    <div className="min-w-0">
-                      <h4 className="font-semibold text-xs sm:text-sm">
-                        Don&apos;t over-log manually
-                      </h4>
-                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                        Auto-capture handles most cases - excessive manual
-                        logging creates noise
-                      </p>
+                  {[
+                    {
+                      title: "Don\u2019t over-log manually",
+                      desc: "Auto-capture handles most cases - excessive manual logging creates noise",
+                    },
+                    {
+                      title: "Don\u2019t enable all features in production",
+                      desc: "User interactions and console messages can be very verbose",
+                    },
+                    {
+                      title: "Don\u2019t ignore privacy settings",
+                      desc: "Review auto-sanitization settings and add custom filters if needed",
+                    },
+                    {
+                      title: "Don\u2019t forget error boundaries",
+                      desc: "Add React/Vue error boundaries for comprehensive error capture",
+                    },
+                    {
+                      title: "Don\u2019t block initialization",
+                      desc: "Initialize the SDK early but don\u2019t block app startup on SDK errors",
+                    },
+                  ].map((item, idx) => (
+                    <div key={idx} className="flex items-start space-x-3">
+                      <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4 text-status-danger mt-1 flex-shrink-0" />
+                      <div className="min-w-0">
+                        <h4 className="font-semibold text-xs sm:text-sm text-text-primary">
+                          {item.title}
+                        </h4>
+                        <p className="text-xs sm:text-sm text-text-secondary leading-relaxed">
+                          {item.desc}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4 text-red-500 mt-1 flex-shrink-0" />
-                    <div className="min-w-0">
-                      <h4 className="font-semibold text-xs sm:text-sm">
-                        Don&apos;t enable all features in production
-                      </h4>
-                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                        User interactions and console messages can be very
-                        verbose
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4 text-red-500 mt-1 flex-shrink-0" />
-                    <div className="min-w-0">
-                      <h4 className="font-semibold text-xs sm:text-sm">
-                        Don&apos;t ignore privacy settings
-                      </h4>
-                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                        Review auto-sanitization settings and add custom filters
-                        if needed
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4 text-red-500 mt-1 flex-shrink-0" />
-                    <div className="min-w-0">
-                      <h4 className="font-semibold text-xs sm:text-sm">
-                        Don&apos;t forget error boundaries
-                      </h4>
-                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                        Add React/Vue error boundaries for comprehensive error
-                        capture
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4 text-red-500 mt-1 flex-shrink-0" />
-                    <div className="min-w-0">
-                      <h4 className="font-semibold text-xs sm:text-sm">
-                        Don&apos;t block initialization
-                      </h4>
-                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                        Initialize the SDK early but don&apos;t block app
-                        startup on SDK errors
-                      </p>
-                    </div>
-                  </div>
+                  ))}
                 </CardContent>
               </Card>
             </div>
           </div>
         </section>
 
-        {/* Roadmap */}
+        {/* ================================================================
+            ROADMAP — Glass cards, Observatory status badges
+            ================================================================ */}
         <section className="mb-24">
           <div className="text-center mb-12 px-4 sm:px-0">
-            <Badge variant="outline" className="mb-4">
-              <GitBranch className="w-3 h-3 mr-1" />
-              Roadmap
-            </Badge>
-            <h2 className="text-2xl sm:text-3xl font-bold mb-4">What&apos;s Coming Next</h2>
-            <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-signal/20 bg-signal-muted backdrop-blur-sm mb-4">
+              <GitBranch className="w-3 h-3 text-signal" />
+              <span className="text-xs font-display font-semibold uppercase tracking-[0.06em] text-signal">
+                Roadmap
+              </span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-display font-bold mb-4 text-text-primary">
+              What&apos;s Coming Next
+            </h2>
+            <p className="text-text-secondary text-base sm:text-lg max-w-2xl mx-auto">
               Upcoming features and improvements to the Monita SDK
             </p>
           </div>
@@ -1614,8 +1645,9 @@ const devLogger = new Monita({
                   "Native crash reporting and performance monitoring for mobile apps",
                 status: "In Progress",
                 version: "v2.2",
-                color: "text-blue-500",
-                bgColor: "bg-blue-500/10",
+                color: "text-signal",
+                bgColor: "bg-signal/5",
+                statusColor: "bg-signal/10 text-signal border-signal/20",
               },
               {
                 icon: Rocket,
@@ -1623,8 +1655,9 @@ const devLogger = new Monita({
                 description: "Seamless integration with Expo managed workflow",
                 status: "Planned",
                 version: "v2.3",
-                color: "text-purple-500",
-                bgColor: "bg-purple-500/10",
+                color: "text-data",
+                bgColor: "bg-data/5",
+                statusColor: "bg-data/10 text-data border-data/20",
               },
               {
                 icon: Eye,
@@ -1632,8 +1665,9 @@ const devLogger = new Monita({
                 description: "Visual session replay with privacy controls",
                 status: "Research",
                 version: "v2.4",
-                color: "text-green-500",
-                bgColor: "bg-green-500/10",
+                color: "text-data-bright",
+                bgColor: "bg-data-bright/5",
+                statusColor: "bg-data-bright/10 text-data-bright border-data-bright/20",
               },
               {
                 icon: Palette,
@@ -1641,8 +1675,9 @@ const devLogger = new Monita({
                 description: "Build custom visualizations for your metrics",
                 status: "Planned",
                 version: "v2.5",
-                color: "text-orange-500",
-                bgColor: "bg-orange-500/10",
+                color: "text-status-warn",
+                bgColor: "bg-status-warn/5",
+                statusColor: "bg-data/10 text-data border-data/20",
               },
               {
                 icon: MessageCircle,
@@ -1650,8 +1685,9 @@ const devLogger = new Monita({
                 description: "Real-time alerts and notifications",
                 status: "Planned",
                 version: "v2.6",
-                color: "text-pink-500",
-                bgColor: "bg-pink-500/10",
+                color: "text-pink-400",
+                bgColor: "bg-pink-400/5",
+                statusColor: "bg-data/10 text-data border-data/20",
               },
               {
                 icon: Network,
@@ -1659,11 +1695,15 @@ const devLogger = new Monita({
                 description: "Detailed GraphQL query and mutation tracking",
                 status: "Research",
                 version: "v2.7",
-                color: "text-indigo-500",
-                bgColor: "bg-indigo-500/10",
+                color: "text-data",
+                bgColor: "bg-data/5",
+                statusColor: "bg-data-bright/10 text-data-bright border-data-bright/20",
               },
             ].map((item, index) => (
-              <Card key={index} className="hover:shadow-md transition-shadow">
+              <Card
+                key={index}
+                className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06] hover:border-signal/20 hover:bg-white/[0.05] transition-all duration-300"
+              >
                 <CardHeader className="pb-3">
                   <div className="flex items-start space-x-3">
                     <div
@@ -1672,25 +1712,25 @@ const devLogger = new Monita({
                       <item.icon className={`w-4 h-4 sm:w-5 sm:h-5 ${item.color}`} />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <CardTitle className="text-sm sm:text-lg leading-tight">{item.title}</CardTitle>
+                      <CardTitle className="text-sm sm:text-lg leading-tight text-text-primary">
+                        {item.title}
+                      </CardTitle>
                       <div className="flex items-center space-x-2 mt-2">
-                        <Badge variant="outline" className="text-xs">
+                        <Badge
+                          variant="outline"
+                          className="text-xs border-white/[0.08] text-text-secondary"
+                        >
                           {item.version}
                         </Badge>
                         <Badge
-                          variant={
-                            item.status === "In Progress"
-                              ? "default"
-                              : "secondary"
-                          }
-                          className="text-xs"
+                          className={`text-xs border ${item.statusColor}`}
                         >
                           {item.status}
                         </Badge>
                       </div>
                     </div>
                   </div>
-                  <CardDescription className="text-xs sm:text-sm mt-3 leading-relaxed">
+                  <CardDescription className="text-xs sm:text-sm mt-3 leading-relaxed text-text-secondary">
                     {item.description}
                   </CardDescription>
                 </CardHeader>
@@ -1699,96 +1739,98 @@ const devLogger = new Monita({
           </div>
         </section>
 
-        {/* Resources */}
+        {/* ================================================================
+            RESOURCES — Glass cards with hover lift
+            ================================================================ */}
         <section className="mb-24">
           <div className="text-center mb-12 px-4 sm:px-0">
-            <Badge variant="outline" className="mb-4">
-              <BookOpen className="w-3 h-3 mr-1" />
-              Resources & Support
-            </Badge>
-            <h2 className="text-2xl sm:text-3xl font-bold mb-4">Learn More</h2>
-            <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-signal/20 bg-signal-muted backdrop-blur-sm mb-4">
+              <BookOpen className="w-3 h-3 text-signal" />
+              <span className="text-xs font-display font-semibold uppercase tracking-[0.06em] text-signal">
+                Resources & Support
+              </span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-display font-bold mb-4 text-text-primary">
+              Learn More
+            </h2>
+            <p className="text-text-secondary text-base sm:text-lg max-w-2xl mx-auto">
               Comprehensive documentation, examples, and community support
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            <Card className="hover:shadow-md transition-shadow">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center space-x-2">
-                  <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 flex-shrink-0" />
-                  <span className="text-sm sm:text-base">Full Documentation</span>
-                </CardTitle>
-                <CardDescription className="text-xs sm:text-sm">
-                  Complete guides, tutorials, and API reference
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <Button
-                  variant="outline"
-                  className="w-full bg-transparent text-xs sm:text-sm"
-                  asChild
-                >
-                  <Link href="https://loghive.vercel.app/sdk" target="_blank">
-                    View Documentation
-                    <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 ml-2" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-md transition-shadow">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center space-x-2">
-                  <Code className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0" />
-                  <span className="text-sm sm:text-base">Code Examples</span>
-                </CardTitle>
-                <CardDescription className="text-xs sm:text-sm">
-                  Real-world examples and integration patterns
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <Button
-                  variant="outline"
-                  className="w-full bg-transparent text-xs sm:text-sm"
-                  asChild
-                >
-                  <Link
-                    href="https://github.com/Stanwukong/loghive-sdk"
-                    target="_blank"
+            {[
+              {
+                icon: BookOpen,
+                title: "Full Documentation",
+                description: "Complete guides, tutorials, and API reference",
+                color: "text-data",
+                href: "https://loghive.vercel.app/sdk",
+                label: "View Documentation",
+              },
+              {
+                icon: Code,
+                title: "Code Examples",
+                description: "Real-world examples and integration patterns",
+                color: "text-signal",
+                href: "https://github.com/Stanwukong/loghive-sdk",
+                label: "Browse Examples",
+              },
+              {
+                icon: Github,
+                title: "GitHub Repository",
+                description: "Open source SDK and community contributions",
+                color: "text-text-secondary",
+                href: "https://github.com/loghive/sdk",
+                label: "View on GitHub",
+              },
+              {
+                icon: TrendingUp,
+                title: "Changelog",
+                description: "Latest updates and new features",
+                color: "text-status-warn",
+                href: "https://github.com/Stanwukong/loghive-sdk/blob/main/CHANGELOG.md",
+                label: "View Changelog",
+              },
+              {
+                icon: Heart,
+                title: "Support",
+                description: "Get help from our support team",
+                color: "text-status-danger",
+                href: "mailto:stanleyajanaku@gmail.com",
+                label: "Contact Support",
+              },
+            ].map((resource, index) => (
+              <Card
+                key={index}
+                className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06] hover:border-signal/20 hover:bg-white/[0.05] hover:-translate-y-0.5 transition-all duration-300"
+              >
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center space-x-2 text-text-primary">
+                    <resource.icon className={`w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 ${resource.color}`} />
+                    <span className="text-sm sm:text-base">{resource.title}</span>
+                  </CardTitle>
+                  <CardDescription className="text-xs sm:text-sm text-text-secondary">
+                    {resource.description}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <Button
+                    variant="outline"
+                    className="w-full text-xs sm:text-sm bg-white/[0.03] border-white/[0.08] hover:bg-signal/10 hover:border-signal/20 hover:text-signal transition-all duration-200"
+                    asChild
                   >
-                    Browse Examples
-                    <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 ml-2" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
+                    <Link href={resource.href} target="_blank">
+                      {resource.label}
+                      <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 ml-2" />
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
 
-            <Card className="hover:shadow-md transition-shadow">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center space-x-2">
-                  <Github className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 flex-shrink-0" />
-                  <span className="text-sm sm:text-base">GitHub Repository</span>
-                </CardTitle>
-                <CardDescription className="text-xs sm:text-sm">
-                  Open source SDK and community contributions
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <Button
-                  variant="outline"
-                  className="w-full bg-transparent text-xs sm:text-sm"
-                  asChild
-                >
-                  <Link href="https://github.com/loghive/sdk" target="_blank">
-                    View on GitHub
-                    <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 ml-2" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* <Card className="hover:shadow-md transition-shadow">
+            {/* Commented out Discord community card preserved from original */}
+            {/* <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <MessageCircle className="w-5 h-5 text-purple-500" />
@@ -1805,109 +1847,98 @@ const devLogger = new Monita({
                 </Button>
               </CardContent>
             </Card> */}
-
-            <Card className="hover:shadow-md transition-shadow">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center space-x-2">
-                  <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0" />
-                  <span className="text-sm sm:text-base">Changelog</span>
-                </CardTitle>
-                <CardDescription className="text-xs sm:text-sm">
-                  Latest updates and new features
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <Button
-                  variant="outline"
-                  className="w-full bg-transparent text-xs sm:text-sm"
-                  asChild
-                >
-                  <Link
-                    href="https://github.com/Stanwukong/loghive-sdk/blob/main/CHANGELOG.md"
-                    target="_blank"
-                  >
-                    View Changelog
-                    <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 ml-2" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-md transition-shadow">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center space-x-2">
-                  <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-red-500 flex-shrink-0" />
-                  <span className="text-sm sm:text-base">Support</span>
-                </CardTitle>
-                <CardDescription className="text-xs sm:text-sm">
-                  Get help from our support team
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <Button
-                  variant="outline"
-                  className="w-full bg-transparent text-xs sm:text-sm"
-                  asChild
-                >
-                  <Link href="mailto:stanleyajanaku@gmail.com">
-                    Contact Support
-                    <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 ml-2" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
           </div>
         </section>
 
-        {/* Get Started CTA */}
-        <section className="text-center py-16 bg-gradient-to-r from-primary/5 to-primary/10 rounded-3xl border border-primary/20">
-          <Badge variant="secondary" className="mb-6">
-            <Rocket className="w-3 h-3 mr-1" />
-            Ready to Start?
-          </Badge>
-          <h2 className="text-3xl font-bold mb-4">
-            Start Auto-Capturing in 30 Seconds
-          </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-8">
-            Join thousands of developers who trust Monita SDK for comprehensive
-            auto-instrumentation
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8 px-4 sm:px-0">
-            <Button size="lg" className="text-sm sm:text-base w-full sm:w-auto" asChild>
-              <Link href="/dashboard">
-                Get Started Free
-                <ArrowRight className="ml-2 w-4 h-4" />
-              </Link>
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="text-sm sm:text-base bg-transparent w-full sm:w-auto"
-            >
-              Schedule Demo
-            </Button>
-            <Button size="lg" variant="ghost" className="text-sm sm:text-base w-full sm:w-auto" asChild>
-              <Link
-                href="https://github.com/Stanwukong/loghive-sdk"
-                target="_blank"
+        {/* ================================================================
+            FINAL CTA — Full-width glass section with signal gradient
+            ================================================================ */}
+        <section
+          className="relative text-center py-16 rounded-3xl overflow-hidden"
+        >
+          {/* Background glass effect */}
+          <div className="absolute inset-0 bg-white/[0.02] backdrop-blur-md" />
+          {/* Gradient border effect */}
+          <div
+            className="absolute inset-0 rounded-3xl"
+            style={{
+              border: "1px solid transparent",
+              background:
+                "linear-gradient(var(--bg-base), var(--bg-base)) padding-box, linear-gradient(135deg, var(--signal) 0%, transparent 40%, transparent 60%, var(--signal) 100%) border-box",
+              opacity: 0.2,
+            }}
+          />
+          {/* Radial glow */}
+          <div
+            className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[200px] pointer-events-none"
+            style={{
+              background:
+                "radial-gradient(ellipse at center, var(--signal-glow) 0%, transparent 70%)",
+              opacity: 0.5,
+            }}
+          />
+
+          <div className="relative z-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-signal/20 bg-signal-muted backdrop-blur-sm mb-6">
+              <Rocket className="w-3 h-3 text-signal" />
+              <span className="text-xs font-display font-semibold uppercase tracking-[0.06em] text-signal">
+                Ready to Start?
+              </span>
+            </div>
+            <h2 className="text-3xl font-display font-bold mb-4 text-text-primary">
+              Start Auto-Capturing in 30 Seconds
+            </h2>
+            <p className="text-text-secondary text-lg max-w-2xl mx-auto mb-8">
+              Join thousands of developers who trust Monita SDK for comprehensive
+              auto-instrumentation
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8 px-4 sm:px-0">
+              <Button
+                variant="signal"
+                size="lg"
+                className="text-sm sm:text-base font-display font-bold w-full sm:w-auto"
+                asChild
               >
-                <Github className="mr-2 w-4 h-4" />
-                Star on GitHub
-              </Link>
-            </Button>
-          </div>
-          <div className="flex flex-wrap justify-center gap-4 sm:gap-6 text-xs sm:text-sm text-muted-foreground px-4 sm:px-0">
-            <div className="flex items-center space-x-2">
-              <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 flex-shrink-0" />
-              <span>No credit card required</span>
+                <Link href="/dashboard">
+                  Get Started Free
+                  <ArrowRight className="ml-2 w-4 h-4" />
+                </Link>
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="text-sm sm:text-base bg-white/[0.03] border-white/[0.08] hover:bg-white/[0.06] hover:border-signal/30 transition-all duration-200 w-full sm:w-auto"
+              >
+                Schedule Demo
+              </Button>
+              <Button
+                size="lg"
+                variant="ghost"
+                className="text-sm sm:text-base text-text-secondary hover:text-text-primary w-full sm:w-auto"
+                asChild
+              >
+                <Link
+                  href="https://github.com/Stanwukong/loghive-sdk"
+                  target="_blank"
+                >
+                  <Github className="mr-2 w-4 h-4" />
+                  Star on GitHub
+                </Link>
+              </Button>
             </div>
-            <div className="flex items-center space-x-2">
-              <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 flex-shrink-0" />
-              <span>10,000 free events per month</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 flex-shrink-0" />
-              <span>Zero-config auto-instrumentation</span>
+            <div className="flex flex-wrap justify-center gap-4 sm:gap-6 text-xs sm:text-sm text-text-secondary px-4 sm:px-0">
+              <div className="flex items-center space-x-2">
+                <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-signal flex-shrink-0" />
+                <span>No credit card required</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-signal flex-shrink-0" />
+                <span>10,000 free events per month</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-signal flex-shrink-0" />
+                <span>Zero-config auto-instrumentation</span>
+              </div>
             </div>
           </div>
         </section>

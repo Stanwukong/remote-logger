@@ -105,3 +105,17 @@ export const useCreatePortal = () => {
     mutationFn: () => billingService.createPortal(),
   });
 };
+
+/**
+ * Cancel the current subscription.
+ */
+export const useCancelSubscription = () => {
+  return useMutation({
+    mutationFn: () => billingService.cancelSubscription(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: billingQueryKeys.all,
+      });
+    },
+  });
+};

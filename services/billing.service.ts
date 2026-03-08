@@ -177,6 +177,28 @@ export const billingService = {
   },
 
   /**
+   * Cancel the current subscription.
+   */
+  cancelSubscription: async (): Promise<Subscription> => {
+    try {
+      const response = await apiClient.post<ApiResponse<Subscription>>(
+        "/billing/cancel"
+      );
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to cancel subscription",
+          response.status,
+          response.data.errors
+        );
+      }
+      return response.data.data!;
+    } catch (error) {
+      handleApiError(error);
+      throw error;
+    }
+  },
+
+  /**
    * Check a specific resource limit.
    */
   checkLimit: async (resource: string): Promise<LimitCheckResult> => {
