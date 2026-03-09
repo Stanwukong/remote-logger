@@ -61,12 +61,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const section = findSectionBySlug(fullSlug);
 
   if (!doc) {
-    return { title: "Not Found - Monita Docs" };
+    return { title: "Not Found - Apperio Docs" };
   }
 
   return {
-    title: `${doc.title} - ${section?.title || "Docs"} - Monita`,
-    description: doc.description || `${doc.title} documentation for Monita`,
+    title: `${doc.title} - ${section?.title || "Docs"} - Apperio`,
+    description: doc.description || `${doc.title} documentation for Apperio`,
   };
 }
 

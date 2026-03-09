@@ -39,12 +39,12 @@ export function ClosingCTA() {
         </h2>
 
         <p className="text-base sm:text-lg text-text-secondary max-w-xl mx-auto mb-10 leading-relaxed" data-reveal>
-          Most bugs are announced before users notice them. Monita listens.
+          Most bugs are announced before users notice them. Apperio listens.
         </p>
 
         {/* Terminal */}
         <div className="max-w-[480px] mx-auto mb-8" data-reveal>
-          <TerminalBlock code="npm install monita" showCopy />
+          <TerminalBlock code="npm install apperio" showCopy />
         </div>
 
         {/* CTAs */}

@@ -171,7 +171,7 @@ export default function ResetPasswordPage() {
           Set new password
         </h1>
         <p className="text-text-secondary">
-          Choose a strong password for your Monita account.
+          Choose a strong password for your Apperio account.
         </p>
       </div>
 

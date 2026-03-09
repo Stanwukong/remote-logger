@@ -48,7 +48,7 @@ export default function PrivacySettingsPage() {
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.download = `monita-data-export-${Date.now()}.zip`;
+        link.download = `apperio-data-export-${Date.now()}.zip`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

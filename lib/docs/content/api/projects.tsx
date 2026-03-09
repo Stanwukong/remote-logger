@@ -34,7 +34,7 @@ export default function ApiProjectsPage() {
       >
         <DocH2 id="overview">Overview</DocH2>
         <DocP>
-          Projects are the top-level organizational unit in Monita. Each
+          Projects are the top-level organizational unit in Apperio. Each
           project has its own API key, log data, team members, and
           configuration. All project endpoints require JWT authentication.
         </DocP>

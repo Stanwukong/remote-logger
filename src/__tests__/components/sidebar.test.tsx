@@ -68,8 +68,8 @@ vi.mock("@/hooks/user.hook", () => ({
 }));
 
 // Mock Zustand stores
-vi.mock("@/store/loghive-store", () => ({
-  useLogHiveStore: (selector: any) =>
+vi.mock("@/store/apperio-store", () => ({
+  useApperioStore: (selector: any) =>
     selector({
       currentProjectId: mockCurrentProjectId,
       sidebarCollapsed: false,
@@ -171,10 +171,10 @@ describe("AppSidebar", () => {
     mockCurrentOrgId = null;
   });
 
-  it("renders the sidebar with Monita branding", () => {
+  it("renders the sidebar with Apperio branding", () => {
     render(<AppSidebar />);
 
-    expect(screen.getByText("Monita")).toBeInTheDocument();
+    expect(screen.getByText("Apperio")).toBeInTheDocument();
     expect(screen.getByText("Developer Console")).toBeInTheDocument();
   });
 

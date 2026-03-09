@@ -98,7 +98,7 @@ export default function SignupPage() {
         password,
         confirmPassword,
       });
-      toast.success("Account created! Welcome to Monita.");
+      toast.success("Account created! Welcome to Apperio.");
       router.push("/dashboard");
     } catch (err: any) {
       toast.error(err?.message || "Failed to create account");
@@ -160,7 +160,7 @@ export default function SignupPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
             <h1 className="text-3xl font-display font-bold text-signal tracking-tight">
-              Monita
+              Apperio
             </h1>
           </Link>
           <p className="text-text-muted mt-2 text-sm">

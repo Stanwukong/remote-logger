@@ -12,7 +12,7 @@ import {
 
 const toc: TocItem[] = [
   { id: "install-the-sdk", title: "Step 1: Install the SDK", level: 2 },
-  { id: "initialize-monita", title: "Step 2: Initialize Monita", level: 2 },
+  { id: "initialize-apperio", title: "Step 2: Initialize Apperio", level: 2 },
   { id: "send-your-first-log", title: "Step 3: Send Your First Log", level: 2 },
   { id: "view-in-dashboard", title: "Step 4: View in Dashboard", level: 2 },
   { id: "enable-auto-capture", title: "Step 5: Enable Auto-Capture", level: 2 },
@@ -25,38 +25,38 @@ export default function QuickStartPage() {
       <DocsContent
         slug="quickstart"
         title="Quick Start"
-        description="Get Monita running in your application in under 5 minutes."
+        description="Get Apperio running in your application in under 5 minutes."
       >
         <DocCallout type="tip" title="Prerequisites">
-          You need a Monita account and a project. Sign up at{" "}
+          You need a Apperio account and a project. Sign up at{" "}
           <InlineCode>https://loghive.vercel.app</InlineCode> and create your
           first project to get an API key.
         </DocCallout>
 
         <DocH2 id="install-the-sdk">Step 1: Install the SDK</DocH2>
         <DocP>
-          Install the <InlineCode>monita</InlineCode> package from npm:
+          Install the <InlineCode>apperio</InlineCode> package from npm:
         </DocP>
-        <CodeBlock language="bash" code="npm install monita" />
+        <CodeBlock language="bash" code="npm install apperio" />
         <DocP>Or use your preferred package manager:</DocP>
         <CodeBlock
           language="bash"
-          code={`yarn add monita
+          code={`yarn add apperio
 # or
-pnpm add monita`}
+pnpm add apperio`}
         />
 
-        <DocH2 id="initialize-monita">Step 2: Initialize Monita</DocH2>
+        <DocH2 id="initialize-apperio">Step 2: Initialize Apperio</DocH2>
         <DocP>
-          Import and initialize Monita at the entry point of your application.
-          You need your project ID and API key from the Monita dashboard.
+          Import and initialize Apperio at the entry point of your application.
+          You need your project ID and API key from the Apperio dashboard.
         </DocP>
         <CodeBlock
           language="typescript"
           filename="src/index.ts"
-          code={`import Monita from "monita";
+          code={`import Apperio from "apperio";
 
-Monita.init({
+Apperio.init({
   projectId: "YOUR_PROJECT_ID",
   apiKey: "YOUR_API_KEY",
   environment: "production",
@@ -78,7 +78,7 @@ Monita.init({
 
         <DocH2 id="send-your-first-log">Step 3: Send Your First Log</DocH2>
         <DocP>
-          Use the logging API to send events at any level. Monita supports six
+          Use the logging API to send events at any level. Apperio supports six
           log levels: <InlineCode>trace</InlineCode>,{" "}
           <InlineCode>debug</InlineCode>, <InlineCode>info</InlineCode>,{" "}
           <InlineCode>warn</InlineCode>, <InlineCode>error</InlineCode>, and{" "}
@@ -87,10 +87,10 @@ Monita.init({
         <CodeBlock
           language="typescript"
           code={`// Simple info log
-Monita.info("Application started successfully");
+Apperio.info("Application started successfully");
 
 // Log with structured data
-Monita.info("User signed in", {
+Apperio.info("User signed in", {
   userId: "user_123",
   method: "oauth",
   provider: "github",
@@ -100,7 +100,7 @@ Monita.info("User signed in", {
 try {
   await fetchUserData();
 } catch (err) {
-  Monita.error("Failed to fetch user data", {
+  Apperio.error("Failed to fetch user data", {
     error: err,
     retryCount: 3,
   });
@@ -109,7 +109,7 @@ try {
 
         <DocH2 id="view-in-dashboard">Step 4: View in Dashboard</DocH2>
         <DocP>
-          Open the Monita dashboard at{" "}
+          Open the Apperio dashboard at{" "}
           <InlineCode>https://loghive.vercel.app</InlineCode> and navigate to
           your project. You will see your logs appearing in real-time in the
           log stream view.
@@ -129,13 +129,13 @@ try {
 
         <DocH2 id="enable-auto-capture">Step 5: Enable Auto-Capture</DocH2>
         <DocP>
-          With auto-capture enabled, Monita automatically instruments your
+          With auto-capture enabled, Apperio automatically instruments your
           application to collect errors, performance data, and more without any
           additional code:
         </DocP>
         <CodeBlock
           language="typescript"
-          code={`Monita.init({
+          code={`Apperio.init({
   projectId: "YOUR_PROJECT_ID",
   apiKey: "YOUR_API_KEY",
   autoCapture: {
@@ -148,12 +148,12 @@ try {
   },
 });
 
-// That's it! Monita handles the rest automatically.`}
+// That's it! Apperio handles the rest automatically.`}
         />
 
         <DocH2 id="whats-next">What's Next</DocH2>
         <DocP>
-          Now that you have Monita running, explore these topics to get the
+          Now that you have Apperio running, explore these topics to get the
           most out of the platform:
         </DocP>
         <CodeBlock

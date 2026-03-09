@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { AlertTriangle, TrendingUp, TrendingDown, Clock, Hash } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
-import { useLogHiveStore } from "@/store/loghive-store";
+import { useApperioStore } from "@/store/apperio-store";
 import {
   useErrorTimeline,
   useTopErrors,
@@ -255,8 +255,8 @@ export default function ErrorAnalyticsPage() {
   const projectId = typeof params?.projectId === "string" ? params.projectId : "";
 
   const [topErrorsView, setTopErrorsView] = useState<ViewMode>("table");
-  const selectedTimeRange = useLogHiveStore((s) => s.selectedTimeRange);
-  const customTimeRange = useLogHiveStore((s) => s.customTimeRange);
+  const selectedTimeRange = useApperioStore((s) => s.selectedTimeRange);
+  const customTimeRange = useApperioStore((s) => s.customTimeRange);
   const timeRangeParams = useMemo(
     () => resolveTimeRangeParams(selectedTimeRange, customTimeRange),
     [selectedTimeRange, customTimeRange]

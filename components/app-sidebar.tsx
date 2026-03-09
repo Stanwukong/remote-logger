@@ -57,7 +57,7 @@ import { SignalDot } from "@/components/shared/SignalDot";
 import { OrgSwitcher } from "@/components/shared/OrgSwitcher";
 import { useProjects } from "@/hooks/project.hooks";
 import { useUserAlertStats } from "@/hooks/alerts.hook";
-import { useLogHiveStore } from "@/store/loghive-store";
+import { useApperioStore } from "@/store/apperio-store";
 import { useOrganizationStore } from "@/store/organization-store";
 import { useProfile } from "@/hooks/user.hook";
 
@@ -100,7 +100,7 @@ const projectSubNavItems = [
 export function AppSidebar() {
   const router = useRouter();
   const pathname = usePathname();
-  const currentProjectId = useLogHiveStore((s) => s.currentProjectId);
+  const currentProjectId = useApperioStore((s) => s.currentProjectId);
   const currentOrgId = useOrganizationStore((s) => s.currentOrgId);
 
   // Fetch projects
@@ -241,7 +241,7 @@ export function AppSidebar() {
           </svg>
           <div>
             <h2 className="font-display font-semibold text-lg tracking-[-0.02em]">
-              Monita
+              Apperio
             </h2>
             <p className="text-xs text-text-muted">Developer Console</p>
           </div>

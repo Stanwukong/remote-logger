@@ -76,7 +76,7 @@ export function FeatureShowcase() {
             <CardContent>
               <CodeBlock
                 language="typescript"
-                code={`const logger = new Monita({
+                code={`const logger = new Apperio({
   apiKey: "your-api-key",
   projectId: "your-project-id",
 
@@ -174,7 +174,7 @@ export function FeatureShowcase() {
             <CardContent>
               <CodeBlock
                 language="typescript"
-                code={`const logger = new Monita({
+                code={`const logger = new Apperio({
   apiKey: "your-api-key",
   projectId: "your-project-id",
 
@@ -265,7 +265,7 @@ export function FeatureShowcase() {
             <CardContent>
               <CodeBlock
                 language="typescript"
-                code={`const logger = new Monita({
+                code={`const logger = new Apperio({
   apiKey: "your-api-key",
   projectId: "your-project-id",
 

@@ -16,7 +16,7 @@ export const docsNavigation: DocSection[] = [
       {
         title: "Introduction",
         slug: "introduction",
-        description: "What is Monita and why you need it",
+        description: "What is Apperio and why you need it",
       },
       {
         title: "Quick Start",

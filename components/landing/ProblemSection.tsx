@@ -47,7 +47,7 @@ export function ProblemSection() {
             <div className="flex items-center gap-3 px-4 py-3 border-b border-status-danger/20 bg-status-danger/5">
               <SignalDot status="danger" size="sm" />
               <span className="text-xs font-display font-semibold text-status-danger uppercase tracking-wider">
-                Without Monita
+                Without Apperio
               </span>
             </div>
             <div className="p-4 font-code text-xs leading-relaxed text-text-muted space-y-1 h-[240px] overflow-hidden">
@@ -76,7 +76,7 @@ export function ProblemSection() {
             <div className="flex items-center gap-3 px-4 py-3 border-b border-signal/20 bg-signal-muted">
               <SignalDot status="ok" size="sm" />
               <span className="text-xs font-display font-semibold text-signal uppercase tracking-wider">
-                With Monita
+                With Apperio
               </span>
             </div>
             <div className="p-4 space-y-2 h-[240px] overflow-hidden">

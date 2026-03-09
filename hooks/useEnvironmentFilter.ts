@@ -1,15 +1,15 @@
 'use client';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useCallback, useEffect } from 'react';
-import { useLogHiveStore } from '@/store/loghive-store';
+import { useApperioStore } from '@/store/apperio-store';
 
 export function useEnvironmentFilter() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
-  const selectedEnvironment = useLogHiveStore((s) => s.selectedEnvironment);
-  const setSelectedEnvironment = useLogHiveStore((s) => s.setSelectedEnvironment);
+  const selectedEnvironment = useApperioStore((s) => s.selectedEnvironment);
+  const setSelectedEnvironment = useApperioStore((s) => s.setSelectedEnvironment);
 
   const paramName = 'env';
 

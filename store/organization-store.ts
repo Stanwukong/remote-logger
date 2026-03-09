@@ -40,7 +40,7 @@ export const useOrganizationStore = create<
         reset: () => set(initialState, false, "reset"),
       }),
       {
-        name: "monita-organization-store",
+        name: "apperio-organization-store",
       }
     ),
     { name: "OrganizationStore" }

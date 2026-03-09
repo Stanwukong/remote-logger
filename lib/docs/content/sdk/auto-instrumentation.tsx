@@ -31,7 +31,7 @@ export default function AutoInstrumentationPage() {
       >
         <DocH2 id="what-gets-captured">What Gets Captured</DocH2>
         <DocP>
-          When auto-instrumentation is enabled, the Monita SDK patches browser
+          When auto-instrumentation is enabled, the Apperio SDK patches browser
           APIs to capture events without any manual code. Each category can be
           independently toggled.
         </DocP>
@@ -272,7 +272,7 @@ console.error("Failed to render component");
         <CodeBlock
           language="typescript"
           code={`// Errors only - minimal overhead
-Monita.init({
+Apperio.init({
   projectId: "...",
   apiKey: "...",
   autoCapture: {
@@ -286,7 +286,7 @@ Monita.init({
 });
 
 // Full observability - maximum data
-Monita.init({
+Apperio.init({
   projectId: "...",
   apiKey: "...",
   autoCapture: {

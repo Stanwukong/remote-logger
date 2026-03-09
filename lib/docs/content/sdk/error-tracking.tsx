@@ -67,8 +67,8 @@ async function fetchData() {
         <DocH2 id="manual-logging">Manual Error Logging</DocH2>
         <DocP>
           For errors you catch and handle, use the{" "}
-          <InlineCode>Monita.error()</InlineCode> or{" "}
-          <InlineCode>Monita.fatal()</InlineCode> methods to log them
+          <InlineCode>Apperio.error()</InlineCode> or{" "}
+          <InlineCode>Apperio.fatal()</InlineCode> methods to log them
           explicitly:
         </DocP>
         <CodeBlock
@@ -77,7 +77,7 @@ async function fetchData() {
 try {
   await processPayment(order);
 } catch (err) {
-  Monita.error("Payment processing failed", {
+  Apperio.error("Payment processing failed", {
     error: err,
     orderId: order.id,
     amount: order.total,
@@ -92,7 +92,7 @@ try {
 try {
   await initializeDatabase();
 } catch (err) {
-  Monita.fatal("Database initialization failed", {
+  Apperio.fatal("Database initialization failed", {
     error: err,
     connectionString: "[REDACTED]",
   });
@@ -162,7 +162,7 @@ try {
 
         <DocH2 id="error-grouping">Error Grouping</DocH2>
         <DocP>
-          The Monita dashboard groups similar errors together based on their
+          The Apperio dashboard groups similar errors together based on their
           error message and source location. This helps you identify recurring
           issues and their frequency without being overwhelmed by individual
           occurrences.
@@ -193,7 +193,7 @@ try {
         <DocH2 id="stack-traces">Stack Traces</DocH2>
         <DocP>
           Stack traces are captured from the Error object's{" "}
-          <InlineCode>stack</InlineCode> property. The Monita dashboard
+          <InlineCode>stack</InlineCode> property. The Apperio dashboard
           renders stack traces with syntax highlighting and frame collapsing
           for easy reading.
         </DocP>
@@ -205,12 +205,12 @@ try {
         <CodeBlock
           language="typescript"
           code={`// Good - includes stack trace
-Monita.error("Operation failed", {
+Apperio.error("Operation failed", {
   error: new Error("Invalid state"),
 });
 
 // Less useful - no stack trace
-Monita.error("Operation failed", {
+Apperio.error("Operation failed", {
   error: { message: "Invalid state" },
 });`}
         />
@@ -218,7 +218,7 @@ Monita.error("Operation failed", {
         <DocH2 id="source-maps">Source Maps</DocH2>
         <DocP>
           In production, your JavaScript is typically minified and bundled,
-          making stack traces difficult to read. Monita captures the raw stack
+          making stack traces difficult to read. Apperio captures the raw stack
           trace as-is. To get readable traces:
         </DocP>
         <DocUl>
@@ -272,7 +272,7 @@ const handleSubmit = (event) => {
         </DocUl>
 
         <DocCallout type="tip">
-          Use the Monita dashboard's error grouping feature to quickly
+          Use the Apperio dashboard's error grouping feature to quickly
           identify the most frequent and recent errors. Set alert rules to
           get notified when new error types appear or error rates spike.
         </DocCallout>

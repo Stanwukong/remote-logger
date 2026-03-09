@@ -21,7 +21,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Monita - Your app is trying to tell you something.",
+  title: "Apperio - Your app is trying to tell you something.",
   description:
     "Stop guessing what's breaking in production. Real-time logging, error tracking, and performance monitoring for modern applications.",
 };

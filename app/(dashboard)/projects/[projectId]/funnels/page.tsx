@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useMemo } from "react";
 import { useParams } from "next/navigation";
-import { useLogHiveStore } from "@/store/loghive-store";
+import { useApperioStore } from "@/store/apperio-store";
 import { resolveTimeRangeParams } from "@/lib/format-utils";
 import { useAnalyzeFunnel, usePopularPaths } from "@/hooks/funnel.hook";
 import { PageHeader } from "@/components/shared/PageHeader";
@@ -376,8 +376,8 @@ export default function FunnelAnalysisPage() {
   const params = useParams<{ projectId: string }>();
   const projectId = typeof params?.projectId === "string" ? params.projectId : "";
 
-  const selectedTimeRange = useLogHiveStore((s) => s.selectedTimeRange);
-  const customTimeRange = useLogHiveStore((s) => s.customTimeRange);
+  const selectedTimeRange = useApperioStore((s) => s.selectedTimeRange);
+  const customTimeRange = useApperioStore((s) => s.customTimeRange);
   const timeRangeParams = useMemo(
     () => resolveTimeRangeParams(selectedTimeRange, customTimeRange),
     [selectedTimeRange, customTimeRange]

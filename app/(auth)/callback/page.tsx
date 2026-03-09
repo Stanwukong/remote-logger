@@ -28,7 +28,7 @@ function CallbackHandler() {
     authService
       .oauthLogin(code, state)
       .then(() => {
-        toast.success("Welcome to Monita!");
+        toast.success("Welcome to Apperio!");
         router.replace("/dashboard");
       })
       .catch((err: any) => {

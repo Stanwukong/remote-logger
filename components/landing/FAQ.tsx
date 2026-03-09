@@ -3,12 +3,12 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 
 const faqItems = [
   {
-    question: "How does LogHive handle data security?",
-    answer: "LogHive takes security seriously. All data is encrypted in transit and at rest using industry-standard AES-256 encryption. We're SOC 2 Type II compliant and undergo regular security audits. Your logs are stored in isolated environments with strict access controls."
+    question: "How does Apperio handle data security?",
+    answer: "Apperio takes security seriously. All data is encrypted in transit and at rest using industry-standard AES-256 encryption. We're SOC 2 Type II compliant and undergo regular security audits. Your logs are stored in isolated environments with strict access controls."
   },
   {
-    question: "Can I integrate LogHive with my existing tools?",
-    answer: "Yes! LogHive offers extensive integrations with popular tools like Slack, PagerDuty, Datadog, and more. We also provide webhooks and a comprehensive REST API for custom integrations. Our SDK supports all major programming languages and frameworks."
+    question: "Can I integrate Apperio with my existing tools?",
+    answer: "Yes! Apperio offers extensive integrations with popular tools like Slack, PagerDuty, Datadog, and more. We also provide webhooks and a comprehensive REST API for custom integrations. Our SDK supports all major programming languages and frameworks."
   },
   {
     question: "What happens if I exceed my plan limits?",
@@ -37,7 +37,7 @@ export function FAQ() {
         </Badge>
         <h2 className="text-4xl font-bold mb-4">Frequently asked questions</h2>
         <p className="text-muted-foreground text-xl max-w-2xl mx-auto">
-          Everything you need to know about LogHive
+          Everything you need to know about Apperio
         </p>
       </div>
 

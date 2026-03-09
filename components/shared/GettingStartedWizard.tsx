@@ -30,13 +30,13 @@ const steps: Step[] = [
   {
     number: 1,
     title: "Install the SDK",
-    description: "Add the Monita SDK to your project via npm.",
+    description: "Add the Apperio SDK to your project via npm.",
     icon: <Package className="w-4 h-4" />,
   },
   {
     number: 2,
     title: "Initialize the Logger",
-    description: "Configure and initialize Monita with your project credentials.",
+    description: "Configure and initialize Apperio with your project credentials.",
     icon: <Code className="w-4 h-4" />,
   },
   {
@@ -114,18 +114,18 @@ export function GettingStartedWizard({
   };
 
   // Code snippets
-  const installCode = `npm install monita`;
+  const installCode = `npm install apperio`;
 
-  const initCode = `import Monita from 'monita';
+  const initCode = `import Apperio from 'apperio';
 
-const logger = new Monita({
+const logger = new Apperio({
   apiKey: '${apiKey}',
   projectId: '${projectId}',
 });
 
 logger.init();`;
 
-  const testLogCode = `logger.info('Hello from Monita!', {
+  const testLogCode = `logger.info('Hello from Apperio!', {
   source: 'getting-started',
 });`;
 
@@ -138,7 +138,7 @@ logger.init();`;
             Getting Started
           </h2>
           <p className="text-sm text-text-secondary mt-0.5">
-            Set up Monita in your application in a few minutes.
+            Set up Apperio in your application in a few minutes.
           </p>
         </div>
         <button

@@ -117,7 +117,7 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
             <h1 className="text-3xl font-display font-bold text-signal tracking-tight">
-              Monita
+              Apperio
             </h1>
           </Link>
           <p className="text-text-muted mt-2 text-sm">

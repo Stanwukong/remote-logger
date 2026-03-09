@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useParams } from "next/navigation";
-import { useLogHiveStore } from "@/store/loghive-store";
+import { useApperioStore } from "@/store/apperio-store";
 import { useLogs, useDistinctValues } from "@/hooks/log.hooks";
 import { useProjectWebSocket } from "@/hooks/useWebsocket";
 import { logService } from "@/services/log.service";
@@ -60,8 +60,8 @@ export default function ProjectLogsPage() {
   const projectId = params.projectId as string;
 
   // 2. Get global state from Zustand
-  const selectedTimeRange = useLogHiveStore((s) => s.selectedTimeRange);
-  const selectedEnvironment = useLogHiveStore((s) => s.selectedEnvironment);
+  const selectedTimeRange = useApperioStore((s) => s.selectedTimeRange);
+  const selectedEnvironment = useApperioStore((s) => s.selectedEnvironment);
 
   // 3. Local filter state
   const [filters, setFilters] = useState<LogFilters>({

@@ -476,7 +476,7 @@ export default function AlertRulesPage() {
                 AI-Suggested Rules
               </h2>
               <p className="text-xs text-text-secondary mt-0.5">
-                Monita analyzes your log patterns and suggests alert rules you might find useful.
+                Apperio analyzes your log patterns and suggests alert rules you might find useful.
               </p>
             </div>
           </div>
@@ -505,7 +505,7 @@ export default function AlertRulesPage() {
                   No suggestions available
                 </h3>
                 <p className="text-xs text-text-secondary max-w-md">
-                  Monita will generate suggestions as it learns from your log patterns.
+                  Apperio will generate suggestions as it learns from your log patterns.
                 </p>
               </div>
             </Card>

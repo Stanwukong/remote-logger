@@ -28,39 +28,39 @@ export default function SdkOverviewPage() {
       <DocsContent
         slug="sdk/overview"
         title="SDK Overview"
-        description="Core logging API, methods, and concepts for the Monita SDK."
+        description="Core logging API, methods, and concepts for the Apperio SDK."
       >
         <DocH2 id="logging-api">Logging API</DocH2>
         <DocP>
-          The Monita SDK provides six log level methods that map directly to
+          The Apperio SDK provides six log level methods that map directly to
           standard severity levels. Each method accepts a message string and an
           optional data object.
         </DocP>
 
         <CodeBlock
           language="typescript"
-          code={`import Monita from "monita";
+          code={`import Apperio from "apperio";
 
 // Trace - very detailed diagnostic info
-Monita.trace("Entering function processOrder", { orderId: "abc123" });
+Apperio.trace("Entering function processOrder", { orderId: "abc123" });
 
 // Debug - diagnostic information
-Monita.debug("Cache miss for user preferences", { userId: "user_1" });
+Apperio.debug("Cache miss for user preferences", { userId: "user_1" });
 
 // Info - general operational events
-Monita.info("Order completed successfully", { total: 49.99 });
+Apperio.info("Order completed successfully", { total: 49.99 });
 
 // Warn - unexpected but non-critical events
-Monita.warn("API rate limit approaching", { remaining: 5 });
+Apperio.warn("API rate limit approaching", { remaining: 5 });
 
 // Error - error events that should be investigated
-Monita.error("Payment processing failed", {
+Apperio.error("Payment processing failed", {
   error: new Error("Card declined"),
   orderId: "abc123",
 });
 
 // Fatal - critical failures requiring immediate action
-Monita.fatal("Database connection lost", { host: "db.example.com" });`}
+Apperio.fatal("Database connection lost", { host: "db.example.com" });`}
         />
 
         <DocH2 id="log-levels">Log Levels</DocH2>
@@ -120,14 +120,14 @@ Monita.fatal("Database connection lost", { host: "db.example.com" });`}
         <CodeBlock
           language="typescript"
           code={`// Simple key-value data
-Monita.info("User action", {
+Apperio.info("User action", {
   action: "click",
   element: "submit-button",
   page: "/checkout",
 });
 
 // Nested objects
-Monita.info("API response received", {
+Apperio.info("API response received", {
   endpoint: "/api/users",
   method: "GET",
   response: {
@@ -141,7 +141,7 @@ Monita.info("API response received", {
 try {
   await riskyOperation();
 } catch (err) {
-  Monita.error("Operation failed", {
+  Apperio.error("Operation failed", {
     error: err,           // Stack trace captured automatically
     context: { step: 3 },
   });
@@ -211,7 +211,7 @@ try {
 
         <CodeBlock
           language="typescript"
-          code={`Monita.init({
+          code={`Apperio.init({
   projectId: "my-project",
   apiKey: "my-key",
   batchSize: 20,        // Send when 20 logs accumulate
@@ -233,19 +233,19 @@ try {
         <CodeBlock
           language="typescript"
           code={`// Initialize - call once at app startup
-Monita.init({ projectId: "...", apiKey: "..." });
+Apperio.init({ projectId: "...", apiKey: "..." });
 
 // The SDK is now active and capturing events.
 
 // Flush - manually send all buffered logs
-await Monita.flush();
+await Apperio.flush();
 
 // Destroy - clean up listeners and send remaining logs
-Monita.destroy();`}
+Apperio.destroy();`}
         />
 
         <DocCallout type="tip">
-          Call <InlineCode>Monita.flush()</InlineCode> before critical
+          Call <InlineCode>Apperio.flush()</InlineCode> before critical
           navigation events (like page unload) to ensure all buffered logs
           are sent. The SDK attempts to flush automatically on{" "}
           <InlineCode>beforeunload</InlineCode>, but this is not guaranteed

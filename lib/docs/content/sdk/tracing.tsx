@@ -54,32 +54,32 @@ export default function TracingPage() {
 
         <DocH2 id="trace-context">Trace Context</DocH2>
         <DocP>
-          Monita supports trace context via the SDK's context system. You can
+          Apperio supports trace context via the SDK's context system. You can
           attach a trace ID and additional context to groups of related log
           entries:
         </DocP>
         <CodeBlock
           language="typescript"
-          code={`import Monita from "monita";
+          code={`import Apperio from "apperio";
 
 // Generate a unique trace ID
 const traceId = crypto.randomUUID();
 
 // Log entries with trace context
-Monita.info("Checkout started", {
+Apperio.info("Checkout started", {
   traceId,
   userId: "user_123",
   cartItems: 3,
 });
 
 // Later in the flow...
-Monita.info("Payment processed", {
+Apperio.info("Payment processed", {
   traceId,             // Same trace ID links these events
   gateway: "stripe",
   amount: 49.99,
 });
 
-Monita.info("Order confirmed", {
+Apperio.info("Order confirmed", {
   traceId,
   orderId: "order_456",
 });`}
@@ -103,7 +103,7 @@ async function processOrder(orderId: string) {
   const traceId = crypto.randomUUID();
   const start = performance.now();
 
-  Monita.debug("Order processing started", {
+  Apperio.debug("Order processing started", {
     traceId,
     orderId,
     spanName: "process-order",
@@ -116,7 +116,7 @@ async function processOrder(orderId: string) {
     await createShipment(orderId);
 
     const duration = performance.now() - start;
-    Monita.info("Order processing completed", {
+    Apperio.info("Order processing completed", {
       traceId,
       orderId,
       spanName: "process-order",
@@ -125,7 +125,7 @@ async function processOrder(orderId: string) {
     });
   } catch (err) {
     const duration = performance.now() - start;
-    Monita.error("Order processing failed", {
+    Apperio.error("Order processing failed", {
       traceId,
       orderId,
       error: err,
@@ -142,13 +142,13 @@ async function withSpan(name: string, traceId: string, fn: () => Promise<void>) 
   const start = performance.now();
   try {
     await fn();
-    Monita.debug(name + " completed", {
+    Apperio.debug(name + " completed", {
       traceId,
       spanName: name,
       duration: Math.round(performance.now() - start),
     });
   } catch (err) {
-    Monita.error(name + " failed", {
+    Apperio.error(name + " failed", {
       traceId,
       spanName: name,
       duration: Math.round(performance.now() - start),
@@ -198,7 +198,7 @@ async function withSpan(name: string, traceId: string, fn: () => Promise<void>) 
 
         <DocH2 id="distributed-tracing">Distributed Tracing</DocH2>
         <DocP>
-          For applications with a backend that also uses Monita, you can
+          For applications with a backend that also uses Apperio, you can
           propagate trace context across the network boundary:
         </DocP>
         <CodeBlock
@@ -206,7 +206,7 @@ async function withSpan(name: string, traceId: string, fn: () => Promise<void>) 
           code={`// Frontend: Pass trace ID in request headers
 const traceId = crypto.randomUUID();
 
-Monita.info("Initiating API call", { traceId });
+Apperio.info("Initiating API call", { traceId });
 
 const response = await fetch("/api/process", {
   headers: {
@@ -216,7 +216,7 @@ const response = await fetch("/api/process", {
   body: JSON.stringify({ data: "..." }),
 });
 
-Monita.info("API call completed", {
+Apperio.info("API call completed", {
   traceId,
   status: response.status,
 });`}
@@ -240,7 +240,7 @@ app.post("/api/process", (req, res) => {
 
         <DocH2 id="viewing-traces">Viewing Traces</DocH2>
         <DocP>
-          In the Monita dashboard, you can filter logs by trace ID to see
+          In the Apperio dashboard, you can filter logs by trace ID to see
           all events in a single trace. Use the log detail view to examine
           timing data and identify bottlenecks.
         </DocP>
@@ -261,7 +261,7 @@ app.post("/api/process", (req, res) => {
         <DocCallout type="tip">
           Include the trace ID in error responses sent to users. When they
           report an issue, you can immediately search for all related events
-          in Monita using that trace ID.
+          in Apperio using that trace ID.
         </DocCallout>
       </DocsContent>
       <DocsTableOfContents items={toc} />

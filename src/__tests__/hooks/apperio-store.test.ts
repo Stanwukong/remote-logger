@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { act, renderHook } from "@testing-library/react";
-import { useLogHiveStore } from "@/store/loghive-store";
+import { useApperioStore } from "@/store/apperio-store";
 
-describe("LogHive Store", () => {
+describe("Apperio Store", () => {
   beforeEach(() => {
     // Reset store to initial state before each test
     act(() => {
-      useLogHiveStore.getState().reset();
+      useApperioStore.getState().reset();
     });
   });
 
@@ -16,35 +16,35 @@ describe("LogHive Store", () => {
 
   describe("currentUser", () => {
     it("starts with null currentUser", () => {
-      const { result } = renderHook(() => useLogHiveStore());
+      const { result } = renderHook(() => useApperioStore());
       expect(result.current.currentUser).toBeNull();
     });
 
     it("sets current user", () => {
-      const { result } = renderHook(() => useLogHiveStore());
+      const { result } = renderHook(() => useApperioStore());
 
       act(() => {
         result.current.setCurrentUser({
           id: "u1",
-          email: "test@monita.dev",
+          email: "test@apperio.dev",
           name: "Test User",
         });
       });
 
       expect(result.current.currentUser).toEqual({
         id: "u1",
-        email: "test@monita.dev",
+        email: "test@apperio.dev",
         name: "Test User",
       });
     });
 
     it("clears current user on logout", () => {
-      const { result } = renderHook(() => useLogHiveStore());
+      const { result } = renderHook(() => useApperioStore());
 
       act(() => {
         result.current.setCurrentUser({
           id: "u1",
-          email: "test@monita.dev",
+          email: "test@apperio.dev",
         });
       });
 
@@ -64,12 +64,12 @@ describe("LogHive Store", () => {
 
   describe("currentProjectId", () => {
     it("starts with null currentProjectId", () => {
-      const { result } = renderHook(() => useLogHiveStore());
+      const { result } = renderHook(() => useApperioStore());
       expect(result.current.currentProjectId).toBeNull();
     });
 
     it("sets project ID", () => {
-      const { result } = renderHook(() => useLogHiveStore());
+      const { result } = renderHook(() => useApperioStore());
 
       act(() => {
         result.current.setCurrentProjectId("proj_123");
@@ -79,7 +79,7 @@ describe("LogHive Store", () => {
     });
 
     it("clears project ID", () => {
-      const { result } = renderHook(() => useLogHiveStore());
+      const { result } = renderHook(() => useApperioStore());
 
       act(() => {
         result.current.setCurrentProjectId("proj_123");
@@ -99,12 +99,12 @@ describe("LogHive Store", () => {
 
   describe("timeRange", () => {
     it("defaults to 24h", () => {
-      const { result } = renderHook(() => useLogHiveStore());
+      const { result } = renderHook(() => useApperioStore());
       expect(result.current.selectedTimeRange).toBe("24h");
     });
 
     it("sets time range", () => {
-      const { result } = renderHook(() => useLogHiveStore());
+      const { result } = renderHook(() => useApperioStore());
 
       act(() => {
         result.current.setTimeRange("7d");
@@ -114,7 +114,7 @@ describe("LogHive Store", () => {
     });
 
     it("clears custom range when selecting a preset", () => {
-      const { result } = renderHook(() => useLogHiveStore());
+      const { result } = renderHook(() => useApperioStore());
 
       // First set a custom range
       const customRange = {
@@ -138,7 +138,7 @@ describe("LogHive Store", () => {
     });
 
     it("sets custom time range and switches to custom mode", () => {
-      const { result } = renderHook(() => useLogHiveStore());
+      const { result } = renderHook(() => useApperioStore());
 
       const customRange = {
         start: new Date("2026-02-01"),
@@ -154,7 +154,7 @@ describe("LogHive Store", () => {
     });
 
     it("setting null custom range reverts to 24h", () => {
-      const { result } = renderHook(() => useLogHiveStore());
+      const { result } = renderHook(() => useApperioStore());
 
       act(() => {
         result.current.setCustomTimeRange({
@@ -179,12 +179,12 @@ describe("LogHive Store", () => {
 
   describe("environment", () => {
     it("defaults to all", () => {
-      const { result } = renderHook(() => useLogHiveStore());
+      const { result } = renderHook(() => useApperioStore());
       expect(result.current.selectedEnvironment).toBe("all");
     });
 
     it("sets environment filter", () => {
-      const { result } = renderHook(() => useLogHiveStore());
+      const { result } = renderHook(() => useApperioStore());
 
       act(() => {
         result.current.setSelectedEnvironment("production");
@@ -200,13 +200,13 @@ describe("LogHive Store", () => {
 
   describe("autoRefresh", () => {
     it("defaults to disabled with 30s interval", () => {
-      const { result } = renderHook(() => useLogHiveStore());
+      const { result } = renderHook(() => useApperioStore());
       expect(result.current.autoRefreshEnabled).toBe(false);
       expect(result.current.autoRefreshInterval).toBe(30000);
     });
 
     it("toggles auto-refresh", () => {
-      const { result } = renderHook(() => useLogHiveStore());
+      const { result } = renderHook(() => useApperioStore());
 
       act(() => {
         result.current.toggleAutoRefresh();
@@ -222,7 +222,7 @@ describe("LogHive Store", () => {
     });
 
     it("sets auto-refresh interval", () => {
-      const { result } = renderHook(() => useLogHiveStore());
+      const { result } = renderHook(() => useApperioStore());
 
       act(() => {
         result.current.setAutoRefreshInterval(60000);
@@ -238,12 +238,12 @@ describe("LogHive Store", () => {
 
   describe("UI state", () => {
     it("sidebar defaults to expanded", () => {
-      const { result } = renderHook(() => useLogHiveStore());
+      const { result } = renderHook(() => useApperioStore());
       expect(result.current.sidebarCollapsed).toBe(false);
     });
 
     it("toggles sidebar", () => {
-      const { result } = renderHook(() => useLogHiveStore());
+      const { result } = renderHook(() => useApperioStore());
 
       act(() => {
         result.current.toggleSidebar();
@@ -259,7 +259,7 @@ describe("LogHive Store", () => {
     });
 
     it("sets sidebar collapsed state directly", () => {
-      const { result } = renderHook(() => useLogHiveStore());
+      const { result } = renderHook(() => useApperioStore());
 
       act(() => {
         result.current.setSidebarCollapsed(true);
@@ -269,7 +269,7 @@ describe("LogHive Store", () => {
     });
 
     it("manages detail panel state", () => {
-      const { result } = renderHook(() => useLogHiveStore());
+      const { result } = renderHook(() => useApperioStore());
       expect(result.current.detailPanelOpen).toBe(false);
 
       act(() => {
@@ -280,7 +280,7 @@ describe("LogHive Store", () => {
     });
 
     it("manages theme", () => {
-      const { result } = renderHook(() => useLogHiveStore());
+      const { result } = renderHook(() => useApperioStore());
       expect(result.current.theme).toBe("dark");
 
       act(() => {
@@ -297,7 +297,7 @@ describe("LogHive Store", () => {
 
   describe("legacy filters", () => {
     it("manages filter level", () => {
-      const { result } = renderHook(() => useLogHiveStore());
+      const { result } = renderHook(() => useApperioStore());
       expect(result.current.filterLevel).toBe("all");
 
       act(() => {
@@ -308,7 +308,7 @@ describe("LogHive Store", () => {
     });
 
     it("manages search query", () => {
-      const { result } = renderHook(() => useLogHiveStore());
+      const { result } = renderHook(() => useApperioStore());
       expect(result.current.searchQuery).toBe("");
 
       act(() => {
@@ -325,7 +325,7 @@ describe("LogHive Store", () => {
 
   describe("reset", () => {
     it("resets all state to initial values", () => {
-      const { result } = renderHook(() => useLogHiveStore());
+      const { result } = renderHook(() => useApperioStore());
 
       // Change various state values
       act(() => {

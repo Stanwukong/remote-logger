@@ -902,7 +902,7 @@ function AISuggestionsTab({
             AI-Generated Suggestions
           </h3>
           <p className="text-sm text-text-secondary">
-            Monita analyzes your log patterns and suggests
+            Apperio analyzes your log patterns and suggests
             alert rules you might find useful.
           </p>
         </div>
@@ -935,7 +935,7 @@ function AISuggestionsTab({
               No suggestions available
             </h3>
             <p className="text-sm text-text-secondary max-w-md">
-              Monita will generate alert rule suggestions
+              Apperio will generate alert rule suggestions
               as it learns from your log patterns. Keep
               sending logs and check back later.
             </p>

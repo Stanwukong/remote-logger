@@ -14,7 +14,7 @@ import {
 
 const toc: TocItem[] = [
   { id: "setup", title: "Setup", level: 2 },
-  { id: "provider-pattern", title: "MonitaProvider Pattern", level: 2 },
+  { id: "provider-pattern", title: "ApperioProvider Pattern", level: 2 },
   { id: "error-boundaries", title: "Error Boundaries", level: 2 },
   { id: "hook-usage", title: "Custom Hook Usage", level: 2 },
   { id: "component-logging", title: "Component-Level Logging", level: 2 },
@@ -28,7 +28,7 @@ export default function ReactGuidePage() {
       <DocsContent
         slug="guides/react"
         title="React Integration"
-        description="Best practices for integrating Monita with React applications."
+        description="Best practices for integrating Apperio with React applications."
       >
         <DocH2 id="setup">Setup</DocH2>
         <DocP>
@@ -37,20 +37,20 @@ export default function ReactGuidePage() {
         </DocP>
         <CodeBlock
           language="bash"
-          code="npm install monita"
+          code="npm install apperio"
         />
         <CodeBlock
           language="typescript"
           filename="src/index.tsx"
           code={`import React from "react";
 import ReactDOM from "react-dom/client";
-import Monita from "monita";
+import Apperio from "apperio";
 import App from "./App";
 
 // Initialize BEFORE rendering
-Monita.init({
-  projectId: process.env.REACT_APP_MONITA_PROJECT_ID!,
-  apiKey: process.env.REACT_APP_MONITA_API_KEY!,
+Apperio.init({
+  projectId: process.env.REACT_APP_APPERIO_PROJECT_ID!,
+  apiKey: process.env.REACT_APP_APPERIO_API_KEY!,
   environment: process.env.NODE_ENV,
   autoCapture: {
     errors: true,
@@ -69,24 +69,24 @@ root.render(
 );`}
         />
 
-        <DocH2 id="provider-pattern">MonitaProvider Pattern</DocH2>
+        <DocH2 id="provider-pattern">ApperioProvider Pattern</DocH2>
         <DocP>
-          Create a context provider to make Monita accessible throughout
+          Create a context provider to make Apperio accessible throughout
           your component tree and to handle initialization lifecycle:
         </DocP>
         <CodeBlock
           language="typescript"
-          filename="src/providers/MonitaProvider.tsx"
+          filename="src/providers/ApperioProvider.tsx"
           code={`import { createContext, useContext, useEffect, useRef } from "react";
-import Monita from "monita";
+import Apperio from "apperio";
 
-interface MonitaContextValue {
-  log: typeof Monita;
+interface ApperioContextValue {
+  log: typeof Apperio;
 }
 
-const MonitaContext = createContext<MonitaContextValue | null>(null);
+const ApperioContext = createContext<ApperioContextValue | null>(null);
 
-export function MonitaProvider({
+export function ApperioProvider({
   children,
   projectId,
   apiKey,
@@ -99,7 +99,7 @@ export function MonitaProvider({
 
   useEffect(() => {
     if (!initialized.current) {
-      Monita.init({
+      Apperio.init({
         projectId,
         apiKey,
         environment: process.env.NODE_ENV,
@@ -114,21 +114,21 @@ export function MonitaProvider({
 
     // Flush on unmount
     return () => {
-      Monita.flush();
+      Apperio.flush();
     };
   }, [projectId, apiKey]);
 
   return (
-    <MonitaContext.Provider value={{ log: Monita }}>
+    <ApperioContext.Provider value={{ log: Apperio }}>
       {children}
-    </MonitaContext.Provider>
+    </ApperioContext.Provider>
   );
 }
 
-export function useMonita() {
-  const context = useContext(MonitaContext);
+export function useApperio() {
+  const context = useContext(ApperioContext);
   if (!context) {
-    throw new Error("useMonita must be used within a MonitaProvider");
+    throw new Error("useApperio must be used within a ApperioProvider");
   }
   return context.log;
 }`}
@@ -137,17 +137,17 @@ export function useMonita() {
         <CodeBlock
           language="typescript"
           filename="src/App.tsx"
-          code={`import { MonitaProvider } from "./providers/MonitaProvider";
+          code={`import { ApperioProvider } from "./providers/ApperioProvider";
 import { Dashboard } from "./pages/Dashboard";
 
 function App() {
   return (
-    <MonitaProvider
-      projectId={process.env.REACT_APP_MONITA_PROJECT_ID!}
-      apiKey={process.env.REACT_APP_MONITA_API_KEY!}
+    <ApperioProvider
+      projectId={process.env.REACT_APP_APPERIO_PROJECT_ID!}
+      apiKey={process.env.REACT_APP_APPERIO_API_KEY!}
     >
       <Dashboard />
-    </MonitaProvider>
+    </ApperioProvider>
   );
 }`}
         />
@@ -155,13 +155,13 @@ function App() {
         <DocH2 id="error-boundaries">Error Boundaries</DocH2>
         <DocP>
           Create an error boundary that automatically reports rendering errors
-          to Monita:
+          to Apperio:
         </DocP>
         <CodeBlock
           language="typescript"
-          filename="src/components/MonitaErrorBoundary.tsx"
+          filename="src/components/ApperioErrorBoundary.tsx"
           code={`import React from "react";
-import Monita from "monita";
+import Apperio from "apperio";
 
 interface Props {
   children: React.ReactNode;
@@ -173,7 +173,7 @@ interface State {
   error: Error | null;
 }
 
-export class MonitaErrorBoundary extends React.Component<Props, State> {
+export class ApperioErrorBoundary extends React.Component<Props, State> {
   state: State = { hasError: false, error: null };
 
   static getDerivedStateFromError(error: Error): State {
@@ -181,7 +181,7 @@ export class MonitaErrorBoundary extends React.Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: React.ErrorInfo) {
-    Monita.error("React component error", {
+    Apperio.error("React component error", {
       error: {
         name: error.name,
         message: error.message,
@@ -205,9 +205,9 @@ export class MonitaErrorBoundary extends React.Component<Props, State> {
 }
 
 // Usage:
-// <MonitaErrorBoundary fallback={<ErrorFallback />}>
+// <ApperioErrorBoundary fallback={<ErrorFallback />}>
 //   <MyComponent />
-// </MonitaErrorBoundary>`}
+// </ApperioErrorBoundary>`}
         />
 
         <DocCallout type="tip">
@@ -223,17 +223,17 @@ export class MonitaErrorBoundary extends React.Component<Props, State> {
         </DocP>
         <CodeBlock
           language="typescript"
-          filename="src/hooks/useMonitaAction.ts"
+          filename="src/hooks/useApperioAction.ts"
           code={`import { useCallback } from "react";
-import Monita from "monita";
+import Apperio from "apperio";
 
 /**
  * Hook for logging user actions with consistent formatting
  */
-export function useMonitaAction(component: string) {
+export function useApperioAction(component: string) {
   const logAction = useCallback(
     (action: string, data?: Record<string, any>) => {
-      Monita.info(component + ": " + action, {
+      Apperio.info(component + ": " + action, {
         component,
         action,
         ...data,
@@ -244,7 +244,7 @@ export function useMonitaAction(component: string) {
 
   const logError = useCallback(
     (action: string, error: unknown, data?: Record<string, any>) => {
-      Monita.error(component + ": " + action + " failed", {
+      Apperio.error(component + ": " + action + " failed", {
         component,
         action,
         error,
@@ -259,7 +259,7 @@ export function useMonitaAction(component: string) {
 
 // Usage in a component:
 function CheckoutPage() {
-  const { logAction, logError } = useMonitaAction("CheckoutPage");
+  const { logAction, logError } = useApperioAction("CheckoutPage");
 
   const handleSubmit = async (order: Order) => {
     logAction("submit_order", { orderId: order.id });
@@ -282,29 +282,29 @@ function CheckoutPage() {
         <CodeBlock
           language="typescript"
           code={`import { useEffect } from "react";
-import Monita from "monita";
+import Apperio from "apperio";
 
 function UserProfile({ userId }: { userId: string }) {
   // Log component mount/unmount
   useEffect(() => {
-    Monita.debug("UserProfile mounted", { userId });
+    Apperio.debug("UserProfile mounted", { userId });
     return () => {
-      Monita.debug("UserProfile unmounted", { userId });
+      Apperio.debug("UserProfile unmounted", { userId });
     };
   }, [userId]);
 
   // Log data fetching
   useEffect(() => {
-    Monita.debug("Fetching user data", { userId });
+    Apperio.debug("Fetching user data", { userId });
     fetchUser(userId)
       .then((user) => {
-        Monita.info("User data loaded", {
+        Apperio.info("User data loaded", {
           userId,
           loadTime: performance.now(),
         });
       })
       .catch((err) => {
-        Monita.error("Failed to load user data", {
+        Apperio.error("Failed to load user data", {
           userId,
           error: err,
         });
@@ -323,7 +323,7 @@ function UserProfile({ userId }: { userId: string }) {
         <CodeBlock
           language="typescript"
           code={`import { useEffect, useRef } from "react";
-import Monita from "monita";
+import Apperio from "apperio";
 
 function useRenderPerformance(componentName: string) {
   const renderCount = useRef(0);
@@ -335,7 +335,7 @@ function useRenderPerformance(componentName: string) {
 
     if (renderTime > 16) {
       // Longer than one frame (60fps)
-      Monita.warn("Slow render detected", {
+      Apperio.warn("Slow render detected", {
         component: componentName,
         renderTime: Math.round(renderTime),
         renderCount: renderCount.current,
@@ -357,13 +357,13 @@ function HeavyComponent() {
         <DocUl>
           <DocLi>
             <DocStrong>Initialize once</DocStrong> -- Call{" "}
-            <InlineCode>Monita.init()</InlineCode> in your entry file, not
+            <InlineCode>Apperio.init()</InlineCode> in your entry file, not
             inside components. Use a ref guard to prevent double-init in
             StrictMode.
           </DocLi>
           <DocLi>
             <DocStrong>Use error boundaries</DocStrong> -- Wrap feature
-            sections with <InlineCode>MonitaErrorBoundary</InlineCode> for
+            sections with <InlineCode>ApperioErrorBoundary</InlineCode> for
             automatic React error reporting.
           </DocLi>
           <DocLi>
@@ -377,7 +377,7 @@ function HeavyComponent() {
           </DocLi>
           <DocLi>
             <DocStrong>Flush on navigation</DocStrong> -- Call{" "}
-            <InlineCode>Monita.flush()</InlineCode> before page unload or
+            <InlineCode>Apperio.flush()</InlineCode> before page unload or
             significant navigation events.
           </DocLi>
         </DocUl>

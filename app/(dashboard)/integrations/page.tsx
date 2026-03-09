@@ -71,7 +71,7 @@ export default function IntegrationsPage() {
     <div className="flex flex-col gap-6 p-6">
       <PageHeader
         title="Integrations"
-        description="Connect Monita with your favorite tools for issue tracking, incident management, and team communication."
+        description="Connect Apperio with your favorite tools for issue tracking, incident management, and team communication."
         badge={
           connectedCount > 0 ? (
             <Badge variant="signal">

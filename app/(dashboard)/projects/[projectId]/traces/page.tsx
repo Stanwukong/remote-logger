@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { useLogHiveStore } from "@/store/loghive-store";
+import { useApperioStore } from "@/store/apperio-store";
 import { useTraces } from "@/hooks/trace.hook";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { SkeletonTable } from "@/components/shared/SkeletonDashboard";
@@ -61,7 +61,7 @@ function truncateId(id: string | undefined | null, len = 12): string {
 export default function TracesPage() {
   const params = useParams<{ projectId: string }>();
   const projectId = typeof params?.projectId === "string" ? params.projectId : "";
-  const selectedTimeRange = useLogHiveStore((s) => s.selectedTimeRange);
+  const selectedTimeRange = useApperioStore((s) => s.selectedTimeRange);
 
   const [timeRange, setTimeRange] = useState<string>(selectedTimeRange || "24h");
   const [statusFilter, setStatusFilter] = useState("all");

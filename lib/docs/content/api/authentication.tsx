@@ -32,7 +32,7 @@ export default function ApiAuthenticationPage() {
       >
         <DocH2 id="auth-methods">Authentication Methods</DocH2>
         <DocP>
-          Monita supports three authentication methods depending on the use
+          Apperio supports three authentication methods depending on the use
           case:
         </DocP>
         <DocTable
@@ -109,7 +109,7 @@ curl -X POST https://loghive-server.vercel.app/api/v1/PROJECT_ID/logs \\
 
         <DocH2 id="oauth">OAuth Authentication</DocH2>
         <DocP>
-          Monita supports OAuth login via GitHub and Google. The OAuth flow
+          Apperio supports OAuth login via GitHub and Google. The OAuth flow
           is handled by the frontend and backend together:
         </DocP>
         <EndpointBlock

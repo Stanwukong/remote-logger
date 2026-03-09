@@ -28,7 +28,7 @@ export default function NextjsGuidePage() {
       <DocsContent
         slug="guides/nextjs"
         title="Next.js Integration"
-        description="Set up Monita with Next.js App Router and Pages Router."
+        description="Set up Apperio with Next.js App Router and Pages Router."
       >
         <DocH2 id="app-router-setup">App Router Setup</DocH2>
         <DocP>
@@ -39,25 +39,25 @@ export default function NextjsGuidePage() {
 
         <CodeBlock
           language="bash"
-          code="npm install monita"
+          code="npm install apperio"
         />
 
         <CodeBlock
           language="typescript"
-          filename="app/providers/MonitaProvider.tsx"
+          filename="app/providers/ApperioProvider.tsx"
           code={`"use client";
 
 import { useEffect, useRef } from "react";
-import Monita from "monita";
+import Apperio from "apperio";
 
-export function MonitaProvider({ children }: { children: React.ReactNode }) {
+export function ApperioProvider({ children }: { children: React.ReactNode }) {
   const initialized = useRef(false);
 
   useEffect(() => {
     if (!initialized.current) {
-      Monita.init({
-        projectId: process.env.NEXT_PUBLIC_MONITA_PROJECT_ID!,
-        apiKey: process.env.NEXT_PUBLIC_MONITA_API_KEY!,
+      Apperio.init({
+        projectId: process.env.NEXT_PUBLIC_APPERIO_PROJECT_ID!,
+        apiKey: process.env.NEXT_PUBLIC_APPERIO_API_KEY!,
         environment: process.env.NODE_ENV,
         autoCapture: {
           errors: true,
@@ -70,7 +70,7 @@ export function MonitaProvider({ children }: { children: React.ReactNode }) {
     }
 
     return () => {
-      Monita.flush();
+      Apperio.flush();
     };
   }, []);
 
@@ -84,7 +84,7 @@ export function MonitaProvider({ children }: { children: React.ReactNode }) {
         <CodeBlock
           language="typescript"
           filename="app/layout.tsx"
-          code={`import { MonitaProvider } from "./providers/MonitaProvider";
+          code={`import { ApperioProvider } from "./providers/ApperioProvider";
 
 export default function RootLayout({
   children,
@@ -94,9 +94,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <MonitaProvider>
+        <ApperioProvider>
           {children}
-        </MonitaProvider>
+        </ApperioProvider>
       </body>
     </html>
   );
@@ -117,20 +117,20 @@ export default function RootLayout({
         </DocP>
         <CodeBlock
           language="typescript"
-          filename="app/dashboard/MonitaInit.tsx"
+          filename="app/dashboard/ApperioInit.tsx"
           code={`"use client";
 
 import { useEffect, useRef } from "react";
-import Monita from "monita";
+import Apperio from "apperio";
 
-export function MonitaInit() {
+export function ApperioInit() {
   const initialized = useRef(false);
 
   useEffect(() => {
     if (!initialized.current) {
-      Monita.init({
-        projectId: process.env.NEXT_PUBLIC_MONITA_PROJECT_ID!,
-        apiKey: process.env.NEXT_PUBLIC_MONITA_API_KEY!,
+      Apperio.init({
+        projectId: process.env.NEXT_PUBLIC_APPERIO_PROJECT_ID!,
+        apiKey: process.env.NEXT_PUBLIC_APPERIO_API_KEY!,
       });
       initialized.current = true;
     }
@@ -140,22 +140,22 @@ export function MonitaInit() {
 }
 
 // Usage in a server component layout:
-// <MonitaInit />
+// <ApperioInit />
 // <DashboardContent />`}
         />
 
         <DocH2 id="server-logging">Server-Side Logging</DocH2>
         <DocP>
           For server-side logging in Server Components, Server Actions, or
-          Route Handlers, you can send logs directly to the Monita API:
+          Route Handlers, you can send logs directly to the Apperio API:
         </DocP>
         <CodeBlock
           language="typescript"
           filename="lib/server-logger.ts"
-          code={`const API_BASE = process.env.MONITA_API_URL
+          code={`const API_BASE = process.env.APPERIO_API_URL
   || "https://loghive-server.vercel.app/api/v1";
-const PROJECT_ID = process.env.MONITA_PROJECT_ID;
-const API_KEY = process.env.MONITA_API_KEY;
+const PROJECT_ID = process.env.APPERIO_PROJECT_ID;
+const API_KEY = process.env.APPERIO_API_KEY;
 
 interface ServerLogOptions {
   level: "trace" | "debug" | "info" | "warn" | "error" | "fatal";
@@ -215,7 +215,7 @@ export async function middleware(request: NextRequest) {
   const start = Date.now();
   const response = NextResponse.next();
 
-  // Log to Monita (fire-and-forget)
+  // Log to Apperio (fire-and-forget)
   const logData = {
     timestamp: new Date().toISOString(),
     level: "info",
@@ -230,11 +230,11 @@ export async function middleware(request: NextRequest) {
   };
 
   // Non-blocking log send
-  fetch(process.env.MONITA_API_URL + "/" + process.env.MONITA_PROJECT_ID + "/logs", {
+  fetch(process.env.APPERIO_API_URL + "/" + process.env.APPERIO_PROJECT_ID + "/logs", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-API-Key": process.env.MONITA_API_KEY!,
+      "X-API-Key": process.env.APPERIO_API_KEY!,
     },
     body: JSON.stringify(logData),
   }).catch(() => {
@@ -247,7 +247,7 @@ export async function middleware(request: NextRequest) {
 
         <DocH2 id="error-handling">Error Handling</DocH2>
         <DocP>
-          Use Next.js error files with Monita for comprehensive error
+          Use Next.js error files with Apperio for comprehensive error
           reporting:
         </DocP>
 
@@ -258,7 +258,7 @@ export async function middleware(request: NextRequest) {
           code={`"use client";
 
 import { useEffect } from "react";
-import Monita from "monita";
+import Apperio from "apperio";
 
 export default function Error({
   error,
@@ -268,7 +268,7 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    Monita.error("Next.js page error", {
+    Apperio.error("Next.js page error", {
       error: {
         name: error.name,
         message: error.message,
@@ -291,7 +291,7 @@ export default function Error({
         <CodeBlock
           language="typescript"
           filename="app/not-found.tsx"
-          code={`import Monita from "monita";
+          code={`import Apperio from "apperio";
 
 export default function NotFound() {
   // Note: This is a server component, so use serverLog
@@ -308,7 +308,7 @@ export default function NotFound() {
 "use client";
 function NotFoundLogger() {
   useEffect(() => {
-    Monita.warn("404 - Page not found", {
+    Apperio.warn("404 - Page not found", {
       url: window.location.href,
       referrer: document.referrer,
     });
@@ -371,40 +371,40 @@ export async function GET(request: Request) {
           language="bash"
           filename=".env.local"
           code={`# Client-side (exposed to browser)
-NEXT_PUBLIC_MONITA_PROJECT_ID=your_project_id
-NEXT_PUBLIC_MONITA_API_KEY=your_api_key
+NEXT_PUBLIC_APPERIO_PROJECT_ID=your_project_id
+NEXT_PUBLIC_APPERIO_API_KEY=your_api_key
 
 # Server-side only (not exposed to browser)
-MONITA_PROJECT_ID=your_project_id
-MONITA_API_KEY=your_api_key
-MONITA_API_URL=https://loghive-server.vercel.app/api/v1`}
+APPERIO_PROJECT_ID=your_project_id
+APPERIO_API_KEY=your_api_key
+APPERIO_API_URL=https://loghive-server.vercel.app/api/v1`}
         />
 
         <DocTable
           headers={["Variable", "Scope", "Used By"]}
           rows={[
             [
-              <InlineCode key="c1">NEXT_PUBLIC_MONITA_PROJECT_ID</InlineCode>,
+              <InlineCode key="c1">NEXT_PUBLIC_APPERIO_PROJECT_ID</InlineCode>,
               "Client",
               "SDK initialization in browser",
             ],
             [
-              <InlineCode key="c2">NEXT_PUBLIC_MONITA_API_KEY</InlineCode>,
+              <InlineCode key="c2">NEXT_PUBLIC_APPERIO_API_KEY</InlineCode>,
               "Client",
               "SDK API authentication",
             ],
             [
-              <InlineCode key="s1">MONITA_PROJECT_ID</InlineCode>,
+              <InlineCode key="s1">APPERIO_PROJECT_ID</InlineCode>,
               "Server",
               "Server-side logging, middleware",
             ],
             [
-              <InlineCode key="s2">MONITA_API_KEY</InlineCode>,
+              <InlineCode key="s2">APPERIO_API_KEY</InlineCode>,
               "Server",
               "Server-side API authentication",
             ],
             [
-              <InlineCode key="s3">MONITA_API_URL</InlineCode>,
+              <InlineCode key="s3">APPERIO_API_URL</InlineCode>,
               "Server",
               "API base URL for server logging",
             ],
@@ -413,14 +413,14 @@ MONITA_API_URL=https://loghive-server.vercel.app/api/v1`}
 
         <DocH2 id="pages-router">Pages Router (Legacy)</DocH2>
         <DocP>
-          If you are using the Pages Router, initialize Monita in{" "}
+          If you are using the Pages Router, initialize Apperio in{" "}
           <InlineCode>_app.tsx</InlineCode>:
         </DocP>
         <CodeBlock
           language="typescript"
           filename="pages/_app.tsx"
           code={`import { useEffect, useRef } from "react";
-import Monita from "monita";
+import Apperio from "apperio";
 import type { AppProps } from "next/app";
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -428,9 +428,9 @@ export default function App({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
     if (!initialized.current) {
-      Monita.init({
-        projectId: process.env.NEXT_PUBLIC_MONITA_PROJECT_ID!,
-        apiKey: process.env.NEXT_PUBLIC_MONITA_API_KEY!,
+      Apperio.init({
+        projectId: process.env.NEXT_PUBLIC_APPERIO_PROJECT_ID!,
+        apiKey: process.env.NEXT_PUBLIC_APPERIO_API_KEY!,
         environment: process.env.NODE_ENV,
       });
       initialized.current = true;

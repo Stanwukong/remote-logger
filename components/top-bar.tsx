@@ -45,7 +45,7 @@ import {
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useWebsocket } from "@/hooks/useWebsocket";
-import { useLogHiveStore } from "@/store/loghive-store";
+import { useApperioStore } from "@/store/apperio-store";
 import { useProjects } from "@/hooks/project.hooks";
 import { format } from "date-fns";
 import type { DateRange } from "react-day-picker";
@@ -149,18 +149,18 @@ export function TopBar({ onCommandOpen }: TopBarProps) {
   const [datePickerOpen, setDatePickerOpen] = useState(false);
 
   // Zustand store
-  const selectedTimeRange = useLogHiveStore((s) => s.selectedTimeRange);
-  const setTimeRange = useLogHiveStore((s) => s.setTimeRange);
-  const customTimeRange = useLogHiveStore((s) => s.customTimeRange);
-  const setCustomTimeRange = useLogHiveStore((s) => s.setCustomTimeRange);
-  const selectedEnvironment = useLogHiveStore((s) => s.selectedEnvironment);
-  const setSelectedEnvironment = useLogHiveStore(
+  const selectedTimeRange = useApperioStore((s) => s.selectedTimeRange);
+  const setTimeRange = useApperioStore((s) => s.setTimeRange);
+  const customTimeRange = useApperioStore((s) => s.customTimeRange);
+  const setCustomTimeRange = useApperioStore((s) => s.setCustomTimeRange);
+  const selectedEnvironment = useApperioStore((s) => s.selectedEnvironment);
+  const setSelectedEnvironment = useApperioStore(
     (s) => s.setSelectedEnvironment,
   );
-  const autoRefreshEnabled = useLogHiveStore((s) => s.autoRefreshEnabled);
-  const autoRefreshInterval = useLogHiveStore((s) => s.autoRefreshInterval);
-  const toggleAutoRefresh = useLogHiveStore((s) => s.toggleAutoRefresh);
-  const setAutoRefreshInterval = useLogHiveStore(
+  const autoRefreshEnabled = useApperioStore((s) => s.autoRefreshEnabled);
+  const autoRefreshInterval = useApperioStore((s) => s.autoRefreshInterval);
+  const toggleAutoRefresh = useApperioStore((s) => s.toggleAutoRefresh);
+  const setAutoRefreshInterval = useApperioStore(
     (s) => s.setAutoRefreshInterval,
   );
 

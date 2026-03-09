@@ -52,7 +52,7 @@ export function Header() {
             <circle cx="24" cy="10" r="2" fill="currentColor" />
           </svg>
           <span className="font-display font-semibold text-lg text-text-primary tracking-[-0.02em]">
-            monita
+            apperio
           </span>
         </Link>
 

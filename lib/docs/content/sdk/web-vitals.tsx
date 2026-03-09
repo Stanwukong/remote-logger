@@ -37,7 +37,7 @@ export default function WebVitalsPage() {
         <DocH2 id="core-web-vitals">Core Web Vitals</DocH2>
         <DocP>
           Core Web Vitals are a set of metrics defined by Google that measure
-          real-world user experience. Monita captures these automatically when{" "}
+          real-world user experience. Apperio captures these automatically when{" "}
           <InlineCode>autoCapture.performance</InlineCode> is enabled.
         </DocP>
 
@@ -166,7 +166,7 @@ const observer = new PerformanceObserver((list) => {
 
         <DocH2 id="dashboard-view">Dashboard Visualization</DocH2>
         <DocP>
-          The Monita dashboard provides dedicated views for performance data:
+          The Apperio dashboard provides dedicated views for performance data:
         </DocP>
         <DocUl>
           <DocLi>
@@ -189,7 +189,7 @@ const observer = new PerformanceObserver((list) => {
 
         <DocH2 id="performance-budgets">Performance Budgets</DocH2>
         <DocP>
-          Use Monita alert rules to set performance budgets and get notified
+          Use Apperio alert rules to set performance budgets and get notified
           when metrics exceed thresholds:
         </DocP>
         <CodeBlock

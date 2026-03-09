@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useParams } from "next/navigation";
 import { MousePointerClick, Clock, List, Target } from "lucide-react";
 import { format } from "date-fns";
-import { useLogHiveStore } from "@/store/loghive-store";
+import { useApperioStore } from "@/store/apperio-store";
 import {
   useInteractionOverview,
   useInteractionTimeline,
@@ -53,8 +53,8 @@ function Empty({ text }: { text: string }) {
 export default function InteractionsPage() {
   const params = useParams<{ projectId: string }>();
   const projectId = typeof params?.projectId === "string" ? params.projectId : "";
-  const selectedTimeRange = useLogHiveStore((s) => s.selectedTimeRange);
-  const customTimeRange = useLogHiveStore((s) => s.customTimeRange);
+  const selectedTimeRange = useApperioStore((s) => s.selectedTimeRange);
+  const customTimeRange = useApperioStore((s) => s.customTimeRange);
   const trp = useMemo(() => resolveTimeRangeParams(selectedTimeRange, customTimeRange), [selectedTimeRange, customTimeRange]);
 
   const { data: overviewRaw, isLoading: ovLoading } = useInteractionOverview(projectId, trp);

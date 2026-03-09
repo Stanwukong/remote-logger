@@ -28,11 +28,11 @@ export default function SdkConfigurationPage() {
       <DocsContent
         slug="sdk/configuration"
         title="Configuration"
-        description="Complete reference for all Monita SDK configuration options."
+        description="Complete reference for all Apperio SDK configuration options."
       >
         <DocH2 id="full-config">Full Configuration</DocH2>
         <DocP>
-          The <InlineCode>Monita.init()</InlineCode> method accepts a
+          The <InlineCode>Apperio.init()</InlineCode> method accepts a
           configuration object with the following shape:
         </DocP>
         <CodeBlock
@@ -80,7 +80,7 @@ export default function SdkConfigurationPage() {
             [
               <InlineCode key="pid">projectId</InlineCode>,
               <InlineCode key="pidt">string</InlineCode>,
-              "Your project's unique identifier from the Monita dashboard",
+              "Your project's unique identifier from the Apperio dashboard",
             ],
             [
               <InlineCode key="ak">apiKey</InlineCode>,
@@ -192,7 +192,7 @@ export default function SdkConfigurationPage() {
 
         <CodeBlock
           language="typescript"
-          code={`Monita.init({
+          code={`Apperio.init({
   projectId: "...",
   apiKey: "...",
   sanitization: {
@@ -243,7 +243,7 @@ export default function SdkConfigurationPage() {
         <DocH3 id="dev-config">Development</DocH3>
         <CodeBlock
           language="typescript"
-          code={`Monita.init({
+          code={`Apperio.init({
   projectId: "dev-project",
   apiKey: "dev-key",
   environment: "development",
@@ -263,9 +263,9 @@ export default function SdkConfigurationPage() {
         <DocH3 id="prod-config">Production</DocH3>
         <CodeBlock
           language="typescript"
-          code={`Monita.init({
-  projectId: process.env.MONITA_PROJECT_ID,
-  apiKey: process.env.MONITA_API_KEY,
+          code={`Apperio.init({
+  projectId: process.env.APPERIO_PROJECT_ID,
+  apiKey: process.env.APPERIO_API_KEY,
   environment: "production",
   service: "web-app",
   logLevel: "info",             // Skip trace/debug in prod

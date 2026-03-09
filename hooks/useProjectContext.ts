@@ -1,15 +1,15 @@
 'use client';
 import { useParams } from 'next/navigation';
 import { useEffect } from 'react';
-import { useLogHiveStore } from '@/store/loghive-store';
+import { useApperioStore } from '@/store/apperio-store';
 import { useProject } from '@/hooks/project.hooks';
 
 export function useProjectContext() {
   const params = useParams<{ projectId?: string }>();
   const projectId = params?.projectId ?? null;
 
-  const storeProjectId = useLogHiveStore((s) => s.currentProjectId);
-  const setCurrentProjectId = useLogHiveStore((s) => s.setCurrentProjectId);
+  const storeProjectId = useApperioStore((s) => s.currentProjectId);
+  const setCurrentProjectId = useApperioStore((s) => s.setCurrentProjectId);
 
   // Sync URL projectId -> Zustand store
   useEffect(() => {

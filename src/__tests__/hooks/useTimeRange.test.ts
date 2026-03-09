@@ -33,8 +33,8 @@ const mockSetCustomTimeRange = vi.fn((range: any) => {
   mockCustomTimeRange = range;
 });
 
-vi.mock("@/store/loghive-store", () => ({
-  useLogHiveStore: (selector: any) =>
+vi.mock("@/store/apperio-store", () => ({
+  useApperioStore: (selector: any) =>
     selector({
       selectedTimeRange: mockStoreTimeRange,
       setTimeRange: mockSetTimeRange,

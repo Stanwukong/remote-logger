@@ -24,7 +24,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { useFavorites, useRemoveFavorite } from "@/hooks/userPreference.hook";
-import { useLogHiveStore, type TimeRange } from "@/store/loghive-store";
+import { useApperioStore, type TimeRange } from "@/store/apperio-store";
 import { toast } from "sonner";
 import Link from "next/link";
 
@@ -47,14 +47,14 @@ export default function PreferencesPage() {
   const { data: favoritesData, isLoading: favoritesLoading } = useFavorites();
   const removeFavorite = useRemoveFavorite();
 
-  const theme = useLogHiveStore((s) => s.theme);
-  const setTheme = useLogHiveStore((s) => s.setTheme);
-  const selectedTimeRange = useLogHiveStore((s) => s.selectedTimeRange);
-  const setTimeRange = useLogHiveStore((s) => s.setTimeRange);
-  const autoRefreshEnabled = useLogHiveStore((s) => s.autoRefreshEnabled);
-  const setAutoRefreshEnabled = useLogHiveStore((s) => s.setAutoRefreshEnabled);
-  const autoRefreshInterval = useLogHiveStore((s) => s.autoRefreshInterval);
-  const setAutoRefreshInterval = useLogHiveStore(
+  const theme = useApperioStore((s) => s.theme);
+  const setTheme = useApperioStore((s) => s.setTheme);
+  const selectedTimeRange = useApperioStore((s) => s.selectedTimeRange);
+  const setTimeRange = useApperioStore((s) => s.setTimeRange);
+  const autoRefreshEnabled = useApperioStore((s) => s.autoRefreshEnabled);
+  const setAutoRefreshEnabled = useApperioStore((s) => s.setAutoRefreshEnabled);
+  const autoRefreshInterval = useApperioStore((s) => s.autoRefreshInterval);
+  const setAutoRefreshInterval = useApperioStore(
     (s) => s.setAutoRefreshInterval
   );
 

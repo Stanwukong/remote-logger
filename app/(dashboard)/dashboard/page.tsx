@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import { useDashboardData } from "@/hooks/dashboard.hook";
 import { useProjects } from "@/hooks/project.hooks";
 import { useUserAlertStats, useUserAlerts } from "@/hooks/alerts.hook";
-import { useLogHiveStore } from "@/store/loghive-store";
+import { useApperioStore } from "@/store/apperio-store";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { MetricCard } from "@/components/shared/MetricCard";
 import { Sparkline } from "@/components/shared/Sparkline";
@@ -84,8 +84,8 @@ const severityBadgeVariant: Record<string, "default" | "secondary" | "destructiv
 // ---------------------------------------------------------------------------
 
 export default function DashboardPage() {
-  const selectedTimeRange = useLogHiveStore((s) => s.selectedTimeRange);
-  const customTimeRange = useLogHiveStore((s) => s.customTimeRange);
+  const selectedTimeRange = useApperioStore((s) => s.selectedTimeRange);
+  const customTimeRange = useApperioStore((s) => s.customTimeRange);
   const [projectsView, setProjectsView] = useState<ViewMode>("cards");
   const [alertsView, setAlertsView] = useState<ViewMode>("cards");
   const { startDate, endDate } = useMemo(
@@ -163,7 +163,7 @@ export default function DashboardPage() {
             <FolderOpen className="w-8 h-8 text-signal" />
           </div>
           <h2 className="text-2xl font-display font-bold text-text-primary mb-2">
-            Welcome to Monita
+            Welcome to Apperio
           </h2>
           <p className="text-text-secondary max-w-md mb-6">
             Create your first project to start monitoring your applications in real-time.

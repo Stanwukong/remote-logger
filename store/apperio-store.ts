@@ -23,7 +23,7 @@ export interface CurrentUser {
 // STATE INTERFACE
 // ============================================
 
-interface LogHiveState {
+interface ApperioState {
   // Auth
   currentUser: CurrentUser | null;
 
@@ -53,7 +53,7 @@ interface LogHiveState {
 // ACTIONS INTERFACE
 // ============================================
 
-interface LogHiveActions {
+interface ApperioActions {
   // Auth
   setCurrentUser: (user: CurrentUser | null) => void;
 
@@ -79,7 +79,7 @@ interface LogHiveActions {
   setTheme: (theme: 'dark' | 'light' | 'system') => void;
 
   // Legacy
-  setFilterLevel: (level: LogHiveState['filterLevel']) => void;
+  setFilterLevel: (level: ApperioState['filterLevel']) => void;
   setSearchQuery: (query: string) => void;
 
   // Reset
@@ -90,7 +90,7 @@ interface LogHiveActions {
 // INITIAL STATE
 // ============================================
 
-const initialState: LogHiveState = {
+const initialState: ApperioState = {
   currentUser: null,
   currentProjectId: null,
   selectedTimeRange: '24h',
@@ -109,7 +109,7 @@ const initialState: LogHiveState = {
 // STORE
 // ============================================
 
-export const useLogHiveStore = create<LogHiveState & LogHiveActions>()(
+export const useApperioStore = create<ApperioState & ApperioActions>()(
   devtools(
     persist(
       (set) => ({
@@ -131,7 +131,7 @@ export const useLogHiveStore = create<LogHiveState & LogHiveActions>()(
               selectedTimeRange: range,
               // Clear custom range when selecting a preset
               customTimeRange: range !== 'custom' ? null : undefined,
-            } as Partial<LogHiveState>,
+            } as Partial<ApperioState>,
             false,
             'setTimeRange'
           ),
@@ -180,7 +180,7 @@ export const useLogHiveStore = create<LogHiveState & LogHiveActions>()(
         reset: () => set(initialState, false, 'reset'),
       }),
       {
-        name: 'monita-store',
+        name: 'apperio-store',
         partialize: (state) => ({
           // Only persist UI preferences, not transient data
           selectedTimeRange: state.selectedTimeRange,
@@ -192,7 +192,7 @@ export const useLogHiveStore = create<LogHiveState & LogHiveActions>()(
         }),
       }
     ),
-    { name: 'LogHiveStore' }
+    { name: 'ApperioStore' }
   )
 );
 
@@ -200,14 +200,14 @@ export const useLogHiveStore = create<LogHiveState & LogHiveActions>()(
 // SELECTOR HOOKS (for performance)
 // ============================================
 
-export const useCurrentProjectId = () => useLogHiveStore((s) => s.currentProjectId);
-export const useSelectedTimeRange = () => useLogHiveStore((s) => s.selectedTimeRange);
-export const useSelectedEnvironment = () => useLogHiveStore((s) => s.selectedEnvironment);
+export const useCurrentProjectId = () => useApperioStore((s) => s.currentProjectId);
+export const useSelectedTimeRange = () => useApperioStore((s) => s.selectedTimeRange);
+export const useSelectedEnvironment = () => useApperioStore((s) => s.selectedEnvironment);
 export const useAutoRefresh = () =>
-  useLogHiveStore((s) => ({
+  useApperioStore((s) => ({
     enabled: s.autoRefreshEnabled,
     interval: s.autoRefreshInterval,
     toggle: s.toggleAutoRefresh,
     setInterval: s.setAutoRefreshInterval,
   }));
-export const useTheme = () => useLogHiveStore((s) => s.theme);
+export const useTheme = () => useApperioStore((s) => s.theme);

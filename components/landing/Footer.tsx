@@ -59,7 +59,7 @@ export function Footer() {
                 <circle cx="24" cy="10" r="2" fill="currentColor" />
               </svg>
               <span className="font-display font-semibold text-lg text-text-primary tracking-[-0.02em]">
-                monita
+                apperio
               </span>
             </Link>
             <p className="text-sm text-text-muted leading-relaxed">
@@ -111,7 +111,7 @@ export function Footer() {
 
         {/* Bottom bar */}
         <div className="border-t border-border-faint pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-text-muted">
-          <p>&copy; 2025 Monita. All rights reserved.</p>
+          <p>&copy; 2025 Apperio. All rights reserved.</p>
           <div className="flex items-center gap-4">
             <span>GDPR Ready</span>
             <span>&bull;</span>

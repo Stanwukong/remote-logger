@@ -255,7 +255,7 @@ export default function StatusPage() {
           System Status
         </h1>
         <p className="text-sm text-text-muted mt-1">
-          Real-time health of Monita platform components
+          Real-time health of Apperio platform components
         </p>
       </div>
 

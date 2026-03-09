@@ -53,18 +53,32 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { InteractiveDemo } from "@/components/sdk/interactive-demo";
 import { CodeBlock } from "@/components/sdk/code-block";
 import { FeatureShowcase } from "@/components/sdk/feature-showcase";
+import { HeroCanvas } from "@/components/landing/HeroCanvas";
 
 export default function SDKPage() {
   const [installCopied, setInstallCopied] = useState(false);
 
   const handleCopyInstall = async () => {
-    await navigator.clipboard.writeText("npm install monita");
+    await navigator.clipboard.writeText("npm install apperio");
     setInstallCopied(true);
     setTimeout(() => setInstallCopied(false), 2000);
   };
 
   return (
-    <div className="min-h-screen scrollbar-hide bg-bg-void">
+    <div
+      className="relative min-h-screen scrollbar-hide"
+      style={{
+        background:
+          "linear-gradient(180deg, var(--bg-void) 0%, var(--bg-base) 50%, var(--bg-void) 100%)",
+      }}
+    >
+      {/* Observatory background — full page */}
+      <div className="fixed inset-0 bg-dot-grid opacity-40 pointer-events-none" />
+      <div className="fixed inset-0 pointer-events-none">
+        <HeroCanvas />
+      </div>
+
+      <div className="relative z-10">
       {/* ================================================================
           SECTION 1: HEADER — Sticky glassmorphism nav
           ================================================================ */}
@@ -90,7 +104,7 @@ export default function SDKPage() {
                 <circle cx="24" cy="10" r="2" fill="currentColor" />
               </svg>
               <span className="font-display font-semibold text-lg text-text-primary tracking-[-0.02em]">
-                monita
+                apperio
               </span>
             </Link>
             <div className="items-center space-x-2 ml-4 hidden md:flex">
@@ -159,12 +173,7 @@ export default function SDKPage() {
             ================================================================ */}
         <div
           className="relative text-center mb-20 -mx-3 sm:-mx-4 px-3 sm:px-4 py-16 sm:py-24 overflow-hidden"
-          style={{
-            background:
-              "linear-gradient(180deg, var(--bg-void) 0%, var(--bg-base) 50%, var(--bg-surface) 100%)",
-          }}
         >
-          <div className="absolute inset-0 bg-dot-grid opacity-30" />
           <div
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] pointer-events-none"
             style={{
@@ -183,7 +192,7 @@ export default function SDKPage() {
             </div>
 
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-extrabold tracking-[-0.03em] mb-6 px-2">
-              <span className="text-text-primary">Monita SDK</span>
+              <span className="text-text-primary">Apperio SDK</span>
             </h1>
 
             <p className="text-base sm:text-lg md:text-xl text-text-secondary max-w-3xl mx-auto mb-8 leading-relaxed px-4 sm:px-0">
@@ -237,7 +246,7 @@ export default function SDKPage() {
               >
                 <Terminal className="w-4 h-4 text-text-muted" />
                 <code className="font-mono text-sm text-text-primary">
-                  npm install monita
+                  npm install apperio
                 </code>
                 <span className="text-text-muted group-hover:text-signal transition-colors">
                   {installCopied ? (
@@ -283,11 +292,11 @@ export default function SDKPage() {
                 asChild
               >
                 <Link
-                  href="https://npmjs.com/package/monita"
+                  href="https://npmjs.com/package/apperio"
                   target="_blank"
                 >
                   <Package className="mr-2 w-4 h-4" />
-                  npm: monita
+                  npm: apperio
                 </Link>
               </Button>
             </div>
@@ -346,23 +355,23 @@ export default function SDKPage() {
                 <StepCard step={1} title="Install">
                   <CodeBlock
                     language="bash"
-                    code="npm install monita"
+                    code="npm install apperio"
                     showCopy
                     title="Terminal"
                   />
                   <div className="flex gap-2 mt-3 text-xs text-text-muted">
                     <span>Or:</span>
-                    <code className="font-mono text-text-code">yarn add monita</code>
-                    <code className="font-mono text-text-code">pnpm add monita</code>
+                    <code className="font-mono text-text-code">yarn add apperio</code>
+                    <code className="font-mono text-text-code">pnpm add apperio</code>
                   </div>
                 </StepCard>
 
                 <StepCard step={2} title="Initialize">
                   <CodeBlock
                     language="typescript"
-                    code={`import { Monita } from "monita";
+                    code={`import { Apperio } from "apperio";
 
-const logger = new Monita({
+const logger = new Apperio({
   apiKey: "your-api-key",
   projectId: "your-project-id",
   environment: "production",
@@ -397,7 +406,7 @@ logger.info("User signed up", {
                 <StepCard step={1} title="Install">
                   <CodeBlock
                     language="bash"
-                    code="npm install monita @monita/react"
+                    code="npm install apperio @apperio/react"
                     showCopy
                     title="Terminal"
                   />
@@ -406,17 +415,17 @@ logger.info("User signed up", {
                 <StepCard step={2} title="Wrap Provider">
                   <CodeBlock
                     language="tsx"
-                    code={`import { MonitaProvider } from "@monita/react";
+                    code={`import { ApperioProvider } from "@apperio/react";
 
 function App() {
   return (
-    <MonitaProvider config={{
+    <ApperioProvider config={{
       apiKey: "your-api-key",
       projectId: "your-project-id",
       environment: "production",
     }}>
       <YourApp />
-    </MonitaProvider>
+    </ApperioProvider>
   );
 }`}
                     showCopy
@@ -427,11 +436,11 @@ function App() {
                 <StepCard step={3} title="Use Hooks">
                   <CodeBlock
                     language="tsx"
-                    code={`import { useMonita, useLogError }
-  from "@monita/react";
+                    code={`import { useApperio, useLogError }
+  from "@apperio/react";
 
 function Dashboard() {
-  const logger = useMonita();
+  const logger = useApperio();
   const logError = useLogError();
 
   const handleClick = () => {
@@ -455,7 +464,7 @@ function Dashboard() {
                 <StepCard step={1} title="Install">
                   <CodeBlock
                     language="bash"
-                    code="npm install monita @monita/nextjs"
+                    code="npm install apperio @apperio/nextjs"
                     showCopy
                     title="Terminal"
                   />
@@ -465,13 +474,13 @@ function Dashboard() {
                   <CodeBlock
                     language="typescript"
                     code={`// middleware.ts
-import { withMonitaMiddleware }
-  from "@monita/nextjs";
+import { withApperioMiddleware }
+  from "@apperio/nextjs";
 import { NextResponse } from "next/server";
 
 const middleware = () => NextResponse.next();
 
-export default withMonitaMiddleware(
+export default withApperioMiddleware(
   middleware,
   {
     apiKey: "your-api-key",
@@ -488,7 +497,7 @@ export default withMonitaMiddleware(
                     language="typescript"
                     code={`// app/api/users/route.ts
 import { createServerLogger }
-  from "@monita/nextjs";
+  from "@apperio/nextjs";
 
 const logger = createServerLogger({
   apiKey: "your-api-key",
@@ -672,7 +681,7 @@ export async function GET() {
           <div className="max-w-2xl mx-auto">
             <CodeBlock
               language="typescript"
-              code={`const logger = new Monita({
+              code={`const logger = new Apperio({
   apiKey: "your-api-key",
   projectId: "your-project-id",
   autoCapture: {
@@ -915,7 +924,7 @@ logger.endSpan(parentSpan);`}
               <CardContent className="pt-0">
                 <CodeBlock
                   language="typescript"
-                  code={`const logger = new Monita({
+                  code={`const logger = new Apperio({
   apiKey: "your-api-key",
   projectId: "your-project-id",
   sanitization: {
@@ -996,7 +1005,7 @@ const trail = logger
               <CardContent>
                 <CodeBlock
                   language="typescript"
-                  code={`const logger = new Monita({
+                  code={`const logger = new Apperio({
   apiKey: "your-api-key",
   projectId: "your-project-id",
   patternDetection: {
@@ -1034,7 +1043,7 @@ const trail = logger
               <CardContent>
                 <CodeBlock
                   language="typescript"
-                  code={`const logger = new Monita({
+                  code={`const logger = new Apperio({
   apiKey: "your-api-key",
   projectId: "your-project-id",
 
@@ -1110,7 +1119,7 @@ logger.addBreadcrumb(
               <CardContent>
                 <CodeBlock
                   language="typescript"
-                  code={`import { createEnhancedLogger } from "monita";
+                  code={`import { createEnhancedLogger } from "apperio";
 
 const {
   logger,
@@ -1164,7 +1173,7 @@ abTestLogger.logVariant(
         </section>
 
         {/* ================================================================
-            SECTION 9: FRAMEWORK SDKs — @monita/react & @monita/nextjs
+            SECTION 9: FRAMEWORK SDKs — @apperio/react & @apperio/nextjs
             ================================================================ */}
         <section id="frameworks" className="mb-24">
           <div className="text-center mb-12">
@@ -1183,7 +1192,7 @@ abTestLogger.logVariant(
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* @monita/react */}
+            {/* @apperio/react */}
             <div className="space-y-4">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 bg-data/10 rounded-xl flex items-center justify-center">
@@ -1191,7 +1200,7 @@ abTestLogger.logVariant(
                 </div>
                 <div>
                   <h3 className="font-display font-bold text-text-primary">
-                    @monita/react
+                    @apperio/react
                   </h3>
                   <p className="text-xs text-text-secondary">
                     React Context Provider, hooks, and Error Boundary
@@ -1202,24 +1211,24 @@ abTestLogger.logVariant(
               <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm text-text-primary">
-                    MonitaProvider
+                    ApperioProvider
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0">
                   <CodeBlock
                     language="tsx"
-                    code={`import { MonitaProvider } from "@monita/react";
+                    code={`import { ApperioProvider } from "@apperio/react";
 
 // Wrap your app root
-<MonitaProvider config={{
+<ApperioProvider config={{
   apiKey: "your-api-key",
   projectId: "your-project-id",
   environment: "production",
 }}>
   <App />
-</MonitaProvider>`}
+</ApperioProvider>`}
                     showCopy
-                    title="MonitaProvider.tsx"
+                    title="ApperioProvider.tsx"
                   />
                 </CardContent>
               </Card>
@@ -1232,14 +1241,14 @@ abTestLogger.logVariant(
                   <CodeBlock
                     language="tsx"
                     code={`import {
-  useMonita,
+  useApperio,
   useLogError,
   useTrackEvent,
   usePerformance,
-} from "@monita/react";
+} from "@apperio/react";
 
 function MyComponent() {
-  const logger = useMonita();       // Core logger
+  const logger = useApperio();       // Core logger
   const logError = useLogError();   // Error logging
   const track = useTrackEvent();    // Event tracking
   const perf = usePerformance();    // Perf measurement
@@ -1264,20 +1273,20 @@ function MyComponent() {
               <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm text-text-primary">
-                    MonitaErrorBoundary
+                    ApperioErrorBoundary
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0">
                   <CodeBlock
                     language="tsx"
-                    code={`import { MonitaErrorBoundary }
-  from "@monita/react";
+                    code={`import { ApperioErrorBoundary }
+  from "@apperio/react";
 
-<MonitaErrorBoundary
+<ApperioErrorBoundary
   fallback={<ErrorPage />}
 >
   <FeatureComponent />
-</MonitaErrorBoundary>
+</ApperioErrorBoundary>
 
 // Automatically captures:
 // - Error name, message, stack
@@ -1290,7 +1299,7 @@ function MyComponent() {
               </Card>
             </div>
 
-            {/* @monita/nextjs */}
+            {/* @apperio/nextjs */}
             <div className="space-y-4">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 bg-signal/10 rounded-xl flex items-center justify-center">
@@ -1298,7 +1307,7 @@ function MyComponent() {
                 </div>
                 <div>
                   <h3 className="font-display font-bold text-text-primary">
-                    @monita/nextjs
+                    @apperio/nextjs
                   </h3>
                   <p className="text-xs text-text-secondary">
                     Middleware wrapper, server logger, and API route handler
@@ -1309,25 +1318,25 @@ function MyComponent() {
               <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm text-text-primary">
-                    withMonitaMiddleware
+                    withApperioMiddleware
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0">
                   <CodeBlock
                     language="typescript"
                     code={`// middleware.ts
-import { withMonitaMiddleware }
-  from "@monita/nextjs";
+import { withApperioMiddleware }
+  from "@apperio/nextjs";
 import { NextResponse } from "next/server";
 
 const middleware = (request) => {
   return NextResponse.next();
 };
 
-export default withMonitaMiddleware(
+export default withApperioMiddleware(
   middleware,
   {
-    apiKey: process.env.MONITA_API_KEY!,
+    apiKey: process.env.APPERIO_API_KEY!,
     projectId: "your-project-id",
   }
 );
@@ -1351,10 +1360,10 @@ export default withMonitaMiddleware(
                     language="typescript"
                     code={`// lib/logger.ts
 import { createServerLogger }
-  from "@monita/nextjs";
+  from "@apperio/nextjs";
 
 export const logger = createServerLogger({
-  apiKey: process.env.MONITA_API_KEY!,
+  apiKey: process.env.APPERIO_API_KEY!,
   projectId: "your-project-id",
   environment: process.env.NODE_ENV,
 });
@@ -1376,22 +1385,22 @@ export async function GET() {
               <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm text-text-primary">
-                    withMonita (Route Wrapper)
+                    withApperio (Route Wrapper)
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0">
                   <CodeBlock
                     language="typescript"
-                    code={`import { withMonita } from "@monita/nextjs";
+                    code={`import { withApperio } from "@apperio/nextjs";
 
 // Wraps route with auto error catching
-export const GET = withMonita(
+export const GET = withApperio(
   async (request) => {
     const data = await fetchData();
     return Response.json(data);
   },
   {
-    apiKey: process.env.MONITA_API_KEY!,
+    apiKey: process.env.APPERIO_API_KEY!,
     projectId: "your-project-id",
   }
 );
@@ -1513,7 +1522,7 @@ export const GET = withMonita(
               Complete Method Reference
             </h2>
             <p className="text-text-secondary text-lg max-w-2xl mx-auto">
-              Every method on the Monita logger instance, organized by domain
+              Every method on the Apperio logger instance, organized by domain
             </p>
           </div>
 
@@ -1652,7 +1661,7 @@ export const GET = withMonita(
                 icon: Package,
                 title: "npm",
                 desc: "Package registry",
-                href: "https://npmjs.com/package/monita",
+                href: "https://npmjs.com/package/apperio",
                 color: "text-status-danger",
               },
               {
@@ -1726,7 +1735,7 @@ export const GET = withMonita(
                 Full Observability in 30 Seconds
               </h2>
               <p className="text-text-secondary text-lg max-w-2xl mx-auto mb-8">
-                Install Monita SDK and start capturing errors, performance, network requests,
+                Install Apperio SDK and start capturing errors, performance, network requests,
                 and user interactions automatically.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8 px-4 sm:px-0">
@@ -1773,6 +1782,7 @@ export const GET = withMonita(
             </div>
           </div>
         </section>
+      </div>
       </div>
     </div>
   );

@@ -22,6 +22,7 @@ interface Pulse {
   edge: number;
   progress: number;
   speed: number;
+  reverse: boolean;
 }
 
 export function HeroCanvas() {
@@ -43,7 +44,6 @@ export function HeroCanvas() {
     const edges: Edge[] = [];
     const pulses: Pulse[] = [];
 
-    // Check reduced motion
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
@@ -61,10 +61,9 @@ export function HeroCanvas() {
     function generateNodes() {
       nodes.length = 0;
       edges.length = 0;
-      const count = Math.min(40, Math.floor((width * height) / 25000));
-      const margin = 40;
+      const count = Math.min(55, Math.floor((width * height) / 16000));
+      const margin = 5;
 
-      // Poisson-disc-ish distribution
       for (let i = 0; i < count; i++) {
         const x = margin + Math.random() * (width - margin * 2);
         const y = margin + Math.random() * (height - margin * 2);
@@ -81,13 +80,13 @@ export function HeroCanvas() {
       }
 
       // Connect nearby nodes
-      const maxDist = Math.min(width, height) * 0.25;
+      const maxDist = Math.min(width, height) * 0.28;
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
           const dx = nodes[i].x - nodes[j].x;
           const dy = nodes[i].y - nodes[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < maxDist && Math.random() < 0.3) {
+          if (dist < maxDist && Math.random() < 0.38) {
             edges.push({ from: i, to: j });
           }
         }
@@ -99,7 +98,8 @@ export function HeroCanvas() {
       pulses.push({
         edge: Math.floor(Math.random() * edges.length),
         progress: 0,
-        speed: 0.003 + Math.random() * 0.004,
+        speed: 0.003 + Math.random() * 0.005,
+        reverse: Math.random() < 0.3,
       });
     }
 
@@ -121,18 +121,23 @@ export function HeroCanvas() {
       for (const edge of edges) {
         const a = nodes[edge.from];
         const b = nodes[edge.to];
-        ctx.strokeStyle = "rgba(36, 51, 82, 0.6)";
+        ctx.strokeStyle = "rgba(36, 51, 82, 0.5)";
         ctx.beginPath();
         ctx.moveTo(a.x, a.y);
         ctx.lineTo(b.x, b.y);
         ctx.stroke();
       }
 
-      // Draw nodes
+      // Draw nodes with subtle glow
       for (const node of nodes) {
-        ctx.fillStyle = "rgba(45, 66, 102, 0.8)";
+        ctx.fillStyle = "rgba(45, 66, 102, 0)";
         ctx.beginPath();
-        ctx.arc(node.x, node.y, 2, 0, Math.PI * 2);
+        ctx.arc(node.x, node.y, 5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = "rgba(45, 66, 102, 0)";
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, 2.5, 0, Math.PI * 2);
         ctx.fill();
       }
 
@@ -149,25 +154,57 @@ export function HeroCanvas() {
 
           const edge = edges[pulse.edge];
           if (!edge) continue;
-          const a = nodes[edge.from];
-          const b = nodes[edge.to];
-          const px = a.x + (b.x - a.x) * pulse.progress;
-          const py = a.y + (b.y - a.y) * pulse.progress;
+          const startNode = pulse.reverse
+            ? nodes[edge.to]
+            : nodes[edge.from];
+          const endNode = pulse.reverse
+            ? nodes[edge.from]
+            : nodes[edge.to];
+          const px =
+            startNode.x + (endNode.x - startNode.x) * pulse.progress;
+          const py =
+            startNode.y + (endNode.y - startNode.y) * pulse.progress;
 
-          ctx.fillStyle = `rgba(0, 217, 126, ${0.8 - pulse.progress * 0.6})`;
+          // Trailing glow line from start to current position
+          const trail = ctx.createLinearGradient(
+            startNode.x,
+            startNode.y,
+            px,
+            py
+          );
+          trail.addColorStop(0, "rgba(0, 217, 126, 0)");
+          trail.addColorStop(
+            1,
+            `rgba(0, 217, 126, ${0.5 - pulse.progress * 0.35})`
+          );
+          ctx.strokeStyle = trail;
+          ctx.lineWidth = 2;
           ctx.beginPath();
-          ctx.arc(px, py, 3, 0, Math.PI * 2);
+          ctx.moveTo(startNode.x, startNode.y);
+          ctx.lineTo(px, py);
+          ctx.stroke();
+
+          // Outer glow halo
+          ctx.fillStyle = `rgba(0, 217, 126, ${0.08 - pulse.progress * 0.05})`;
+          ctx.beginPath();
+          ctx.arc(px, py, 22, 0, Math.PI * 2);
           ctx.fill();
 
-          // Glow
-          ctx.fillStyle = `rgba(0, 217, 126, ${0.15 - pulse.progress * 0.1})`;
+          // Mid glow
+          ctx.fillStyle = `rgba(0, 217, 126, ${0.3 - pulse.progress * 0.2})`;
           ctx.beginPath();
-          ctx.arc(px, py, 8, 0, Math.PI * 2);
+          ctx.arc(px, py, 11, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Core bright dot
+          ctx.fillStyle = `rgba(0, 217, 126, ${1.0 - pulse.progress * 0.3})`;
+          ctx.beginPath();
+          ctx.arc(px, py, 3.5, 0, Math.PI * 2);
           ctx.fill();
         }
 
-        // Spawn new pulses periodically
-        if (Math.random() < 0.01) spawnPulse();
+        // Spawn new pulses frequently
+        if (Math.random() < 0.045) spawnPulse();
       }
 
       animRef.current = requestAnimationFrame(draw);
@@ -177,10 +214,9 @@ export function HeroCanvas() {
     generateNodes();
 
     // Spawn initial pulses
-    for (let i = 0; i < 3; i++) spawnPulse();
+    for (let i = 0; i < 10; i++) spawnPulse();
 
     if (prefersReducedMotion) {
-      // Draw single static frame
       draw(0);
     } else {
       animRef.current = requestAnimationFrame(draw);
@@ -192,7 +228,7 @@ export function HeroCanvas() {
       resizeTimer = setTimeout(() => {
         resize();
         generateNodes();
-        for (let i = 0; i < 3; i++) spawnPulse();
+        for (let i = 0; i < 10; i++) spawnPulse();
       }, 200);
     };
 

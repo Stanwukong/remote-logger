@@ -5,7 +5,6 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { SignalDot } from "@/components/shared/SignalDot";
 import { TerminalBlock } from "@/components/shared/TerminalBlock";
-import { HeroCanvas } from "./HeroCanvas";
 import { DashboardPreview } from "./DashboardPreview";
 import { useHeroSequence } from "@/hooks/useGsapAnimations";
 
@@ -16,24 +15,7 @@ export function Hero() {
     <section
       ref={containerRef}
       className="relative min-h-screen overflow-hidden pt-16"
-      style={{
-        background:
-          "linear-gradient(180deg, var(--bg-void) 0%, var(--bg-base) 60%, var(--bg-void) 100%)",
-      }}
     >
-      {/* Background layers */}
-      <div className="absolute inset-0 bg-dot-grid opacity-40" />
-      <HeroCanvas />
-
-      {/* Vignette overlay */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "linear-gradient(to bottom, transparent 60%, var(--bg-void) 100%)",
-        }}
-      />
-
       {/* Hero content */}
       <div className="relative z-10 max-w-[1280px] mx-auto px-6 pt-24 pb-16 md:pt-32">
         {/* Badge pill */}
@@ -53,11 +35,13 @@ export function Hero() {
             style={{ fontSize: "clamp(52px, 8vw, 96px)" }}
           >
             <span data-hero-headline>Stop guessing what&apos;s</span>
+
             <br />
-            <span data-hero-headline>breaking in</span>
-            <br />
-            <span data-hero-headline className="text-signal">
-              production.
+            <span data-hero-headline>
+              breaking in
+              <span data-hero-headline className="text-signal">
+                production.
+              </span>
             </span>
           </h1>
         </div>
@@ -88,7 +72,7 @@ export function Hero() {
             </Link>
           </Button>
           <TerminalBlock
-            code="npm install monita"
+            code="npm install apperio"
             className="w-full sm:w-auto min-w-[280px]"
             showCopy
           />

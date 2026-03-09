@@ -255,7 +255,7 @@ export default function PlansPage() {
                 </Button>
               ) : isEnterprise ? (
                 <Button variant="ghost" className="w-full" asChild>
-                  <Link href="mailto:sales@monita.dev">Contact Sales</Link>
+                  <Link href="mailto:sales@apperio.dev">Contact Sales</Link>
                 </Button>
               ) : (
                 <Button

@@ -258,7 +258,7 @@ export default function ApiAlertsPage() {
           code={`// Request body
 {
   "slackWebhookUrl": "https://hooks.slack.com/services/T.../B.../...",
-  "webhookUrl": "https://your-app.com/api/monita-webhook"
+  "webhookUrl": "https://your-app.com/api/apperio-webhook"
 }`}
         />
 

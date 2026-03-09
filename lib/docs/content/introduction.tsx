@@ -15,7 +15,7 @@ import {
 } from "@/components/docs";
 
 const toc: TocItem[] = [
-  { id: "what-is-monita", title: "What is Monita?", level: 2 },
+  { id: "what-is-apperio", title: "What is Apperio?", level: 2 },
   { id: "key-features", title: "Key Features", level: 2 },
   { id: "how-it-works", title: "How It Works", level: 2 },
   { id: "platform-components", title: "Platform Components", level: 2 },
@@ -28,19 +28,19 @@ export default function IntroductionPage() {
       <DocsContent
         slug="introduction"
         title="Introduction"
-        description="Learn what Monita is and how it helps you monitor your applications in real-time."
+        description="Learn what Apperio is and how it helps you monitor your applications in real-time."
       >
-        <DocH2 id="what-is-monita">What is Monita?</DocH2>
+        <DocH2 id="what-is-apperio">What is Apperio?</DocH2>
         <DocP>
-          Monita is a comprehensive observability and logging platform that helps
+          Apperio is a comprehensive observability and logging platform that helps
           developers monitor, debug, and optimize their applications in
-          real-time. Stop guessing what is breaking in production -- Monita
+          real-time. Stop guessing what is breaking in production -- Apperio
           gives you full visibility into your application's behavior with
           minimal setup.
         </DocP>
         <DocP>
           With a lightweight JavaScript SDK, a powerful REST API, and an
-          intuitive dashboard, Monita captures errors, tracks performance,
+          intuitive dashboard, Apperio captures errors, tracks performance,
           monitors network requests, and provides actionable insights across
           your entire stack.
         </DocP>
@@ -83,7 +83,7 @@ export default function IntroductionPage() {
 
         <DocH2 id="how-it-works">How It Works</DocH2>
         <DocP>
-          Monita follows a simple three-step flow to collect, process, and
+          Apperio follows a simple three-step flow to collect, process, and
           visualize your application data:
         </DocP>
 
@@ -95,7 +95,7 @@ export default function IntroductionPage() {
 #    Sanitizes PII data before transmission
 #           |
 #           v
-# 2. Monita API (Backend)
+# 2. Apperio API (Backend)
 #    Receives log batches via POST /:projectId/logs
 #    Validates and stores in MongoDB
 #    Broadcasts to WebSocket subscribers
@@ -121,7 +121,7 @@ export default function IntroductionPage() {
           rows={[
             [
               "JavaScript SDK",
-              <InlineCode key="sdk">npm install monita</InlineCode>,
+              <InlineCode key="sdk">npm install apperio</InlineCode>,
               "Lightweight client library for log capture and transmission",
             ],
             [

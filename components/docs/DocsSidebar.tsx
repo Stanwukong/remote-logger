@@ -95,7 +95,7 @@ export function DocsSidebar() {
           href="/docs/introduction"
           className="flex items-center gap-2 text-text-primary hover:text-signal transition-colors"
         >
-          <span className="font-display text-lg font-bold">Monita</span>
+          <span className="font-display text-lg font-bold">Apperio</span>
           <span className="text-xs text-text-muted font-mono px-1.5 py-0.5 rounded bg-bg-elevated border border-border-faint">
             docs
           </span>
@@ -117,7 +117,7 @@ export function DocsMobileNav() {
           href="/docs/introduction"
           className="flex items-center gap-2 text-text-primary"
         >
-          <span className="font-display text-lg font-bold">Monita</span>
+          <span className="font-display text-lg font-bold">Apperio</span>
           <span className="text-xs text-text-muted font-mono px-1.5 py-0.5 rounded bg-bg-elevated border border-border-faint">
             docs
           </span>

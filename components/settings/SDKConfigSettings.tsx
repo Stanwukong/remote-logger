@@ -672,9 +672,9 @@ export default function SDKConfigSettings({
           <TerminalBlock
             filename="sdk-setup.ts"
             language="typescript"
-            code={`import { Monita } from 'monita';
+            code={`import { Apperio } from 'apperio';
 
-const logger = new Monita({
+const logger = new Apperio({
   apiKey: '${projectId.slice(0, 6)}...${"*".repeat(8)}',
   projectId: '${projectId}',
   minLogLevel: '${config.minLogLevel}',

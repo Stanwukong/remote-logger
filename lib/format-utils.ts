@@ -1,5 +1,5 @@
 /**
- * Shared formatting utilities for the Monita dashboard.
+ * Shared formatting utilities for the Apperio dashboard.
  *
  * Centralizes number, duration, percentage, and time formatting
  * that was previously duplicated across 6-8 page files.

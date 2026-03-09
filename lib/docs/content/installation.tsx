@@ -26,22 +26,22 @@ export default function InstallationPage() {
       <DocsContent
         slug="installation"
         title="Installation"
-        description="Install the Monita SDK and configure it for your project."
+        description="Install the Apperio SDK and configure it for your project."
       >
         <DocH2 id="package-managers">Package Managers</DocH2>
         <DocP>
-          Monita is published as <InlineCode>monita</InlineCode> on npm. Install
+          Apperio is published as <InlineCode>apperio</InlineCode> on npm. Install
           it with your preferred package manager:
         </DocP>
 
         <DocH3 id="npm">npm</DocH3>
-        <CodeBlock language="bash" code="npm install monita" />
+        <CodeBlock language="bash" code="npm install apperio" />
 
         <DocH3 id="yarn">Yarn</DocH3>
-        <CodeBlock language="bash" code="yarn add monita" />
+        <CodeBlock language="bash" code="yarn add apperio" />
 
         <DocH3 id="pnpm">pnpm</DocH3>
-        <CodeBlock language="bash" code="pnpm add monita" />
+        <CodeBlock language="bash" code="pnpm add apperio" />
 
         <DocP>
           The package includes TypeScript declarations out of the box. No
@@ -50,15 +50,15 @@ export default function InstallationPage() {
 
         <DocH2 id="cdn-usage">CDN Usage</DocH2>
         <DocP>
-          You can also load Monita directly via a script tag for quick
+          You can also load Apperio directly via a script tag for quick
           prototyping or non-bundled environments:
         </DocP>
         <CodeBlock
           language="html"
-          code={`<script src="https://unpkg.com/monita@latest/dist/index.js"></script>
+          code={`<script src="https://unpkg.com/apperio@latest/dist/index.js"></script>
 <script>
-  // Monita is available as a global
-  Monita.init({
+  // Apperio is available as a global
+  Apperio.init({
     projectId: "YOUR_PROJECT_ID",
     apiKey: "YOUR_API_KEY",
   });
@@ -79,19 +79,19 @@ export default function InstallationPage() {
         <CodeBlock
           language="bash"
           filename=".env"
-          code={`MONITA_PROJECT_ID=your_project_id_here
-MONITA_API_KEY=your_api_key_here`}
+          code={`APPERIO_PROJECT_ID=your_project_id_here
+APPERIO_API_KEY=your_api_key_here`}
         />
 
         <DocP>Then reference them during initialization:</DocP>
         <CodeBlock
           language="typescript"
           filename="src/monitoring.ts"
-          code={`import Monita from "monita";
+          code={`import Apperio from "apperio";
 
-Monita.init({
-  projectId: process.env.MONITA_PROJECT_ID,
-  apiKey: process.env.MONITA_API_KEY,
+Apperio.init({
+  projectId: process.env.APPERIO_PROJECT_ID,
+  apiKey: process.env.APPERIO_API_KEY,
   environment: process.env.NODE_ENV || "development",
 });`}
         />
@@ -100,12 +100,12 @@ Monita.init({
           headers={["Variable", "Required", "Description"]}
           rows={[
             [
-              <InlineCode key="pid">MONITA_PROJECT_ID</InlineCode>,
+              <InlineCode key="pid">APPERIO_PROJECT_ID</InlineCode>,
               "Yes",
-              "Your project ID from the Monita dashboard",
+              "Your project ID from the Apperio dashboard",
             ],
             [
-              <InlineCode key="ak">MONITA_API_KEY</InlineCode>,
+              <InlineCode key="ak">APPERIO_API_KEY</InlineCode>,
               "Yes",
               "API key for authenticating SDK requests",
             ],
@@ -126,8 +126,8 @@ Monita.init({
         <CodeBlock
           language="bash"
           filename=".env"
-          code={`REACT_APP_MONITA_PROJECT_ID=your_project_id
-REACT_APP_MONITA_API_KEY=your_api_key`}
+          code={`REACT_APP_APPERIO_PROJECT_ID=your_project_id
+REACT_APP_APPERIO_API_KEY=your_api_key`}
         />
 
         <DocH3 id="nextjs-env">Next.js</DocH3>
@@ -138,8 +138,8 @@ REACT_APP_MONITA_API_KEY=your_api_key`}
         <CodeBlock
           language="bash"
           filename=".env.local"
-          code={`NEXT_PUBLIC_MONITA_PROJECT_ID=your_project_id
-NEXT_PUBLIC_MONITA_API_KEY=your_api_key`}
+          code={`NEXT_PUBLIC_APPERIO_PROJECT_ID=your_project_id
+NEXT_PUBLIC_APPERIO_API_KEY=your_api_key`}
         />
 
         <DocH3 id="vite-env">Vite</DocH3>
@@ -150,8 +150,8 @@ NEXT_PUBLIC_MONITA_API_KEY=your_api_key`}
         <CodeBlock
           language="bash"
           filename=".env"
-          code={`VITE_MONITA_PROJECT_ID=your_project_id
-VITE_MONITA_API_KEY=your_api_key`}
+          code={`VITE_APPERIO_PROJECT_ID=your_project_id
+VITE_APPERIO_API_KEY=your_api_key`}
         />
 
         <DocH2 id="typescript-support">TypeScript Support</DocH2>
@@ -161,8 +161,8 @@ VITE_MONITA_API_KEY=your_api_key`}
         </DocP>
         <CodeBlock
           language="typescript"
-          code={`import Monita from "monita";
-import type { LoggerConfig, LogLevel } from "monita";
+          code={`import Apperio from "apperio";
+import type { LoggerConfig, LogLevel } from "apperio";
 
 const config: LoggerConfig = {
   projectId: "my-project",
@@ -171,7 +171,7 @@ const config: LoggerConfig = {
   logLevel: "info" as LogLevel,
 };
 
-Monita.init(config);`}
+Apperio.init(config);`}
         />
 
         <DocH2 id="verifying-installation">Verifying Installation</DocH2>
@@ -181,20 +181,20 @@ Monita.init(config);`}
         </DocP>
         <CodeBlock
           language="typescript"
-          code={`import Monita from "monita";
+          code={`import Apperio from "apperio";
 
-Monita.init({
+Apperio.init({
   projectId: "YOUR_PROJECT_ID",
   apiKey: "YOUR_API_KEY",
 });
 
 // Send a test log
-Monita.info("Monita SDK installed successfully", {
+Apperio.info("Apperio SDK installed successfully", {
   timestamp: new Date().toISOString(),
   version: "1.0.4",
 });
 
-// Check your Monita dashboard - the log should appear
+// Check your Apperio dashboard - the log should appear
 // within a few seconds.`}
         />
 

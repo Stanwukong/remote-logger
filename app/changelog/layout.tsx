@@ -4,7 +4,7 @@ import Link from "next/link";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
-function MonitaLogo() {
+function ApperioLogo() {
   return (
     <Link href="/" className="flex items-center gap-2.5">
       <svg
@@ -25,7 +25,7 @@ function MonitaLogo() {
         <circle cx="24" cy="10" r="2" fill="currentColor" />
       </svg>
       <span className="font-display font-semibold text-lg text-text-primary tracking-[-0.02em]">
-        monita
+        apperio
       </span>
     </Link>
   );
@@ -51,7 +51,7 @@ export default function ChangelogLayout({
       <div className="min-h-screen bg-bg-base">
         <header className="border-b border-border-subtle">
           <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
-            <MonitaLogo />
+            <ApperioLogo />
             <nav className="flex items-center gap-4 text-sm text-text-muted">
               <Link
                 href="/status"
@@ -71,7 +71,7 @@ export default function ChangelogLayout({
         <main className="max-w-3xl mx-auto px-6 py-10">{children}</main>
         <footer className="border-t border-border-subtle">
           <div className="max-w-3xl mx-auto px-6 py-6 text-center text-xs text-text-muted">
-            &copy; {new Date().getFullYear()} Monita. All rights reserved.
+            &copy; {new Date().getFullYear()} Apperio. All rights reserved.
           </div>
         </footer>
       </div>

@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { useProject } from "@/hooks/project.hooks";
 import { useLogSummary } from "@/hooks/log.hooks";
 import { useAlertStats } from "@/hooks/alerts.hook";
-import { useLogHiveStore } from "@/store/loghive-store";
+import { useApperioStore } from "@/store/apperio-store";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { MetricCard } from "@/components/shared/MetricCard";
 import { TimeSeriesChart } from "@/components/shared/TimeSeriesChart";
@@ -131,8 +131,8 @@ const quickLinks = [
 export default function ProjectDashboard() {
   const params = useParams<{ projectId: string }>();
   const projectId = typeof params?.projectId === "string" ? params.projectId : "";
-  const selectedTimeRange = useLogHiveStore((s) => s.selectedTimeRange);
-  const customTimeRange = useLogHiveStore((s) => s.customTimeRange);
+  const selectedTimeRange = useApperioStore((s) => s.selectedTimeRange);
+  const customTimeRange = useApperioStore((s) => s.customTimeRange);
   const timeRangeParams = useMemo(
     () => resolveTimeRangeParams(selectedTimeRange, customTimeRange),
     [selectedTimeRange, customTimeRange]

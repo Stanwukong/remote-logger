@@ -320,7 +320,7 @@ export function NewProjectModal() {
                   <div className="text-sm">
                     <p className="font-medium mb-2">Next Steps:</p>
                     <ul className="space-y-1 text-muted-foreground">
-                      <li>• Install the Monita SDK in your application</li>
+                      <li>• Install the Apperio SDK in your application</li>
                       <li>• Configure it with your Project ID and API Key</li>
                       <li>• Start sending logs to monitor your application</li>
                     </ul>

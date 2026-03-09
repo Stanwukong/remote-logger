@@ -1,17 +1,17 @@
 'use client';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useCallback, useEffect } from 'react';
-import { useLogHiveStore, TimeRange } from '@/store/loghive-store';
+import { useApperioStore, TimeRange } from '@/store/apperio-store';
 
 export function useTimeRange() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
-  const storeTimeRange = useLogHiveStore((s) => s.selectedTimeRange);
-  const setStoreTimeRange = useLogHiveStore((s) => s.setTimeRange);
-  const customTimeRange = useLogHiveStore((s) => s.customTimeRange);
-  const setCustomTimeRange = useLogHiveStore((s) => s.setCustomTimeRange);
+  const storeTimeRange = useApperioStore((s) => s.selectedTimeRange);
+  const setStoreTimeRange = useApperioStore((s) => s.setTimeRange);
+  const customTimeRange = useApperioStore((s) => s.customTimeRange);
+  const setCustomTimeRange = useApperioStore((s) => s.setCustomTimeRange);
 
   // URL param name
   const paramName = 'timeRange';

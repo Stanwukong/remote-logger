@@ -145,7 +145,7 @@ export function DashboardPreview() {
         </div>
         <div className="flex-1 h-7 rounded-md bg-bg-void/80 flex items-center px-3">
           <span className="text-xs text-text-muted font-code">
-            app.monita.dev/dashboard
+            app.apperio.dev/dashboard
           </span>
         </div>
         <div className="flex items-center gap-1.5">

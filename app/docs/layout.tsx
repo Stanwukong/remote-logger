@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { DocsSidebar, DocsMobileNav } from "@/components/docs";
 
 export const metadata: Metadata = {
-  title: "Documentation - Monita",
+  title: "Documentation - Apperio",
   description:
-    "Comprehensive documentation for Monita: real-time logging, error tracking, and performance monitoring SDK.",
+    "Comprehensive documentation for Apperio: real-time logging, error tracking, and performance monitoring SDK.",
 };
 
 export default function DocsLayout({

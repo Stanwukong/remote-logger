@@ -237,7 +237,7 @@ export const logService = {
       );
 
       // Determine filename from Content-Disposition header or generate a fallback
-      let filename = `monita-logs-${projectId}.${format}`;
+      let filename = `apperio-logs-${projectId}.${format}`;
       const disposition = response.headers["content-disposition"];
       if (disposition) {
         const match = disposition.match(/filename="?([^";\n]+)"?/);

@@ -32,7 +32,7 @@ export default function DataSanitizationPage() {
       >
         <DocH2 id="overview">Overview</DocH2>
         <DocP>
-          Monita includes a built-in data sanitizer that automatically detects
+          Apperio includes a built-in data sanitizer that automatically detects
           and redacts Personally Identifiable Information (PII) before log
           data leaves the browser. This ensures sensitive data never reaches
           your logging backend.
@@ -123,7 +123,7 @@ export default function DataSanitizationPage() {
         </DocP>
         <CodeBlock
           language="typescript"
-          code={`Monita.init({
+          code={`Apperio.init({
   projectId: "...",
   apiKey: "...",
   sanitization: {
@@ -141,7 +141,7 @@ export default function DataSanitizationPage() {
         <CodeBlock
           language="typescript"
           code={`// BALANCED is the default - no explicit config needed
-Monita.init({
+Apperio.init({
   projectId: "...",
   apiKey: "...",
   // sanitization.preset defaults to "BALANCED"
@@ -156,7 +156,7 @@ Monita.init({
         </DocP>
         <CodeBlock
           language="typescript"
-          code={`Monita.init({
+          code={`Apperio.init({
   projectId: "...",
   apiKey: "...",
   sanitization: {
@@ -173,7 +173,7 @@ Monita.init({
         </DocP>
         <CodeBlock
           language="typescript"
-          code={`Monita.init({
+          code={`Apperio.init({
   projectId: "...",
   apiKey: "...",
   sanitization: {
@@ -291,7 +291,7 @@ Monita.init({
 
         <CodeBlock
           language="typescript"
-          code={`Monita.init({
+          code={`Apperio.init({
   projectId: "...",
   apiKey: "...",
   sanitization: {

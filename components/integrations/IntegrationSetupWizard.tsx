@@ -451,7 +451,7 @@ export function IntegrationSetupWizard({
                     Integration Connected
                   </p>
                   <p className="text-xs text-text-secondary mt-1">
-                    {displayName} is now integrated with Monita. Alerts
+                    {displayName} is now integrated with Apperio. Alerts
                     and actions will flow automatically.
                   </p>
                 </div>

@@ -191,7 +191,7 @@ export function createMockLogEntry(overrides: Record<string, any> = {}) {
 export function createMockUser(overrides: Record<string, any> = {}) {
   return {
     _id: "user_test_123",
-    email: "test@monita.dev",
+    email: "test@apperio.dev",
     firstName: "Test",
     lastName: "User",
     role: "user",

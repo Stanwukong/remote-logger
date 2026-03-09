@@ -177,7 +177,7 @@ export default function ChangelogPage() {
           Changelog
         </h1>
         <p className="text-sm text-text-muted mt-1">
-          New features, improvements, and fixes shipped to Monita
+          New features, improvements, and fixes shipped to Apperio
         </p>
       </div>
 

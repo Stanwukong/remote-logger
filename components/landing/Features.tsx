@@ -109,9 +109,9 @@ function HealthRing() {
    MAIN FEATURES / BENTO GRID
    ============================================================================ */
 
-const sdkCode = `import { Monita } from 'monita';
+const sdkCode = `import { Apperio } from 'apperio';
 
-const logger = new Monita({
+const logger = new Apperio({
   apiKey: 'mnt_••••••••••••',
   projectId: 'proj_••••••••',
 });
@@ -253,7 +253,7 @@ export function Features() {
               AI-powered insights
             </h3>
             <p className="text-sm text-text-secondary leading-relaxed mb-3">
-              Monita surfaces root causes, not just symptoms.
+              Apperio surfaces root causes, not just symptoms.
             </p>
             <div className="p-3 rounded-lg border border-data/20 bg-data-muted text-xs text-text-primary leading-relaxed">
               <span className="text-data font-semibold">↗</span> Error rate
