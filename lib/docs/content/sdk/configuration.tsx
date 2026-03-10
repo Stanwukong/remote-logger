@@ -45,7 +45,7 @@ export default function SdkConfigurationPage() {
   // Optional - General
   environment?: string;          // default: "production"
   service?: string;              // Service/app name tag
-  apiEndpoint?: string;          // default: "https://loghive-server.vercel.app/api/v1"
+  apiEndpoint?: string;          // default: "https://apperioserver.onrender.com/api/v1"
   logLevel?: LogLevel;           // Minimum level to capture: "trace" | "debug" | "info" | "warn" | "error" | "fatal"
 
   // Optional - Batching

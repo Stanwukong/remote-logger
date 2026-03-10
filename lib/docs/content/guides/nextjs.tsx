@@ -153,7 +153,7 @@ export function ApperioInit() {
           language="typescript"
           filename="lib/server-logger.ts"
           code={`const API_BASE = process.env.APPERIO_API_URL
-  || "https://loghive-server.vercel.app/api/v1";
+  || "https://apperioserver.onrender.com/api/v1";
 const PROJECT_ID = process.env.APPERIO_PROJECT_ID;
 const API_KEY = process.env.APPERIO_API_KEY;
 
@@ -377,7 +377,7 @@ NEXT_PUBLIC_APPERIO_API_KEY=your_api_key
 # Server-side only (not exposed to browser)
 APPERIO_PROJECT_ID=your_project_id
 APPERIO_API_KEY=your_api_key
-APPERIO_API_URL=https://loghive-server.vercel.app/api/v1`}
+APPERIO_API_URL=https://apperioserver.onrender.com/api/v1`}
         />
 
         <DocTable

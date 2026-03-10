@@ -65,14 +65,14 @@ export default function ApiAuthenticationPage() {
         <CodeBlock
           language="bash"
           code={`# Include JWT in requests
-curl -X GET https://loghive-server.vercel.app/api/v1/projects \\
+curl -X GET https://apperioserver.onrender.com/api/v1/projects \\
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..."`}
         />
         <CodeBlock
           language="typescript"
           filename="example.ts"
           code={`// JavaScript/TypeScript usage
-const response = await fetch("https://loghive-server.vercel.app/api/v1/projects", {
+const response = await fetch("https://apperioserver.onrender.com/api/v1/projects", {
   headers: {
     "Authorization": "Bearer " + token,
     "Content-Type": "application/json",
@@ -92,7 +92,7 @@ const response = await fetch("https://loghive-server.vercel.app/api/v1/projects"
         <CodeBlock
           language="bash"
           code={`# Send logs with API key
-curl -X POST https://loghive-server.vercel.app/api/v1/PROJECT_ID/logs \\
+curl -X POST https://apperioserver.onrender.com/api/v1/PROJECT_ID/logs \\
   -H "X-API-Key: your-api-key-here" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -148,7 +148,7 @@ curl -X POST https://loghive-server.vercel.app/api/v1/PROJECT_ID/logs \\
         />
         <CodeBlock
           language="bash"
-          code={`curl -X POST https://loghive-server.vercel.app/api/v1/users/signup \\
+          code={`curl -X POST https://apperioserver.onrender.com/api/v1/users/signup \\
   -H "Content-Type: application/json" \\
   -d '{
     "name": "Jane Doe",
@@ -181,7 +181,7 @@ curl -X POST https://loghive-server.vercel.app/api/v1/PROJECT_ID/logs \\
         />
         <CodeBlock
           language="bash"
-          code={`curl -X POST https://loghive-server.vercel.app/api/v1/users/login \\
+          code={`curl -X POST https://apperioserver.onrender.com/api/v1/users/login \\
   -H "Content-Type: application/json" \\
   -d '{
     "email": "jane@example.com",

@@ -47,7 +47,7 @@ export default function ApiAlertsPage() {
         />
         <CodeBlock
           language="bash"
-          code={`curl -X POST "https://loghive-server.vercel.app/api/v1/alert-rules" \\
+          code={`curl -X POST "https://apperioserver.onrender.com/api/v1/alert-rules" \\
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -104,7 +104,7 @@ export default function ApiAlertsPage() {
         />
         <CodeBlock
           language="bash"
-          code={`curl "https://loghive-server.vercel.app/api/v1/alert-rules/proj_abc123" \\
+          code={`curl "https://apperioserver.onrender.com/api/v1/alert-rules/proj_abc123" \\
   -H "Authorization: Bearer YOUR_JWT_TOKEN"`}
         />
 
@@ -116,7 +116,7 @@ export default function ApiAlertsPage() {
         />
         <CodeBlock
           language="bash"
-          code={`curl -X PUT "https://loghive-server.vercel.app/api/v1/alert-rules/RULE_ID" \\
+          code={`curl -X PUT "https://apperioserver.onrender.com/api/v1/alert-rules/RULE_ID" \\
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \\
   -H "Content-Type: application/json" \\
   -d '{

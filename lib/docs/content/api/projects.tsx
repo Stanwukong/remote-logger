@@ -47,7 +47,7 @@ export default function ApiProjectsPage() {
         />
         <CodeBlock
           language="bash"
-          code={`curl "https://loghive-server.vercel.app/api/v1/projects" \\
+          code={`curl "https://apperioserver.onrender.com/api/v1/projects" \\
   -H "Authorization: Bearer YOUR_JWT_TOKEN"`}
         />
         <CodeBlock
@@ -78,7 +78,7 @@ export default function ApiProjectsPage() {
         />
         <CodeBlock
           language="bash"
-          code={`curl -X POST "https://loghive-server.vercel.app/api/v1/projects" \\
+          code={`curl -X POST "https://apperioserver.onrender.com/api/v1/projects" \\
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -125,7 +125,7 @@ export default function ApiProjectsPage() {
         />
         <CodeBlock
           language="bash"
-          code={`curl -X PUT "https://loghive-server.vercel.app/api/v1/projects/PROJ_ID" \\
+          code={`curl -X PUT "https://apperioserver.onrender.com/api/v1/projects/PROJ_ID" \\
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -153,7 +153,7 @@ export default function ApiProjectsPage() {
         />
         <CodeBlock
           language="bash"
-          code={`curl -X POST "https://loghive-server.vercel.app/api/v1/projects/PROJ_ID/regenerate-api-key" \\
+          code={`curl -X POST "https://apperioserver.onrender.com/api/v1/projects/PROJ_ID/regenerate-api-key" \\
   -H "Authorization: Bearer YOUR_JWT_TOKEN"`}
         />
         <CodeBlock

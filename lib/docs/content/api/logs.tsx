@@ -42,7 +42,7 @@ export default function ApiLogsPage() {
         </DocP>
         <CodeBlock
           language="bash"
-          code={`curl -X POST https://loghive-server.vercel.app/api/v1/PROJECT_ID/logs \\
+          code={`curl -X POST https://apperioserver.onrender.com/api/v1/PROJECT_ID/logs \\
   -H "X-API-Key: your-api-key" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -151,11 +151,11 @@ export default function ApiLogsPage() {
         <CodeBlock
           language="bash"
           code={`# Get recent error logs
-curl "https://loghive-server.vercel.app/api/v1/PROJECT_ID/logs?level=error&limit=20" \\
+curl "https://apperioserver.onrender.com/api/v1/PROJECT_ID/logs?level=error&limit=20" \\
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 
 # Search logs with date range
-curl "https://loghive-server.vercel.app/api/v1/PROJECT_ID/logs?search=timeout&startDate=2026-03-01&endDate=2026-03-07" \\
+curl "https://apperioserver.onrender.com/api/v1/PROJECT_ID/logs?search=timeout&startDate=2026-03-01&endDate=2026-03-07" \\
   -H "Authorization: Bearer YOUR_JWT_TOKEN"`}
         />
         <CodeBlock
@@ -190,7 +190,7 @@ curl "https://loghive-server.vercel.app/api/v1/PROJECT_ID/logs?search=timeout&st
         />
         <CodeBlock
           language="bash"
-          code={`curl "https://loghive-server.vercel.app/api/v1/PROJECT_ID/logs/LOG_ID" \\
+          code={`curl "https://apperioserver.onrender.com/api/v1/PROJECT_ID/logs/LOG_ID" \\
   -H "Authorization: Bearer YOUR_JWT_TOKEN"`}
         />
 
@@ -275,7 +275,7 @@ curl "https://loghive-server.vercel.app/api/v1/PROJECT_ID/logs?search=timeout&st
         <CodeBlock
           language="bash"
           code={`# Delete all debug logs older than 7 days
-curl -X DELETE "https://loghive-server.vercel.app/api/v1/PROJECT_ID/logs?level=debug&endDate=2026-02-28" \\
+curl -X DELETE "https://apperioserver.onrender.com/api/v1/PROJECT_ID/logs?level=debug&endDate=2026-02-28" \\
   -H "Authorization: Bearer YOUR_JWT_TOKEN"`}
         />
 

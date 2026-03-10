@@ -56,7 +56,7 @@ https://loghive.vercel.app
 
 **Environment Variables (Production):**
 ```
-NEXT_PUBLIC_API_BASE_URL=https://loghive-server.vercel.app/api/v1
+NEXT_PUBLIC_API_BASE_URL=https://apperioserver.onrender.com/api/v1
 ```
 
 ### Local Development
