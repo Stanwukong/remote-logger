@@ -23,6 +23,7 @@ export type IntegrationSettings = {
   slack?: { webhookUrl?: string };
   email?: { recipients?: string[] };
   webhook?: { url?: string; headers?: Record<string, string> };
+  github?: { repo?: string; owner?: string; enabled?: boolean };
 };
 
 // The main project data structure.

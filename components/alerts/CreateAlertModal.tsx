@@ -25,6 +25,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useCreateAlertRule, useEscalationPolicies } from "@/hooks/alerts.hook";
+import { useConnectedIntegrations } from "@/hooks/integration.hooks";
 import {
   Plus,
   Trash2,
@@ -32,10 +33,12 @@ import {
   Zap,
   Mail,
   Globe,
+  Github,
   Shield,
   ChevronRight,
   ChevronDown,
   Loader2,
+  Info,
 } from "lucide-react";
 import { SimpleCondition, CompositeCondition } from "@/services/alert.service";
 
@@ -100,6 +103,13 @@ export function CreateAlertModal({
   // Escalation policies for selected project
   const { data: policiesData } = useEscalationPolicies(projectId);
   const policies = policiesData?.data || [];
+
+  // Check if GitHub integration is connected for the selected project
+  const { data: connectedIntegrations } = useConnectedIntegrations(projectId || undefined);
+  const isGitHubConnected = Array.isArray(connectedIntegrations)
+    && connectedIntegrations.some(
+        (integration: any) => integration.type === "github" && integration.status === "connected"
+      );
 
   const toggleSection = (section: string) => {
     setExpandedSections((prev) => {
@@ -482,19 +492,23 @@ export function CreateAlertModal({
                 {/* Channel toggles */}
                 <div className="flex flex-wrap gap-2">
                   {[
-                    { id: "email", label: "Email", icon: Mail },
-                    { id: "slack", label: "Slack", icon: Zap },
-                    { id: "webhook", label: "Webhook", icon: Globe },
-                  ].map(({ id, label, icon: Icon }) => (
+                    { id: "email", label: "Email", icon: Mail, disabled: false },
+                    { id: "slack", label: "Slack", icon: Zap, disabled: false },
+                    { id: "webhook", label: "Webhook", icon: Globe, disabled: false },
+                    { id: "github", label: "GitHub Issue", icon: Github, disabled: !isGitHubConnected },
+                  ].map(({ id, label, icon: Icon, disabled }) => (
                     <button
                       key={id}
                       type="button"
-                      onClick={() => toggleChannel(id)}
+                      onClick={() => !disabled && toggleChannel(id)}
+                      disabled={disabled}
                       className={`
                         px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200
                         border flex items-center gap-2
                         ${
-                          notifyChannels.includes(id)
+                          disabled
+                            ? "bg-[var(--bg-void)] border-[var(--border-subtle)] text-[var(--text-tertiary)] opacity-50 cursor-not-allowed"
+                            : notifyChannels.includes(id)
                             ? "bg-[var(--signal)]/10 border-[var(--signal)] text-[var(--signal)]"
                             : "bg-[var(--bg-void)] border-[var(--border-subtle)] text-[var(--text-secondary)] hover:border-[var(--signal)]"
                         }
@@ -505,6 +519,21 @@ export function CreateAlertModal({
                     </button>
                   ))}
                 </div>
+
+                {/* GitHub info */}
+                {notifyChannels.includes("github") && isGitHubConnected && (
+                  <p className="text-xs text-[var(--text-tertiary)] mt-1">
+                    A GitHub issue will be created automatically in the repository connected via Integrations settings.
+                  </p>
+                )}
+                {!isGitHubConnected && (
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <Info className="h-3 w-3 text-[var(--text-tertiary)] shrink-0" />
+                    <p className="text-xs text-[var(--text-tertiary)]">
+                      Configure GitHub integration in project settings to enable automatic issue creation.
+                    </p>
+                  </div>
+                )}
 
                 {/* Email config */}
                 {notifyChannels.includes("email") && (

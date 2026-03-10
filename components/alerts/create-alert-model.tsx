@@ -24,9 +24,10 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { X } from "lucide-react";
+import { X, Github } from "lucide-react";
 import { useCreateAlertRule } from "@/hooks/alerts.hook";
 import { useProjects } from "@/hooks/project.hooks";
+import { useConnectedIntegrations } from "@/hooks/integration.hooks";
 import { toast } from "sonner";
 
 // Updated interface to match AlertRule structure
@@ -81,6 +82,14 @@ export function CreateAlertModal({
   const [selectedProjectId, setSelectedProjectId] = useState<string>(
     projectId || ""
   );
+
+  // Check if GitHub integration is connected for the selected project
+  const effectiveProjectId = projectId || selectedProjectId;
+  const { data: connectedIntegrations } = useConnectedIntegrations(effectiveProjectId || undefined);
+  const isGitHubConnected = Array.isArray(connectedIntegrations)
+    && connectedIntegrations.some(
+        (integration: any) => integration.type === "github" && integration.status === "connected"
+      );
 
   const [formData, setFormData] = useState({
     name: "",
@@ -480,6 +489,35 @@ export function CreateAlertModal({
                   />
                   <Label htmlFor="webhook-channel">Webhook</Label>
                 </div>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="github-channel"
+                    checked={formData.notifyChannels.includes("github")}
+                    onCheckedChange={(checked) =>
+                      toggleNotifyChannel("github", checked)
+                    }
+                    disabled={!isGitHubConnected}
+                  />
+                  <Label
+                    htmlFor="github-channel"
+                    className={`flex items-center gap-1.5 ${
+                      !isGitHubConnected ? "text-muted-foreground" : ""
+                    }`}
+                  >
+                    <Github className="h-4 w-4" />
+                    GitHub Issue
+                  </Label>
+                </div>
+                {!isGitHubConnected && (
+                  <p className="text-xs text-muted-foreground pl-1">
+                    Configure GitHub integration in project settings first
+                  </p>
+                )}
+                {formData.notifyChannels.includes("github") && isGitHubConnected && (
+                  <p className="text-xs text-muted-foreground pl-1">
+                    A GitHub issue will be created automatically when this alert fires
+                  </p>
+                )}
               </div>
             </div>
 

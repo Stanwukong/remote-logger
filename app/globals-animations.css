@@ -124,6 +124,34 @@
   }
 }
 
+/* Text glitch — chromatic aberration for "breaking" headline */
+@keyframes text-glitch {
+  0%, 92%, 98%, 100% {
+    text-shadow: none;
+    clip-path: none;
+  }
+  93% {
+    text-shadow: -2px 0 #ff3b3b, 2px 0 #4d8ef8;
+    clip-path: inset(20% 0 40% 0);
+  }
+  94% {
+    text-shadow: 2px 0 #ff3b3b, -2px 0 #4d8ef8;
+    clip-path: inset(60% 0 5% 0);
+  }
+  95% {
+    text-shadow: -1px 0 #ff3b3b, 1px 0 #4d8ef8;
+    clip-path: inset(10% 0 70% 0);
+  }
+  96% {
+    text-shadow: 3px 0 #ff3b3b, -3px 0 #4d8ef8;
+    clip-path: inset(45% 0 25% 0);
+  }
+  97% {
+    text-shadow: -2px 0 #ff3b3b, 2px 0 #4d8ef8;
+    clip-path: inset(75% 0 5% 0);
+  }
+}
+
 /* ============================================================================
    PHASE 3 — Intelligence animations
    ============================================================================ */
@@ -275,6 +303,12 @@
   animation: streaming-cursor 1s steps(1) infinite;
 }
 
+/* Text glitch — broken text effect */
+.animate-text-glitch {
+  display: inline-block;
+  animation: text-glitch 2s linear infinite;
+}
+
 /* Stagger delays for reveal animations */
 .stagger-1 { animation-delay: 0ms; }
 .stagger-2 { animation-delay: 80ms; }
@@ -402,7 +436,8 @@ html {
   .animate-glow-pulse,
   .animate-caret-blink,
   .animate-ai-dot,
-  .animate-streaming-cursor {
+  .animate-streaming-cursor,
+  .animate-text-glitch {
     animation: none !important;
   }
 }

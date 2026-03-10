@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { AlertRule } from "@/types/alert.types";
-import { Bell, Edit, Trash2, Clock, AlertCircle } from "lucide-react";
+import { Bell, Edit, Trash2, Clock, AlertCircle, Mail, MessageSquare, Webhook, Github } from "lucide-react";
 import { useUpdateAlertRule, useDeleteAlertRule } from "@/hooks/useAlerts";
 import { useState } from "react";
 import {
@@ -125,15 +125,24 @@ export function AlertRuleCard({ rule, projectId, apiKey }: AlertRuleCardProps) {
             <div>
               <p className="text-sm font-medium mb-2">Notification Channels</p>
               <div className="flex flex-wrap gap-2">
-                {rule.notifyChannels.map((channel) => (
-                  <Badge
-                    key={channel}
-                    variant="secondary"
-                    className="capitalize"
-                  >
-                    {channel}
-                  </Badge>
-                ))}
+                {rule.notifyChannels.map((channel) => {
+                  const ChannelIcon = {
+                    email: Mail,
+                    slack: MessageSquare,
+                    webhook: Webhook,
+                    github: Github,
+                  }[channel] || Bell;
+                  return (
+                    <Badge
+                      key={channel}
+                      variant="secondary"
+                      className="capitalize flex items-center gap-1"
+                    >
+                      <ChannelIcon className="h-3 w-3" />
+                      {channel === "github" ? "GitHub Issue" : channel}
+                    </Badge>
+                  );
+                })}
               </div>
             </div>
           )}

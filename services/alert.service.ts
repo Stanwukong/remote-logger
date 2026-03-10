@@ -98,6 +98,9 @@ export interface AlertRule {
     emails?: string[];
     slackWebhookUrl?: string;
     webhookUrl?: string;
+    github?: {
+      enabled?: boolean;
+    };
   };
   escalationPolicyId?: string;
   snoozeUntil?: string;
@@ -110,7 +113,7 @@ export interface AlertRule {
 export interface EscalationLevel {
   level: number;
   delayMinutes: number;
-  notifyChannels: ("email" | "slack" | "webhook")[];
+  notifyChannels: ("email" | "slack" | "webhook" | "github")[];
   recipients: string[];
   webhookUrl?: string;
 }
@@ -160,6 +163,9 @@ export interface CreateAlertRuleData {
     emails?: string[];
     slackWebhookUrl?: string;
     webhookUrl?: string;
+    github?: {
+      enabled?: boolean;
+    };
   };
 }
 

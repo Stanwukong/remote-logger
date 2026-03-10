@@ -38,7 +38,14 @@ export function Hero() {
 
             <br />
             <span data-hero-headline>
-              breaking in
+              <span
+                className="text-status-danger animate-text-glitch"
+                data-hero-glitch
+                style={{ animationDelay: "2s" }}
+              >
+                breaking
+              </span>{" "}
+              in{" "}
               <span data-hero-headline className="text-signal">
                 production.
               </span>

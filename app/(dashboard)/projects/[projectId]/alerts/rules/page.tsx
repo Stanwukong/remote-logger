@@ -42,6 +42,7 @@ import {
   Mail,
   MessageSquare,
   Webhook,
+  Github,
   ArrowLeft,
 } from "lucide-react";
 import {
@@ -61,6 +62,7 @@ const CHANNEL_ICON: Record<string, typeof Mail> = {
   email: Mail,
   slack: MessageSquare,
   webhook: Webhook,
+  github: Github,
 };
 
 function conditionSummary(

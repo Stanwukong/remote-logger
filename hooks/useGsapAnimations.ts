@@ -149,10 +149,10 @@ export function useHeroSequence() {
 
       // Choreography: 0ms → 1100ms
       if (canvas) tl.to(canvas, { opacity: 0.6, duration: 0.8 }, 0);
-      if (badge) tl.to(badge, { opacity: 1, y: 0, duration: 0.4 }, 0.2);
+      if (badge) tl.to(badge, { opacity: 1, y: 0, duration: 0.6 }, 0.2);
 
       headlines.forEach((el, i) => {
-        tl.to(el, { opacity: 1, y: 0, duration: 0.5 }, 0.38 + i * 0.08);
+        tl.to(el, { opacity: 1, y: 0, duration: 0.8 }, 0.38 + i * 0.08);
       });
 
       if (sub) tl.to(sub, { opacity: 1, duration: 0.4 }, 0.7);
@@ -183,7 +183,7 @@ export function useStaggerReveal(options?: {
   duration?: number;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { stagger = 0.08, y = 24, duration = 0.5 } = options || {};
+  const { stagger = 0.08, y = 24, duration = 0.8 } = options || {};
 
   useGSAP(
     () => {

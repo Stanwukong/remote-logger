@@ -56,6 +56,10 @@ import {
   Search,
   Sparkles,
   Trash2,
+  Mail,
+  MessageSquare,
+  Webhook,
+  Github,
 } from "lucide-react";
 import {
   Alert,
@@ -96,6 +100,13 @@ const SEVERITY_BADGE_CLASS: Record<string, string> = {
   critical: "bg-status-danger/10 text-status-danger border-status-danger/30",
   warning: "bg-status-warn/10 text-status-warn border-status-warn/30",
   info: "bg-data-info/10 text-data-info border-data-info/30",
+};
+
+const CHANNEL_ICON: Record<string, typeof Mail> = {
+  email: Mail,
+  slack: MessageSquare,
+  webhook: Webhook,
+  github: Github,
 };
 
 // ============================================
@@ -769,18 +780,25 @@ function RulesTab({ projectId }: { projectId: string }) {
                 {/* Meta */}
                 <div className="flex items-center gap-4 mt-3 text-xs text-text-muted">
                   {rule.notifyChannels?.length > 0 && (
-                    <div className="flex gap-1">
-                      {rule.notifyChannels.map(
-                        (ch: string) => (
-                          <Badge
-                            key={ch}
-                            variant="outline"
-                            className="text-[10px] capitalize bg-signal/10 border-signal/30 text-signal"
-                          >
-                            {ch}
-                          </Badge>
-                        )
-                      )}
+                    <div className="flex items-center gap-1.5">
+                      <Bell className="h-3 w-3" />
+                      <div className="flex gap-1">
+                        {rule.notifyChannels.map(
+                          (ch: string) => {
+                            const ChannelIcon = CHANNEL_ICON[ch] || Bell;
+                            return (
+                              <Badge
+                                key={ch}
+                                variant="outline"
+                                className="text-[10px] capitalize bg-signal/10 border-signal/30 text-signal gap-1"
+                              >
+                                <ChannelIcon className="h-2.5 w-2.5" />
+                                {ch}
+                              </Badge>
+                            );
+                          }
+                        )}
+                      </div>
                     </div>
                   )}
                   <span>
