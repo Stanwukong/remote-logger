@@ -33,7 +33,7 @@ export function ProblemSection() {
   const containerRef = useScrollReveal();
 
   return (
-    <section className="py-24 bg-bg-base" ref={containerRef}>
+    <section className="py-24" ref={containerRef}>
       <div className="max-w-[1280px] mx-auto px-6">
         <SectionHeading
           eyebrow="THE PROBLEM"

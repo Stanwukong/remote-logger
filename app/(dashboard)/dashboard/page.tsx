@@ -29,6 +29,7 @@ import {
   Bug,
   FolderOpen,
   Plus,
+  RefreshCw,
   ScrollText,
   ArrowRight,
   Clock,
@@ -97,6 +98,7 @@ export default function DashboardPage() {
     overview,
     isLoading: dashboardLoading,
     hasData: dashboardHasData,
+    refetch,
   } = useDashboardData({ startDate, endDate });
 
   const { data: projectsResponse, isLoading: projectsLoading } = useProjects();
@@ -157,7 +159,12 @@ export default function DashboardPage() {
   if (projects.length === 0 && !dashboardHasData) {
     return (
       <div className="p-6 md:px-8 lg:p-10">
-        <PageHeader title="Dashboard" description="Cross-project overview" />
+        <div className="flex items-center justify-between mb-6">
+          <PageHeader title="Dashboard" description="Cross-project overview" />
+          <Button variant="ghost" size="sm" onClick={() => refetch()}>
+            <RefreshCw className="w-4 h-4" />
+          </Button>
+        </div>
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <div className="w-16 h-16 rounded-2xl bg-signal/10 flex items-center justify-center mb-6">
             <FolderOpen className="w-8 h-8 text-signal" />
@@ -181,7 +188,12 @@ export default function DashboardPage() {
 
   return (
     <div className="p-6 md:px-8 lg:p-10 space-y-6">
-      <PageHeader title="Dashboard" description="Cross-project overview" />
+      <div className="flex items-center justify-between">
+        <PageHeader title="Dashboard" description="Cross-project overview" />
+        <Button variant="ghost" size="sm" onClick={() => refetch()}>
+          <RefreshCw className="w-4 h-4" />
+        </Button>
+      </div>
 
       {/* Metric Cards — with sparklines and real comparison data */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">

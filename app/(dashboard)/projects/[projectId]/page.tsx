@@ -242,7 +242,7 @@ export default function ProjectDashboard() {
       />
 
       {/* Getting Started Wizard — shown when project has no logs */}
-      {!wizardDismissed && project.logCount === 0 && (
+      {!wizardDismissed || project.logCount === 0 && (
         <GettingStartedWizard
           projectId={projectId}
           apiKey={project.apiKey}

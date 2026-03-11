@@ -47,6 +47,11 @@ export const useDashboardData = (params?: {
 
   const [overviewQuery, performanceQuery] = queries;
 
+  const refetch = () => {
+    overviewQuery.refetch();
+    performanceQuery.refetch();
+  };
+
   const isLoading = queries.some((query) => query.isLoading);
   const isError = queries.some((query) => query.isError);
   const hasData = queries.every((query) => query.data);
@@ -86,5 +91,6 @@ export const useDashboardData = (params?: {
     metrics,
     performanceMetrics,
     performanceStatus,
+    refetch,
   };
 };

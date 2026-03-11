@@ -41,7 +41,7 @@ export function Hero() {
               <span
                 className="text-status-danger animate-text-glitch"
                 data-hero-glitch
-                style={{ animationDelay: "2s" }}
+                style={{ animationDelay: "1s" }}
               >
                 breaking
               </span>{" "}
@@ -105,7 +105,7 @@ export function Hero() {
 
         {/* Dashboard preview */}
         <div
-          className="relative max-w-[1000px] mx-auto"
+          className="relative max-w-[1200px] mx-auto pb-40"
           data-hero-preview
           style={{
             perspective: "2000px",
@@ -116,7 +116,7 @@ export function Hero() {
             style={{
               transform: "rotateX(8deg)",
               boxShadow:
-                "0 0 0 1px var(--border-faint), 0 60px 120px rgba(0,0,0,0.8), 0 0 60px #00d97e10",
+                "0 0 0 1px var(--border-faint), 0 60px 180px rgba(104, 98, 98, 0.8), 0 0 60px #ffffffff",
             }}
           >
             <DashboardPreview />

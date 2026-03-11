@@ -27,7 +27,7 @@ export function Header() {
     <header
       className={`fixed top-0 left-0 right-0 z-[1000] h-16 transition-all duration-300 ${
         scrolled
-          ? "glass-nav border-b border-border-faint"
+          ? "glass-nav"
           : "bg-transparent border-b border-transparent"
       }`}
     >

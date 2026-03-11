@@ -63,6 +63,13 @@ export function DashboardPreview() {
       service: "billing-service",
       timestamp: new Date(Date.now() - 90000).toISOString(),
     },
+    {
+      id: "5",
+      level: "debug",
+      message: "Cache refreshed: session_store",
+      service: "api-service",
+      timestamp: new Date(Date.now() - 120000).toISOString(),
+    },
   ]);
 
   const [metrics, setMetrics] = useState<MetricData[]>([
@@ -99,7 +106,7 @@ export function DashboardPreview() {
         ][Math.floor(Math.random() * 4)],
         timestamp: new Date().toISOString(),
       };
-      setLogs((prev) => [newLog, ...prev.slice(0, 4)]);
+      setLogs((prev) => [newLog, ...prev.slice(0, 5)]);
 
       setMetrics((prev) =>
         prev.map((m) => ({
@@ -155,7 +162,7 @@ export function DashboardPreview() {
       </div>
 
       {/* Dashboard content */}
-      <div className="p-4 space-y-4">
+      <div className="p-5 space-y-5">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -212,7 +219,7 @@ export function DashboardPreview() {
             <p className="text-[10px] text-text-muted mb-2">
               Log Volume (24h)
             </p>
-            <div className="flex items-end gap-0.5 h-16">
+            <div className="flex items-end gap-0.5 h-36">
               {chartData.map((h, i) => (
                 <div
                   key={i}
@@ -227,7 +234,7 @@ export function DashboardPreview() {
           <div className="p-3 rounded-lg border border-border-faint bg-bg-void/50">
             <p className="text-[10px] text-text-muted mb-2">Live Logs</p>
             <div className="space-y-1.5">
-              {logs.slice(0, 4).map((log) => (
+              {logs.slice(0, 5).map((log) => (
                 <div
                   key={log.id}
                   className="flex items-center gap-2 text-[10px]"

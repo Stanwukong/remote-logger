@@ -122,7 +122,7 @@ export function Features() {
   const containerRef = useStaggerReveal({ stagger: 0.1 });
 
   return (
-    <section id="features" className="py-24 bg-bg-base" ref={containerRef}>
+    <section id="features" className="py-24" ref={containerRef}>
       <div className="max-w-[1280px] mx-auto px-6">
         <SectionHeading
           eyebrow="BUILT FOR DEVELOPERS"

@@ -306,30 +306,30 @@
 /* Text glitch — broken text effect */
 .animate-text-glitch {
   display: inline-block;
-  animation: text-glitch 2s linear infinite;
+  animation: text-glitch 1s linear infinite;
 }
 
 /* Stagger delays for reveal animations */
 .stagger-1 { animation-delay: 0ms; }
-.stagger-2 { animation-delay: 80ms; }
-.stagger-3 { animation-delay: 160ms; }
-.stagger-4 { animation-delay: 240ms; }
-.stagger-5 { animation-delay: 320ms; }
-.stagger-6 { animation-delay: 400ms; }
+.stagger-2 { animation-delay: 100ms; }
+.stagger-3 { animation-delay: 180ms; }
+.stagger-4 { animation-delay: 260ms; }
+.stagger-5 { animation-delay: 340ms; }
+.stagger-6 { animation-delay: 500ms; }
 
 /* ============================================================================
    GLASSMORPHISM — Observatory variant
    ============================================================================ */
 
 .glass {
-  background: rgba(17, 28, 46, 0.6);
+  background: rgba(77, 126, 141, 0.6);
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
   border: 1px solid var(--border-faint, #1a2640);
 }
 
 .glass-nav {
-  background: rgba(6, 11, 20, 0.8);
+  background: linear-gradient(180deg, var(--bg-void) 0%, transparent 50%);
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
 }

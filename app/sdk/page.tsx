@@ -82,7 +82,7 @@ export default function SDKPage() {
       {/* ================================================================
           SECTION 1: HEADER — Sticky glassmorphism nav
           ================================================================ */}
-      <header className="sticky top-0 z-50 glass-nav border-b border-border-faint">
+      <header className="sticky top-0 z-50">
         <div className="container mx-auto px-4 py-3.5 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Link href="/" className="flex items-center gap-2.5">

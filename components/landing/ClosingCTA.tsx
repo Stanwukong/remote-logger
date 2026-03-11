@@ -14,9 +14,7 @@ export function ClosingCTA() {
     <section
       className="py-32 relative overflow-hidden"
       ref={containerRef}
-      style={{
-        background: `radial-gradient(ellipse 80% 60% at 50% 50%, #00d97e08 0%, transparent 70%), var(--bg-void)`,
-      }}
+      
     >
       <div className="max-w-[1280px] mx-auto px-6 text-center">
         {/* Pre-headline */}
