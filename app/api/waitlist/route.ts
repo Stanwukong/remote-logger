@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Forward to backend
-    const res = await fetch(`${API_BASE_URL}/waitlist`, {
+    const res = await fetch(`${API_BASE_URL}/api/v1/waitlist`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
