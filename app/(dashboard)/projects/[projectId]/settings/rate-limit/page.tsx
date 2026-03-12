@@ -60,8 +60,8 @@ export default function RateLimitSettingsPage() {
       {
         projectId: project._id,
         rateLimit: {
-          maxRequests: effectiveMaxRequests,
-          windowInMinutes: 1,
+          maxRequestsPerMinute: effectiveMaxRequests,
+          burstLimit: effectiveBurstLimit,
         },
       },
       {

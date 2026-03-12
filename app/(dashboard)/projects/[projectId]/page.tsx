@@ -8,14 +8,26 @@ import { useAlertStats } from "@/hooks/alerts.hook";
 import { useApperioStore } from "@/store/apperio-store";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { MetricCard } from "@/components/shared/MetricCard";
-import { TimeSeriesChart } from "@/components/shared/TimeSeriesChart";
 import { SkeletonDashboard } from "@/components/shared/SkeletonDashboard";
 import { SignalDot } from "@/components/shared/SignalDot";
 import { GettingStartedWizard } from "@/components/shared/GettingStartedWizard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+} from "recharts";
 import {
   ScrollText,
   Bug,
@@ -51,6 +63,46 @@ function deriveHealthStatus(
   if (errorRate > 5 || perfHealth === "warning" || perfHealth === "degraded") return "warn";
   return "ok";
 }
+
+function formatHour(isoStr: string): string {
+  try {
+    const d = new Date(isoStr);
+    return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  } catch {
+    return isoStr;
+  }
+}
+
+function formatDate(dateStr: string): string {
+  try {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString([], { month: "short", day: "numeric" });
+  } catch {
+    return dateStr;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Chart configs
+// ---------------------------------------------------------------------------
+
+const responseTimeChartConfig = {
+  avgResponseTime: {
+    label: "Avg Response Time",
+    color: "var(--signal)",
+  },
+} satisfies ChartConfig;
+
+const logVolumeChartConfig = {
+  totalLogs: {
+    label: "Total Logs",
+    color: "var(--data)",
+  },
+  errorLogs: {
+    label: "Errors",
+    color: "var(--status-danger)",
+  },
+} satisfies ChartConfig;
 
 // ---------------------------------------------------------------------------
 // Quick link definitions
@@ -139,7 +191,6 @@ export default function ProjectDashboard() {
   );
 
   const { data: projectData, isLoading: projectLoading } = useProject(projectId);
-  // Log summary available for future use
   useLogSummary(projectId, timeRangeParams.timeRange);
   const { data: alertStatsResponse } = useAlertStats(projectId);
 
@@ -154,6 +205,40 @@ export default function ProjectDashboard() {
     setWizardDismissed(true);
   }, [projectId]);
 
+  // Derived data (must be above early returns to satisfy rules-of-hooks)
+  const pData = projectData as Project | undefined;
+  const analytics = pData?.analytics;
+  const recommendations = pData?.recommendations;
+  const project = pData?.project;
+  const alertStats = alertStatsResponse?.data ?? null;
+
+  const healthStatus = deriveHealthStatus(analytics);
+  const logsToday = analytics?.overview?.recentLogs ?? 0;
+  const errorsToday = analytics?.overview?.errorLogs ?? 0;
+  const avgResponseTime = analytics?.responseTime?.current?.avgResponseTime ?? 0;
+  const perfHealth = analytics?.performance?.health ?? "unknown";
+  const healthScore = recommendations?.healthScore ?? 0;
+  const activeAlertCount = alertStats?.active ?? 0;
+
+  // Build response time chart data from responseTime.trends (hourly buckets)
+  const responseTimeData = useMemo(() => {
+    const trends = analytics?.responseTime?.trends ?? [];
+    return trends.map((point: any) => ({
+      hour: formatHour(point._id?.hour ?? point.timestamp ?? ""),
+      avgResponseTime: Math.round((point.avgResponseTime ?? 0) * 100) / 100,
+    }));
+  }, [analytics?.responseTime?.trends]);
+
+  // Build log volume chart data from trends.logs (daily buckets)
+  const logVolumeData = useMemo(() => {
+    const trends = analytics?.trends?.logs ?? [];
+    return trends.map((point: any) => ({
+      date: formatDate(point._id?.date ?? point.date ?? ""),
+      totalLogs: point.totalLogs ?? 0,
+      errorLogs: point.errorLogs ?? 0,
+    }));
+  }, [analytics?.trends?.logs]);
+
   if (projectLoading) {
     return (
       <div className="p-6 md:px-8 lg:p-10">
@@ -162,7 +247,7 @@ export default function ProjectDashboard() {
     );
   }
 
-  if (!projectData || !projectData.project) {
+  if (!project) {
     return (
       <div className="p-6 md:px-8 lg:p-10">
         <div className="text-center py-16 bg-bg-surface border border-border-subtle rounded-lg">
@@ -181,38 +266,6 @@ export default function ProjectDashboard() {
       </div>
     );
   }
-
-  const { project, analytics, recommendations } = projectData as Project;
-  const healthStatus = deriveHealthStatus(analytics);
-  const alertStats = alertStatsResponse?.data ?? null;
-
-  // Metric values
-  const logsToday = analytics?.overview?.recentLogs ?? 0;
-  const errorsToday = analytics?.overview?.errorLogs ?? 0;
-  const avgResponseTime = analytics?.responseTime?.current?.avgResponseTime ?? 0;
-  const perfHealth = analytics?.performance?.health ?? "unknown";
-  const healthScore = recommendations?.healthScore ?? 0;
-
-  // Build time-series from response time history
-  const timeSeriesData = (analytics?.responseTime?.history ?? []).map((point: any) => ({
-    timestamp: new Date(point.timestamp).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
-    responseTime: point.avgResponseTime ?? 0,
-  }));
-
-  const timeSeriesSeries = [
-    {
-      key: "responseTime",
-      label: "Avg Response Time (ms)",
-      color: "var(--signal)",
-      type: "area" as const,
-    },
-  ];
-
-  // Recent alerts for this project
-  const activeAlertCount = alertStats?.active ?? 0;
 
   return (
     <div className="p-6 md:px-8 lg:p-10 space-y-6">
@@ -274,9 +327,13 @@ export default function ProjectDashboard() {
               ? "danger"
               : perfHealth === "warning" || perfHealth === "degraded"
               ? "warning"
-              : "success"
+              : "default"
           }
-          subtitle={`Health: ${perfHealth}`}
+          subtitle={
+            avgResponseTime > 0
+              ? `Health: ${perfHealth}`
+              : `${formatNumber(analytics?.performance?.metrics?.totalRequests ?? 0)} requests tracked`
+          }
         />
         <MetricCard
           label="Health Score"
@@ -297,29 +354,155 @@ export default function ProjectDashboard() {
         />
       </div>
 
-      {/* Response Time Chart */}
-      <Card className="bg-bg-surface border-border-subtle">
-        <CardHeader>
-          <CardTitle className="text-sm font-body text-text-secondary uppercase tracking-wider">
-            Response Time (Last 24h)
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {timeSeriesData.length > 0 ? (
-            <TimeSeriesChart
-              data={timeSeriesData}
-              series={timeSeriesSeries}
-              height={280}
-              showLegend={false}
-              formatYAxis={(v: number) => `${v}ms`}
-            />
-          ) : (
-            <div className="flex items-center justify-center h-[280px] text-text-muted text-sm">
-              Response time data will appear here once traffic is detected.
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      {/* Charts: Response Time + Log Volume */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Response Time Chart */}
+        <Card className="bg-bg-surface border-border-subtle">
+          <CardHeader>
+            <CardTitle className="text-sm font-body text-text-secondary uppercase tracking-wider">
+              Response Time (Hourly)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {responseTimeData.length > 0 ? (
+              <ChartContainer config={responseTimeChartConfig} className="min-h-[220px] w-full">
+                <AreaChart
+                  accessibilityLayer
+                  data={responseTimeData}
+                  margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
+                >
+                  <defs>
+                    <linearGradient id="responseTimeGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="var(--color-avgResponseTime)" stopOpacity={0.3} />
+                      <stop offset="100%" stopColor="var(--color-avgResponseTime)" stopOpacity={0.02} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid vertical={false} strokeOpacity={0.06} />
+                  <XAxis
+                    dataKey="hour"
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fill: "var(--text-muted)", fontSize: 11 }}
+                    tickMargin={8}
+                  />
+                  <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fill: "var(--text-muted)", fontSize: 11 }}
+                    tickFormatter={(v) => `${v}ms`}
+                    width={52}
+                  />
+                  <ChartTooltip
+                    content={
+                      <ChartTooltipContent
+                        formatter={(value) => [`${Number(value).toFixed(1)}ms`]}
+                      />
+                    }
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="avgResponseTime"
+                    stroke="var(--color-avgResponseTime)"
+                    strokeWidth={2}
+                    fill="url(#responseTimeGrad)"
+                    dot={false}
+                    activeDot={{
+                      r: 4,
+                      strokeWidth: 2,
+                      stroke: "var(--color-avgResponseTime)",
+                      fill: "var(--bg-surface)",
+                    }}
+                  />
+                </AreaChart>
+              </ChartContainer>
+            ) : (
+              <div className="flex items-center justify-center min-h-[220px] text-text-muted text-sm">
+                Response time data will appear once network requests with latency are captured.
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Log Volume Chart */}
+        <Card className="bg-bg-surface border-border-subtle">
+          <CardHeader>
+            <CardTitle className="text-sm font-body text-text-secondary uppercase tracking-wider">
+              Log Volume (Daily)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {logVolumeData.length > 0 ? (
+              <ChartContainer config={logVolumeChartConfig} className="min-h-[220px] w-full">
+                <AreaChart
+                  accessibilityLayer
+                  data={logVolumeData}
+                  margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
+                >
+                  <defs>
+                    <linearGradient id="totalLogsGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="var(--color-totalLogs)" stopOpacity={0.3} />
+                      <stop offset="100%" stopColor="var(--color-totalLogs)" stopOpacity={0.02} />
+                    </linearGradient>
+                    <linearGradient id="errorLogsGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="var(--color-errorLogs)" stopOpacity={0.3} />
+                      <stop offset="100%" stopColor="var(--color-errorLogs)" stopOpacity={0.02} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid vertical={false} strokeOpacity={0.06} />
+                  <XAxis
+                    dataKey="date"
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fill: "var(--text-muted)", fontSize: 11 }}
+                    tickMargin={8}
+                  />
+                  <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fill: "var(--text-muted)", fontSize: 11 }}
+                    width={40}
+                  />
+                  <ChartTooltip
+                    content={<ChartTooltipContent />}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="totalLogs"
+                    stroke="var(--color-totalLogs)"
+                    strokeWidth={2}
+                    fill="url(#totalLogsGrad)"
+                    dot={false}
+                    activeDot={{
+                      r: 4,
+                      strokeWidth: 2,
+                      stroke: "var(--color-totalLogs)",
+                      fill: "var(--bg-surface)",
+                    }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="errorLogs"
+                    stroke="var(--color-errorLogs)"
+                    strokeWidth={2}
+                    fill="url(#errorLogsGrad)"
+                    dot={false}
+                    activeDot={{
+                      r: 4,
+                      strokeWidth: 2,
+                      stroke: "var(--color-errorLogs)",
+                      fill: "var(--bg-surface)",
+                    }}
+                  />
+                </AreaChart>
+              </ChartContainer>
+            ) : (
+              <div className="flex items-center justify-center min-h-[220px] text-text-muted text-sm">
+                Log volume data will appear once logs are ingested.
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Quick Links + Recent Alerts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -345,8 +528,8 @@ export default function ProjectDashboard() {
                       href={href}
                       className="group flex flex-col items-center gap-2 p-4 rounded-lg border border-border-subtle bg-bg-base hover:bg-bg-elevated hover:border-border-accent transition-all duration-200 text-center"
                     >
-                      <div className={`w-10 h-10 rounded-lg ${link.bgColor} flex items-center justify-center`}>
-                        <Icon className={`w-5 h-5 ${link.color}`} />
+                      <div className={`size-10 rounded-lg ${link.bgColor} flex items-center justify-center`}>
+                        <Icon className={`size-5 ${link.color}`} />
                       </div>
                       <div>
                         <p className="text-sm font-display font-semibold text-text-primary group-hover:text-signal transition-colors">

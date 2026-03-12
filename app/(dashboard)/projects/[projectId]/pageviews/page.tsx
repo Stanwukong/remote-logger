@@ -86,9 +86,10 @@ export default function PageviewAnalyticsPage() {
     );
   }
 
-  const topPageName = ov?.topPage
-    ? (typeof ov.topPage === "string" ? truncateUrl(ov.topPage, 24) : String(ov.topPage))
-    : "None";
+  const topPageObj = ov?.topPage && typeof ov.topPage === "object" ? ov.topPage : null;
+  const topPageName = topPageObj
+    ? truncateUrl(topPageObj.url || "", 24)
+    : (typeof ov?.topPage === "string" ? truncateUrl(ov.topPage, 24) : "None");
 
   return (
     <div className="p-6 bg-bg-base min-h-full space-y-6">
@@ -97,7 +98,7 @@ export default function PageviewAnalyticsPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <MetricCard label="Total Pageviews" value={formatCompact(ov?.totalPageviews)} icon={<Eye className="w-4 h-4" />} />
         <MetricCard label="Unique Pages" value={formatCompact(ov?.uniquePages)} />
-        <MetricCard label="Top Page" value={topPageName} subtitle={ov?.topPageViews ? `${formatCompact(ov.topPageViews)} views` : undefined} />
+        <MetricCard label="Top Page" value={topPageName} subtitle={topPageObj?.count ? `${formatCompact(topPageObj.count)} views` : undefined} />
       </div>
 
       <TabLayout tabs={TABS} defaultTab="overview">

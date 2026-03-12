@@ -49,19 +49,20 @@ function Empty({ text }: { text: string }) {
 }
 
 const LEVEL_BADGE: Record<string, string> = {
+  fatal: "bg-status-danger/10 text-status-danger",
   error: "bg-status-danger/10 text-status-danger",
   warn: "bg-status-warn/10 text-status-warn",
   warning: "bg-status-warn/10 text-status-warn",
   info: "bg-data-info/10 text-data-info",
-  log: "bg-text-muted/10 text-text-muted",
   debug: "bg-text-muted/10 text-text-muted",
+  trace: "bg-text-muted/10 text-text-muted",
 };
 
 function LevelBadge({ level }: { level: string }) {
-  const cls = LEVEL_BADGE[level?.toLowerCase()] ?? LEVEL_BADGE.log;
+  const cls = LEVEL_BADGE[level?.toLowerCase()] ?? LEVEL_BADGE.info;
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${cls}`}>
-      {level || "log"}
+      {level || "info"}
     </span>
   );
 }
@@ -79,6 +80,10 @@ export default function ConsoleMonitorPage() {
   const { data: messagesRaw, isLoading: mgLoading } = useConsoleMessages(projectId, { ...trp, page: msgPage, limit: 25 });
 
   const ov = asObj(overviewRaw);
+  const errorRate = useMemo(() => {
+    if (!ov?.total) return 0;
+    return ((ov?.byLevel?.error ?? 0) / ov.total) * 100;
+  }, [ov]);
   const timeline = extract<any>(timelineRaw, "timeline", "data");
   const messages = extract<any>(messagesRaw, "messages", "data");
   const msgMeta = asObj(messagesRaw);
@@ -97,13 +102,13 @@ export default function ConsoleMonitorPage() {
       <PageHeader title="Console Monitor" description="Console output and message analytics" />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <MetricCard label="Total Messages" value={formatCompact(ov?.totalMessages)} icon={<Terminal className="w-4 h-4" />} />
-        <MetricCard label="Errors" value={formatCompact(ov?.errors)} variant="danger" />
-        <MetricCard label="Warnings" value={formatCompact(ov?.warnings)} variant="warning" />
+        <MetricCard label="Total Messages" value={formatCompact(ov?.total)} icon={<Terminal className="w-4 h-4" />} />
+        <MetricCard label="Errors" value={formatCompact(ov?.byLevel?.error)} variant="danger" />
+        <MetricCard label="Warnings" value={formatCompact(ov?.byLevel?.warn)} variant="warning" />
         <MetricCard
           label="Error Rate"
-          value={formatPercent(ov?.errorRate)}
-          variant={ov?.errorRate > 10 ? "danger" : ov?.errorRate > 3 ? "warning" : "default"}
+          value={formatPercent(errorRate)}
+          variant={errorRate > 10 ? "danger" : errorRate > 3 ? "warning" : "default"}
         />
       </div>
 
@@ -121,7 +126,7 @@ export default function ConsoleMonitorPage() {
                     { key: "error", label: "Error", color: CHART_COLORS.danger, type: "area" },
                     { key: "warn", label: "Warning", color: CHART_COLORS.warn, type: "area" },
                     { key: "info", label: "Info", color: CHART_COLORS.data, type: "line" },
-                    { key: "log", label: "Log", color: CHART_COLORS.muted, type: "line", strokeDasharray: "4 4" },
+                    { key: "debug", label: "Debug", color: CHART_COLORS.muted, type: "line", strokeDasharray: "4 4" },
                   ]}
                   height={320}
                   formatXAxis={formatChartTs}
@@ -162,12 +167,12 @@ export default function ConsoleMonitorPage() {
                   ))}
                 </div>
                 {/* Pagination */}
-                {(msgMeta?.totalPages ?? 0) > 1 && (
+                {(msgMeta?.meta?.total ?? 0) > 1 && (
                   <div className="flex items-center justify-between mt-4">
-                    <span className="text-xs text-text-muted">Page {msgPage} of {msgMeta?.totalPages}</span>
+                    <span className="text-xs text-text-muted">Page {msgPage} of {msgMeta?.meta?.total}</span>
                     <div className="flex gap-2">
                       <button onClick={() => setMsgPage((p) => Math.max(1, p - 1))} disabled={msgPage <= 1} className="px-3 py-1.5 text-xs rounded border border-border-subtle bg-bg-surface text-text-secondary hover:bg-bg-elevated disabled:opacity-40">Prev</button>
-                      <button onClick={() => setMsgPage((p) => p + 1)} disabled={msgPage >= (msgMeta?.totalPages ?? 1)} className="px-3 py-1.5 text-xs rounded border border-border-subtle bg-bg-surface text-text-secondary hover:bg-bg-elevated disabled:opacity-40">Next</button>
+                      <button onClick={() => setMsgPage((p) => p + 1)} disabled={msgPage >= (msgMeta?.meta?.total ?? 1)} className="px-3 py-1.5 text-xs rounded border border-border-subtle bg-bg-surface text-text-secondary hover:bg-bg-elevated disabled:opacity-40">Next</button>
                     </div>
                   </div>
                 )}

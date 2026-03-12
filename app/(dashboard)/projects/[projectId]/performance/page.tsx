@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { useApperioStore } from "@/store/apperio-store";
 import {
@@ -20,11 +20,18 @@ import {
   formatDuration,
   formatPercent as sharedFormatPercent,
   truncateUrl as sharedTruncateUrl,
-  formatBytes,
   computeChange,
   resolveTimeRangeParams,
 } from "@/lib/format-utils";
 import { useAnomalies } from "@/hooks/anomaly.hook";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Clock,
   Gauge,
@@ -34,6 +41,7 @@ import {
   FileText,
   Server,
   Package,
+  Search,
 } from "lucide-react";
 
 // ---------------------------------------------------------------------------
@@ -100,11 +108,12 @@ const TABS = [
 interface PagePerfEntry {
   url?: string;
   page?: string;
+  loadTime?: number;
   avgLoadTime?: number;
-  avgResponseTime?: number;
   views?: number;
   pageViews?: number;
-  bounceRate?: number;
+  fcp?: number;
+  lcp?: number;
 }
 
 function PagesTable({ data }: { data: PagePerfEntry[] }) {
@@ -113,7 +122,7 @@ function PagesTable({ data }: { data: PagePerfEntry[] }) {
   }
 
   const sorted = [...data].sort(
-    (a, b) => (b.avgLoadTime ?? b.avgResponseTime ?? 0) - (a.avgLoadTime ?? a.avgResponseTime ?? 0)
+    (a, b) => (b.loadTime ?? b.avgLoadTime ?? 0) - (a.loadTime ?? a.avgLoadTime ?? 0)
   );
 
   return (
@@ -128,10 +137,13 @@ function PagesTable({ data }: { data: PagePerfEntry[] }) {
               Avg Load Time
             </th>
             <th className="text-right text-text-muted text-xs uppercase tracking-wider font-medium px-4 py-3">
-              Views
+              FCP
             </th>
             <th className="text-right text-text-muted text-xs uppercase tracking-wider font-medium px-4 py-3">
-              Bounce Rate
+              LCP
+            </th>
+            <th className="text-right text-text-muted text-xs uppercase tracking-wider font-medium px-4 py-3">
+              Views
             </th>
           </tr>
         </thead>
@@ -141,17 +153,20 @@ function PagesTable({ data }: { data: PagePerfEntry[] }) {
               key={i}
               className="border-t border-border-subtle even:bg-bg-elevated/30 hover:bg-bg-elevated/50 transition-colors"
             >
-              <td className="px-4 py-3 text-text-primary font-mono text-xs max-w-[300px] truncate" title={entry.url ?? entry.page ?? ""}>
-                {truncateUrl(entry.url ?? entry.page ?? "--")}
+              <td className="px-4 py-3 text-text-primary font-mono text-xs max-w-[300px] truncate" title={entry.page ?? entry.url ?? ""}>
+                {truncateUrl(entry.page ?? entry.url ?? "--")}
               </td>
               <td className="px-4 py-3 text-right text-text-primary font-mono text-xs">
-                {formatMs(entry.avgLoadTime ?? entry.avgResponseTime)}
+                {formatMs(entry.loadTime ?? entry.avgLoadTime)}
+              </td>
+              <td className="px-4 py-3 text-right text-text-primary font-mono text-xs">
+                {formatMs(entry.fcp)}
+              </td>
+              <td className="px-4 py-3 text-right text-text-primary font-mono text-xs">
+                {formatMs(entry.lcp)}
               </td>
               <td className="px-4 py-3 text-right text-text-primary font-mono text-xs">
                 {(entry.views ?? entry.pageViews ?? 0).toLocaleString()}
-              </td>
-              <td className="px-4 py-3 text-right text-text-primary font-mono text-xs">
-                {entry.bounceRate != null ? formatPercent(entry.bounceRate) : "--"}
               </td>
             </tr>
           ))}
@@ -162,21 +177,69 @@ function PagesTable({ data }: { data: PagePerfEntry[] }) {
 }
 
 interface EndpointEntry {
+  url?: string;
   endpoint?: string;
   name?: string;
   method?: string;
+  avgDuration?: number;
   avgTime?: number;
-  avgResponseTime?: number;
   p95?: number;
-  p95ResponseTime?: number;
+  maxDuration?: number;
   calls?: number;
   count?: number;
 }
 
-function EndpointsTable({ data }: { data: EndpointEntry[] }) {
+function EndpointsTable({
+  data,
+  filterText,
+  filterMethod,
+  sortBy,
+  sortDir,
+  onSort,
+}: {
+  data: EndpointEntry[];
+  filterText: string;
+  filterMethod: string;
+  sortBy: string;
+  sortDir: "asc" | "desc";
+  onSort: (col: string) => void;
+}) {
   if (!data || data.length === 0) {
     return <EmptyTab message="No endpoint data available." />;
   }
+
+  // Filter
+  let filtered = data;
+  if (filterText) {
+    const lower = filterText.toLowerCase();
+    filtered = filtered.filter((e) =>
+      (e.url ?? e.endpoint ?? e.name ?? "").toLowerCase().includes(lower)
+    );
+  }
+  if (filterMethod && filterMethod !== "all") {
+    filtered = filtered.filter(
+      (e) => (e.method ?? "GET").toUpperCase() === filterMethod.toUpperCase()
+    );
+  }
+
+  // Sort
+  const sorted = [...filtered].sort((a, b) => {
+    let aVal: number, bVal: number;
+    if (sortBy === "avgTime") {
+      aVal = a.avgDuration ?? a.avgTime ?? 0;
+      bVal = b.avgDuration ?? b.avgTime ?? 0;
+    } else {
+      aVal = a.calls ?? a.count ?? 0;
+      bVal = b.calls ?? b.count ?? 0;
+    }
+    return sortDir === "asc" ? aVal - bVal : bVal - aVal;
+  });
+
+  const SortIcon = ({ col }: { col: string }) => (
+    <span className="ml-1 cursor-pointer select-none opacity-60 hover:opacity-100">
+      {sortBy === col ? (sortDir === "asc" ? "\u25B2" : "\u25BC") : "\u25B4"}
+    </span>
+  );
 
   return (
     <div className="rounded-lg border border-border-subtle overflow-hidden">
@@ -189,42 +252,56 @@ function EndpointsTable({ data }: { data: EndpointEntry[] }) {
             <th className="text-left text-text-muted text-xs uppercase tracking-wider font-medium px-4 py-3">
               Method
             </th>
-            <th className="text-right text-text-muted text-xs uppercase tracking-wider font-medium px-4 py-3">
-              Avg Time
+            <th
+              className="text-right text-text-muted text-xs uppercase tracking-wider font-medium px-4 py-3 cursor-pointer select-none"
+              onClick={() => onSort("avgTime")}
+            >
+              Avg Time <SortIcon col="avgTime" />
             </th>
             <th className="text-right text-text-muted text-xs uppercase tracking-wider font-medium px-4 py-3">
               p95
             </th>
-            <th className="text-right text-text-muted text-xs uppercase tracking-wider font-medium px-4 py-3">
-              Calls
+            <th
+              className="text-right text-text-muted text-xs uppercase tracking-wider font-medium px-4 py-3 cursor-pointer select-none"
+              onClick={() => onSort("calls")}
+            >
+              Calls <SortIcon col="calls" />
             </th>
           </tr>
         </thead>
         <tbody>
-          {data.map((entry, i) => (
-            <tr
-              key={i}
-              className="border-t border-border-subtle even:bg-bg-elevated/30 hover:bg-bg-elevated/50 transition-colors"
-            >
-              <td className="px-4 py-3 text-text-primary font-mono text-xs max-w-[280px] truncate" title={entry.endpoint ?? entry.name ?? ""}>
-                {truncateUrl(entry.endpoint ?? entry.name ?? "--")}
-              </td>
-              <td className="px-4 py-3 text-text-secondary text-xs">
-                <span className="inline-block px-2 py-0.5 rounded bg-bg-elevated text-text-primary font-mono text-xs font-medium">
-                  {entry.method ?? "GET"}
-                </span>
-              </td>
-              <td className="px-4 py-3 text-right text-text-primary font-mono text-xs">
-                {formatMs(entry.avgTime ?? entry.avgResponseTime)}
-              </td>
-              <td className="px-4 py-3 text-right text-text-primary font-mono text-xs">
-                {formatMs(entry.p95 ?? entry.p95ResponseTime)}
-              </td>
-              <td className="px-4 py-3 text-right text-text-primary font-mono text-xs">
-                {(entry.calls ?? entry.count ?? 0).toLocaleString()}
+          {sorted.length === 0 ? (
+            <tr>
+              <td colSpan={5} className="px-4 py-8 text-center text-text-muted text-sm">
+                No endpoints match your filters.
               </td>
             </tr>
-          ))}
+          ) : (
+            sorted.map((entry, i) => (
+              <tr
+                key={i}
+                className="border-t border-border-subtle even:bg-bg-elevated/30 hover:bg-bg-elevated/50 transition-colors"
+              >
+                <td className="px-4 py-3 text-text-primary font-mono text-xs max-w-[280px] truncate" title={entry.url ?? entry.endpoint ?? entry.name ?? ""}>
+                  {truncateUrl(entry.url ?? entry.endpoint ?? entry.name ?? "--")}
+                </td>
+                <td className="px-4 py-3 text-text-secondary text-xs">
+                  <span className="inline-block px-2 py-0.5 rounded bg-bg-elevated text-text-primary font-mono text-xs font-medium">
+                    {entry.method ?? "GET"}
+                  </span>
+                </td>
+                <td className="px-4 py-3 text-right text-text-primary font-mono text-xs">
+                  {formatMs(entry.avgDuration ?? entry.avgTime)}
+                </td>
+                <td className="px-4 py-3 text-right text-text-primary font-mono text-xs">
+                  {formatMs(entry.p95)}
+                </td>
+                <td className="px-4 py-3 text-right text-text-primary font-mono text-xs">
+                  {(entry.calls ?? entry.count ?? 0).toLocaleString()}
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>
@@ -232,16 +309,14 @@ function EndpointsTable({ data }: { data: EndpointEntry[] }) {
 }
 
 interface ResourceEntry {
+  name?: string;
   url?: string;
   resource?: string;
-  type?: string;
-  resourceType?: string;
+  calls?: number;
   avgDuration?: number;
-  avgResponseTime?: number;
-  size?: number;
-  transferSize?: number;
-  initiator?: string;
-  initiatorType?: string;
+  p95?: number;
+  p99?: number;
+  errors?: number;
 }
 
 function ResourcesTable({ data }: { data: ResourceEntry[] }) {
@@ -257,17 +332,17 @@ function ResourcesTable({ data }: { data: ResourceEntry[] }) {
             <th className="text-left text-text-muted text-xs uppercase tracking-wider font-medium px-4 py-3">
               Resource URL
             </th>
-            <th className="text-left text-text-muted text-xs uppercase tracking-wider font-medium px-4 py-3">
-              Type
+            <th className="text-right text-text-muted text-xs uppercase tracking-wider font-medium px-4 py-3">
+              Calls
             </th>
             <th className="text-right text-text-muted text-xs uppercase tracking-wider font-medium px-4 py-3">
               Avg Duration
             </th>
             <th className="text-right text-text-muted text-xs uppercase tracking-wider font-medium px-4 py-3">
-              Size
+              p95
             </th>
-            <th className="text-left text-text-muted text-xs uppercase tracking-wider font-medium px-4 py-3">
-              Initiator
+            <th className="text-right text-text-muted text-xs uppercase tracking-wider font-medium px-4 py-3">
+              Errors
             </th>
           </tr>
         </thead>
@@ -277,22 +352,22 @@ function ResourcesTable({ data }: { data: ResourceEntry[] }) {
               key={i}
               className="border-t border-border-subtle even:bg-bg-elevated/30 hover:bg-bg-elevated/50 transition-colors"
             >
-              <td className="px-4 py-3 text-text-primary font-mono text-xs max-w-[280px] truncate" title={entry.url ?? entry.resource ?? ""}>
-                {truncateUrl(entry.url ?? entry.resource ?? "--")}
+              <td className="px-4 py-3 text-text-primary font-mono text-xs max-w-[280px] truncate" title={entry.name ?? entry.url ?? entry.resource ?? ""}>
+                {truncateUrl(entry.name ?? entry.url ?? entry.resource ?? "--")}
               </td>
-              <td className="px-4 py-3 text-text-secondary text-xs">
-                <span className="inline-block px-2 py-0.5 rounded bg-bg-elevated text-text-primary font-mono text-xs">
-                  {entry.type ?? entry.resourceType ?? "--"}
+              <td className="px-4 py-3 text-right text-text-primary font-mono text-xs">
+                {(entry.calls ?? 0).toLocaleString()}
+              </td>
+              <td className="px-4 py-3 text-right text-text-primary font-mono text-xs">
+                {formatMs(entry.avgDuration)}
+              </td>
+              <td className="px-4 py-3 text-right text-text-primary font-mono text-xs">
+                {formatMs(entry.p95)}
+              </td>
+              <td className="px-4 py-3 text-right text-text-primary font-mono text-xs">
+                <span className={entry.errors && entry.errors > 0 ? "text-level-error" : ""}>
+                  {(entry.errors ?? 0).toLocaleString()}
                 </span>
-              </td>
-              <td className="px-4 py-3 text-right text-text-primary font-mono text-xs">
-                {formatMs(entry.avgDuration ?? entry.avgResponseTime)}
-              </td>
-              <td className="px-4 py-3 text-right text-text-primary font-mono text-xs">
-                {formatSize(entry.size ?? entry.transferSize)}
-              </td>
-              <td className="px-4 py-3 text-text-muted font-mono text-xs">
-                {entry.initiator ?? entry.initiatorType ?? "--"}
               </td>
             </tr>
           ))}
@@ -300,11 +375,6 @@ function ResourcesTable({ data }: { data: ResourceEntry[] }) {
       </table>
     </div>
   );
-}
-
-function formatSize(bytes: number | undefined | null): string {
-  if (bytes == null || isNaN(bytes)) return "--";
-  return formatBytes(bytes);
 }
 
 function EmptyTab({ message }: { message: string }) {
@@ -356,6 +426,21 @@ export default function PerformanceAnalyticsPage() {
     data: resourcesData,
     isLoading: resourcesLoading,
   } = useResourcePerformance(projectId, timeParams);
+
+  // Endpoint filter/sort state
+  const [epFilterText, setEpFilterText] = useState("");
+  const [epFilterMethod, setEpFilterMethod] = useState("all");
+  const [epSortBy, setEpSortBy] = useState("avgTime");
+  const [epSortDir, setEpSortDir] = useState<"asc" | "desc">("desc");
+
+  const handleEpSort = (col: string) => {
+    if (epSortBy === col) {
+      setEpSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setEpSortBy(col);
+      setEpSortDir("desc");
+    }
+  };
 
   // Anomaly data for chart overlays
   const { data: anomalyData } = useAnomalies(projectId, {
@@ -444,8 +529,8 @@ export default function PerformanceAnalyticsPage() {
 
   // Bar chart data for slowest endpoints
   const barChartData = endpointsList.slice(0, 10).map((ep) => ({
-    name: truncateUrl(ep.endpoint ?? ep.name ?? "--", 40),
-    avg: ep.avgTime ?? ep.avgResponseTime ?? 0,
+    name: truncateUrl(ep.url ?? ep.endpoint ?? ep.name ?? "--", 40),
+    avg: ep.avgDuration ?? ep.avgTime ?? 0,
   }));
 
   // ---------------------------------------------------------------------------
@@ -597,6 +682,11 @@ export default function PerformanceAnalyticsPage() {
               );
             }
 
+            // Collect unique methods for filter dropdown
+            const methods = Array.from(
+              new Set(endpointsList.map((e) => (e.method ?? "GET").toUpperCase()))
+            ).sort();
+
             return (
               <div className="space-y-6">
                 {barChartData.length > 0 && (
@@ -622,10 +712,43 @@ export default function PerformanceAnalyticsPage() {
                 )}
 
                 <div className="space-y-4">
-                  <h3 className="text-sm font-display font-semibold text-text-primary">
-                    Endpoint Details
-                  </h3>
-                  <EndpointsTable data={endpointsList} />
+                  <div className="flex items-center justify-between gap-4 flex-wrap">
+                    <h3 className="text-sm font-display font-semibold text-text-primary">
+                      Endpoint Details
+                    </h3>
+                    <div className="flex items-center gap-3">
+                      <div className="relative">
+                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-muted" />
+                        <Input
+                          placeholder="Filter endpoints..."
+                          value={epFilterText}
+                          onChange={(e) => setEpFilterText(e.target.value)}
+                          className="pl-8 h-8 w-52 bg-bg-elevated border-border-subtle text-text-primary text-xs"
+                        />
+                      </div>
+                      <Select value={epFilterMethod} onValueChange={setEpFilterMethod}>
+                        <SelectTrigger className="h-8 w-28 bg-bg-elevated border-border-subtle text-text-primary text-xs">
+                          <SelectValue placeholder="Method" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Methods</SelectItem>
+                          {methods.map((m) => (
+                            <SelectItem key={m} value={m}>
+                              {m}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <EndpointsTable
+                    data={endpointsList}
+                    filterText={epFilterText}
+                    filterMethod={epFilterMethod}
+                    sortBy={epSortBy}
+                    sortDir={epSortDir}
+                    onSort={handleEpSort}
+                  />
                 </div>
               </div>
             );

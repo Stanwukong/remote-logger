@@ -1,10 +1,18 @@
 "use client";
 
+import { useState } from "react";
 import { LogEntry } from "@/types/analytics";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
+import { Code, Copy, Check } from "lucide-react";
 import { SignalDot } from "@/components/shared/SignalDot";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface EnhancedLogListItemProps {
   log: LogEntry;
@@ -35,12 +43,47 @@ export function EnhancedLogListItem({
   isSelected,
   onSelect,
 }: EnhancedLogListItemProps) {
+  const [jsonDialogOpen, setJsonDialogOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
   const levelColor = LEVEL_COLORS[log.level as keyof typeof LEVEL_COLORS] || LEVEL_COLORS.info;
   const dotStatus = LEVEL_DOT_STATUS[log.level] || LEVEL_DOT_STATUS.info;
 
   const timeAgo = formatDistanceToNow(new Date(log.timestamp), { addSuffix: true });
 
+  const jsonString = JSON.stringify(log, null, 2);
+
+  const handleCopyJson = async () => {
+    await navigator.clipboard.writeText(jsonString);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
+    <>
+      <Dialog open={jsonDialogOpen} onOpenChange={setJsonDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] bg-bg-surface border-border-subtle">
+          <DialogHeader>
+            <DialogTitle className="text-text-primary font-display">Raw Log Entry</DialogTitle>
+          </DialogHeader>
+          <div className="relative">
+            <button
+              onClick={handleCopyJson}
+              className={cn(
+                "absolute top-2 right-2 p-1.5 rounded transition-colors",
+                "bg-bg-elevated hover:bg-bg-elevated/80 border border-border-subtle",
+                copied ? "text-status-ok" : "text-text-muted hover:text-text-primary"
+              )}
+              title="Copy JSON"
+            >
+              {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+            </button>
+            <pre className="overflow-auto max-h-[60vh] rounded-lg bg-bg-base border border-border-subtle p-4 text-sm">
+              <code className="text-text-primary font-mono whitespace-pre">{jsonString}</code>
+            </pre>
+          </div>
+        </DialogContent>
+      </Dialog>
     <div
       className={cn(
         "group relative px-4 py-3 cursor-pointer transition-all duration-200",
@@ -136,6 +179,24 @@ export function EnhancedLogListItem({
         </div>
       </div>
 
+      {/* View JSON button (hover) */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          setJsonDialogOpen(true);
+        }}
+        className={cn(
+          "absolute top-2 right-2 p-1.5 rounded transition-all duration-200",
+          "bg-bg-elevated/80 hover:bg-bg-elevated border border-border-subtle hover:border-signal/40",
+          "text-text-muted hover:text-signal",
+          "opacity-0 group-hover:opacity-100",
+          isSelected && "right-8"
+        )}
+        title="View JSON"
+      >
+        <Code className="h-3.5 w-3.5" />
+      </button>
+
       {/* Keyboard navigation indicator */}
       {isSelected && (
         <div className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-signal/60 font-mono">
@@ -143,5 +204,6 @@ export function EnhancedLogListItem({
         </div>
       )}
     </div>
+    </>
   );
 }

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Filter, X, Clock, Database, Tag, Activity, Save, Hash } from "lucide-react";
+import { Search, Filter, X, Clock, Database, Tag, Activity, Save, Hash, CalendarIcon } from "lucide-react";
+import { DateRange } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 
 export interface LogFilters {
   search: string;
@@ -22,6 +29,8 @@ export interface LogFilters {
   eventTypes: string[];
   timeRange?: "1h" | "24h" | "7d" | "30d" | "custom";
   release?: string;
+  customFrom?: string;
+  customTo?: string;
 }
 
 interface ObservatoryFilterBarProps {
@@ -70,6 +79,8 @@ export function ObservatoryFilterBar({
   onToggleLiveTail,
 }: ObservatoryFilterBarProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [customDateRange, setCustomDateRange] = useState<{ from?: Date; to?: Date }>({});
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const activeFiltersCount =
     filters.levels.length +
@@ -109,6 +120,8 @@ export function ObservatoryFilterBar({
   };
 
   const clearFilters = () => {
+    setCustomDateRange({});
+    setShowDatePicker(false);
     onFiltersChange({
       search: "",
       levels: [],
@@ -116,8 +129,25 @@ export function ObservatoryFilterBar({
       environments: [],
       eventTypes: [],
       release: "",
+      customFrom: undefined,
+      customTo: undefined,
     });
   };
+
+  const handleCustomDateSelect = (range: DateRange | undefined) => {
+    const newRange = { from: range?.from, to: range?.to };
+    setCustomDateRange(newRange);
+    if (range?.from && range?.to) {
+      onFiltersChange({
+        ...filters,
+        customFrom: range.from.toISOString(),
+        customTo: range.to.toISOString(),
+      });
+    }
+  };
+
+  const formatDateShort = (date: Date) =>
+    date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 
   return (
     <div className="space-y-3">
@@ -145,9 +175,20 @@ export function ObservatoryFilterBar({
         {/* Time Range Selector */}
         <Select
           value={filters.timeRange || ""}
-          onValueChange={(value) =>
-            onFiltersChange({ ...filters, timeRange: value as LogFilters["timeRange"] })
-          }
+          onValueChange={(value) => {
+            const newTimeRange = value as LogFilters["timeRange"];
+            if (newTimeRange === "custom") {
+              setShowDatePicker(true);
+            } else {
+              setShowDatePicker(false);
+              setCustomDateRange({});
+            }
+            onFiltersChange({
+              ...filters,
+              timeRange: newTimeRange,
+              ...(newTimeRange !== "custom" && { customFrom: undefined, customTo: undefined }),
+            });
+          }}
         >
           <SelectTrigger className="w-[180px] bg-bg-base border-border-faint">
             <Clock className="w-4 h-4 mr-2 text-text-muted" />
@@ -161,6 +202,58 @@ export function ObservatoryFilterBar({
             ))}
           </SelectContent>
         </Select>
+
+        {/* Custom Date Range Picker */}
+        {filters.timeRange === "custom" && (
+          <Popover open={showDatePicker} onOpenChange={setShowDatePicker}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className={cn(
+                  "border-border-faint gap-2",
+                  customDateRange.from && customDateRange.to && "border-signal/30 bg-signal/10"
+                )}
+              >
+                <CalendarIcon className="w-4 h-4 text-text-muted" />
+                {customDateRange.from && customDateRange.to ? (
+                  <span className="text-xs text-text-primary">
+                    {formatDateShort(customDateRange.from)} - {formatDateShort(customDateRange.to)}
+                  </span>
+                ) : (
+                  <span className="text-xs text-text-muted">Pick dates</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-auto p-0 bg-bg-surface border-border-subtle"
+              align="start"
+            >
+              <Calendar
+                mode="range"
+                selected={
+                  customDateRange.from
+                    ? { from: customDateRange.from, to: customDateRange.to }
+                    : undefined
+                }
+                onSelect={handleCustomDateSelect}
+                numberOfMonths={2}
+                disabled={{ after: new Date() }}
+                className="bg-bg-surface text-text-primary"
+                classNames={{
+                  day: "text-text-primary",
+                  caption_label: "text-text-primary",
+                  weekday: "text-text-muted",
+                  outside: "text-text-muted/50",
+                  range_start: "rounded-l-md bg-signal/20",
+                  range_end: "rounded-r-md bg-signal/20",
+                  range_middle: "bg-signal/10 rounded-none",
+                  today: "bg-bg-base text-signal rounded-md",
+                }}
+              />
+            </PopoverContent>
+          </Popover>
+        )}
 
         {/* Filters Toggle */}
         <Button

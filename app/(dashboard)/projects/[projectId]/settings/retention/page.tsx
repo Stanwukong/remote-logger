@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Clock, Loader2, Info, AlertTriangle } from "lucide-react";
-import { useProject, useUpdateProject } from "@/hooks/project.hooks";
+import { useProject, useApplyRetention } from "@/hooks/project.hooks";
 import { toast } from "sonner";
 
 const RETENTION_PRESETS = [
@@ -31,9 +31,11 @@ export default function RetentionSettingsPage() {
   const projectId =
     typeof params?.projectId === "string" ? params.projectId : "";
   const { data: projectData, isLoading } = useProject(projectId);
-  const updateProject = useUpdateProject();
+  const applyRetention = useApplyRetention();
 
-  const [retentionDays, setRetentionDays] = useState(30);
+  const [retentionDays, setRetentionDays] = useState(
+    (projectData?.project as any)?.retentionConfig?.retentionDays ?? 30
+  );
   const [autoCleanup, setAutoCleanup] = useState(true);
 
   if (isLoading) {
@@ -60,10 +62,10 @@ export default function RetentionSettingsPage() {
   }
 
   const handleSave = () => {
-    updateProject.mutate(
+    applyRetention.mutate(
       {
         projectId: project._id,
-        projectData: {} as any,
+        retentionConfig: { retentionDays },
       },
       {
         onSuccess: () => toast.success("Retention settings updated"),
@@ -194,9 +196,9 @@ export default function RetentionSettingsPage() {
         <Button
           variant="signal"
           onClick={handleSave}
-          disabled={updateProject.isPending}
+          disabled={applyRetention.isPending}
         >
-          {updateProject.isPending && (
+          {applyRetention.isPending && (
             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
           )}
           Save Retention Settings

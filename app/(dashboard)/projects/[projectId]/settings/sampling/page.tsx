@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { BarChart3, Loader2, Info } from "lucide-react";
-import { useProject, useUpdateProject } from "@/hooks/project.hooks";
+import { useProject, useUpdateSamplingConfig } from "@/hooks/project.hooks";
 import { toast } from "sonner";
 
 const LOG_LEVELS = ["trace", "debug", "info", "warn", "error", "fatal"] as const;
@@ -23,11 +23,13 @@ export default function SamplingSettingsPage() {
   const projectId =
     typeof params?.projectId === "string" ? params.projectId : "";
   const { data: projectData, isLoading } = useProject(projectId);
-  const updateProject = useUpdateProject();
+  const updateSampling = useUpdateSamplingConfig();
 
   const project = projectData?.project;
 
-  const [sampleRate, setSampleRate] = useState(100);
+  const [sampleRate, setSampleRate] = useState(
+    (project as any)?.samplingConfig?.value ?? 100
+  );
   const [perLevelSampling, setPerLevelSampling] = useState<
     Record<string, boolean>
   >({
@@ -61,13 +63,22 @@ export default function SamplingSettingsPage() {
   }
 
   const handleSave = () => {
-    updateProject.mutate(
+    const disabledLevels = Object.entries(perLevelSampling)
+      .filter(([, enabled]) => !enabled)
+      .map(([level]) => level);
+    const alwaysKeepLevels = LOG_LEVELS.filter(
+      (l) => !disabledLevels.includes(l)
+    ) as string[];
+
+    updateSampling.mutate(
       {
         projectId: project._id,
-        projectData: {
-          // samplingConfig will be passed as part of the update
-          // The backend handles the samplingConfig field on the project model
-        } as any,
+        samplingConfig: {
+          enabled: sampleRate < 100,
+          mode: "percentage" as const,
+          value: sampleRate,
+          alwaysKeepLevels,
+        },
       },
       {
         onSuccess: () => toast.success("Sampling configuration updated"),
@@ -215,9 +226,9 @@ export default function SamplingSettingsPage() {
         <Button
           variant="signal"
           onClick={handleSave}
-          disabled={updateProject.isPending}
+          disabled={updateSampling.isPending}
         >
-          {updateProject.isPending && (
+          {updateSampling.isPending && (
             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
           )}
           Save Sampling Config

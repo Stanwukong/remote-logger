@@ -324,7 +324,7 @@ export const projectService = {
    */
   updateRateLimit: async (
     projectId: string,
-    rateLimit: { maxRequests: number; windowInMinutes: number }
+    rateLimit: { maxRequestsPerMinute: number; burstLimit: number }
   ) => {
     try {
       const response = await apiClient.put<ApiResponse>(
@@ -345,21 +345,75 @@ export const projectService = {
   },
 
   /**
+   * Update a project's sampling configuration.
+   * @param projectId - The ID of the project.
+   * @param samplingConfig - The new sampling configuration.
+   */
+  updateSamplingConfig: async (
+    projectId: string,
+    samplingConfig: { enabled: boolean; mode: "rate" | "percentage"; value: number; alwaysKeepLevels?: string[] }
+  ) => {
+    try {
+      const response = await apiClient.put<ApiResponse>(
+        `/projects/${projectId}/sampling-config`,
+        samplingConfig
+      );
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to update sampling config",
+          response.status,
+          response.data.errors
+        );
+      }
+      return response.data.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  /**
+   * Apply retention policy to a project.
+   * @param projectId - The ID of the project.
+   * @param retentionConfig - The retention configuration.
+   */
+  applyRetention: async (
+    projectId: string,
+    retentionConfig: { retentionDays: number }
+  ) => {
+    try {
+      const response = await apiClient.post<ApiResponse>(
+        `/retention/${projectId}/apply`,
+        retentionConfig
+      );
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to update retention settings",
+          response.status,
+          response.data.errors
+        );
+      }
+      return response.data.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  /**
    * Get SDK configuration for a project.
    * @param projectId - The ID of the project.
    */
   getSDKConfig: async (projectId: string) => {
     try {
-      const response = await apiClient.get<SDKConfig>(
+      const response = await apiClient.get<ApiResponse<SDKConfig>>(
         `/projects/${projectId}/config`
       );
-      if (response.status !== 200) {
+      if (response.data.status === "error") {
         throw new ApiError(
-           "Failed to fetch SDK configuration",
+          response.data.message || "Failed to fetch SDK configuration",
           response.status,
         );
       }
-      return response.data;
+      return response.data.data;
     } catch (error) {
       handleApiError(error);
     }

@@ -29,6 +29,18 @@ import Link from "next/link";
 // Types
 // ---------------------------------------------------------------------------
 
+interface EnvironmentEntryRaw {
+  environment: string;
+  name?: string;
+  logCount?: number;
+  totalLogs?: number;
+  errorCount: number;
+  errorRate: number;
+  avgResponseTime?: number;
+  warnCount?: number;
+  lastActivity?: string;
+}
+
 interface EnvironmentEntry {
   environment: string;
   name?: string;
@@ -228,9 +240,15 @@ export default function EnvironmentsPage() {
     isLoading,
   } = useEnvironmentStats(projectId, timeParams);
 
-  const environments: EnvironmentEntry[] = Array.isArray(envStatsRaw)
+  const rawEnvironments: EnvironmentEntryRaw[] = Array.isArray(envStatsRaw)
     ? envStatsRaw
     : envStatsRaw?.environments ?? [];
+
+  // Normalize field names: backend returns `totalLogs`, frontend uses `logCount`
+  const environments: EnvironmentEntry[] = rawEnvironments.map((e) => ({
+    ...e,
+    logCount: e.logCount ?? e.totalLogs ?? 0,
+  }));
 
   // Derived metrics
   const totalEnvironments = environments.length;

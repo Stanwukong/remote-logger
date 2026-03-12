@@ -244,7 +244,7 @@ export default function SessionsPage() {
               const startTime = session.startTime || session.firstSeen || session.timestamp;
               const duration = session.duration ?? session.totalDuration ?? 0;
               const eventCount = session.eventCount ?? session.events ?? session.logCount ?? 0;
-              const pageCount = session.pageCount ?? session.pages ?? session.uniquePages ?? 0;
+              const pageCount = session.pageCount ?? session.pageViews ?? session.pages ?? session.uniquePages ?? 0;
               const device = session.device || detectDevice(session.userAgent);
               const isActive =
                 session.status === "active" ||
@@ -318,7 +318,7 @@ export default function SessionsPage() {
               const startTime = session.startTime || session.firstSeen || session.timestamp;
               const duration = session.duration ?? session.totalDuration ?? 0;
               const eventCount = session.eventCount ?? session.events ?? session.logCount ?? 0;
-              const pageCount = session.pageCount ?? session.pages ?? session.uniquePages ?? 0;
+              const pageCount = session.pageCount ?? session.pageViews ?? session.pages ?? session.uniquePages ?? 0;
               const device = session.device || detectDevice(session.userAgent);
               const hasErrors = session.hasErrors === true || (session.errorCount ?? 0) > 0;
               const isActive =

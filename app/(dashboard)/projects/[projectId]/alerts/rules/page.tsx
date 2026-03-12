@@ -11,6 +11,7 @@ import {
   useAISuggestions,
   useAcceptSuggestion,
 } from "@/hooks/aiSuggestion.hook";
+import { useProjects } from "@/hooks/project.hooks";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { SignalDot } from "@/components/shared/SignalDot";
 import { CreateAlertModal } from "@/components/alerts/CreateAlertModal";
@@ -114,6 +115,12 @@ export default function AlertRulesPage() {
   const params = useParams();
   const projectId = params.projectId as string;
   const router = useRouter();
+
+  const { data: projectsResponse } = useProjects();
+  const allProjects = useMemo(
+    () => (projectsResponse as any)?.data ?? [],
+    [projectsResponse]
+  );
 
   const [searchTerm, setSearchTerm] = useState("");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -597,7 +604,7 @@ export default function AlertRulesPage() {
       <CreateAlertModal
         open={isCreateModalOpen}
         onOpenChange={setIsCreateModalOpen}
-        projects={[]}
+        projects={allProjects}
         defaultProjectId={projectId}
       />
     </div>

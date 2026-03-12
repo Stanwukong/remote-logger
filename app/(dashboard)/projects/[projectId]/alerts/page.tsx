@@ -15,7 +15,7 @@ import {
   useAISuggestions,
   useAcceptSuggestion,
 } from "@/hooks/aiSuggestion.hook";
-import { useProject } from "@/hooks/project.hooks";
+import { useProject, useProjects } from "@/hooks/project.hooks";
 import { MetricCard } from "@/components/shared/MetricCard";
 import { SignalDot } from "@/components/shared/SignalDot";
 import { PageHeader } from "@/components/shared/PageHeader";
@@ -551,6 +551,12 @@ function RulesTab({ projectId }: { projectId: string }) {
   const [isCreateModalOpen, setIsCreateModalOpen] =
     useState(false);
 
+  const { data: projectsResponse } = useProjects();
+  const allProjects = useMemo(
+    () => (projectsResponse as any)?.data ?? [],
+    [projectsResponse]
+  );
+
   const { data: rulesData, isLoading } =
     useAlertRules(projectId);
   const rules: AlertRule[] = useMemo(
@@ -818,7 +824,7 @@ function RulesTab({ projectId }: { projectId: string }) {
       <CreateAlertModal
         open={isCreateModalOpen}
         onOpenChange={setIsCreateModalOpen}
-        projects={[]}
+        projects={allProjects}
         defaultProjectId={projectId}
       />
     </div>
