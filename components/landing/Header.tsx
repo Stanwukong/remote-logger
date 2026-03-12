@@ -8,8 +8,7 @@ import { Menu, X } from "lucide-react";
 
 const navItems = [
   { href: "#features", label: "Features" },
-  { href: "#integrations", label: "Integrations" },
-  { href: "#pricing", label: "Pricing" },
+  { href: "#how-it-works", label: "How It Works" },
   { href: "/docs", label: "Docs" },
 ];
 
@@ -72,16 +71,8 @@ export function Header() {
         {/* CTA Group — Desktop */}
         <div className="hidden md:flex items-center gap-3">
           <ThemeToggle />
-          <Button variant="ghost" size="sm" asChild>
-            <Link
-              href="/login"
-              className="text-sm text-text-secondary hover:text-text-primary"
-            >
-              Sign In
-            </Link>
-          </Button>
           <Button variant="signal" size="sm" asChild>
-            <Link href="/signup">Start Free</Link>
+            <a href="#waitlist">Join Waitlist</a>
           </Button>
         </div>
 
@@ -114,11 +105,8 @@ export function Header() {
                 <span className="text-sm text-text-secondary">Theme</span>
                 <ThemeToggle />
               </div>
-              <Button variant="ghost" className="w-full justify-center" asChild>
-                <Link href="/login">Sign In</Link>
-              </Button>
               <Button variant="signal" className="w-full justify-center" asChild>
-                <Link href="/signup">Start Free</Link>
+                <a href="#waitlist" onClick={() => setMobileOpen(false)}>Join Waitlist</a>
               </Button>
             </div>
           </div>

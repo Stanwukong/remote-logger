@@ -1,13 +1,7 @@
 import { Header } from "@/components/landing/Header";
-import { Hero } from "@/components/landing/Hero";
-import { ProblemSection } from "@/components/landing/ProblemSection";
-import { Features } from "@/components/landing/Features";
-import { StatsBar } from "@/components/landing/StatsBar";
-import { Integrations } from "@/components/landing/Integrations";
-import { Pricing } from "@/components/landing/Pricing";
-import { ClosingCTA } from "@/components/landing/ClosingCTA";
 import { Footer } from "@/components/landing/Footer";
 import { HeroCanvas } from "@/components/landing/HeroCanvas";
+import { WaitlistPage } from "@/components/waitlist/WaitlistPage";
 
 export default function LandingPage() {
   return (
@@ -27,13 +21,7 @@ export default function LandingPage() {
       {/* Page content */}
       <div className="relative z-10">
         <Header />
-        <Hero />
-        <ProblemSection />
-        <Features />
-        <StatsBar />
-        <Integrations />
-        <Pricing />
-        <ClosingCTA />
+        <WaitlistPage />
         <Footer />
       </div>
     </div>
