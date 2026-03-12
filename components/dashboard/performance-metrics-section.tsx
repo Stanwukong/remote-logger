@@ -8,7 +8,7 @@ export interface PerformanceMetricCardData {
   title: string;
   value: string;
   change: string;
-  changeColorClass: string; // Tailwind class for text color (e.g., 'text-green-600')
+  changeColorClass: string; // Tailwind class for text color (e.g., 'text-status-ok')
   icon: React.ElementType; // Lucide icon for the title
   trendIcon: React.ElementType; // Lucide icon for the trend indicator
   subtitle: string;
@@ -51,7 +51,7 @@ export const defaultPerformanceMetrics: PerformanceMetricCardData[] = [
     title: "Avg Response Time",
     value: "245ms",
     change: "-12ms",
-    changeColorClass: "text-green-600",
+    changeColorClass: "text-status-ok",
     icon: Timer,
     trendIcon: TrendingDown,
     subtitle: "from last hour",
@@ -61,7 +61,7 @@ export const defaultPerformanceMetrics: PerformanceMetricCardData[] = [
     title: "System Load",
     value: "68%",
     change: "+5%",
-    changeColorClass: "text-orange-600",
+    changeColorClass: "text-status-warn",
     icon: Cpu,
     trendIcon: TrendingUp,
     subtitle: "from last hour",
@@ -71,7 +71,7 @@ export const defaultPerformanceMetrics: PerformanceMetricCardData[] = [
     title: "Storage Used",
     value: "2.4GB",
     change: "+180MB",
-    changeColorClass: "text-blue-600",
+    changeColorClass: "text-data-info",
     icon: HardDrive,
     trendIcon: TrendingUp,
     subtitle: "today",
@@ -81,7 +81,7 @@ export const defaultPerformanceMetrics: PerformanceMetricCardData[] = [
     title: "Uptime",
     value: "99.9%",
     change: "30 days",
-    changeColorClass: "text-green-600",
+    changeColorClass: "text-status-ok",
     icon: Network,
     trendIcon: CheckCircle,
     subtitle: "no incidents",

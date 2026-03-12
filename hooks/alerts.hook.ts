@@ -432,3 +432,280 @@ export const useInvalidateAlerts = () => {
     queryClient.invalidateQueries({ queryKey: alertRuleQueryKeys.all });
   };
 };
+
+// === PHASE 2.2 HOOKS ===
+
+import {
+  escalationPolicyService,
+  maintenanceWindowService,
+  EscalationPolicy,
+  MaintenanceWindow,
+} from "@/services/alert.service";
+
+// Escalation Policy Query Keys
+export const escalationPolicyQueryKeys = {
+  all: ["escalation-policies"] as const,
+  list: (projectId: string) =>
+    [...escalationPolicyQueryKeys.all, "list", projectId] as const,
+  byId: (id: string) =>
+    [...escalationPolicyQueryKeys.all, "detail", id] as const,
+};
+
+// Maintenance Window Query Keys
+export const maintenanceWindowQueryKeys = {
+  all: ["maintenance-windows"] as const,
+  list: (projectId: string) =>
+    [...maintenanceWindowQueryKeys.all, "list", projectId] as const,
+  active: (projectId: string) =>
+    [...maintenanceWindowQueryKeys.all, "active", projectId] as const,
+  byId: (id: string) =>
+    [...maintenanceWindowQueryKeys.all, "detail", id] as const,
+};
+
+/**
+ * Test alert rule against recent logs
+ */
+export const useTestAlertRule = () => {
+  return useMutation({
+    mutationFn: ({ ruleId, limitLogs = 100 }: { ruleId: string; limitLogs?: number }) =>
+      alertRuleService.testRule(ruleId, limitLogs),
+  });
+};
+
+/**
+ * Snooze alert rule
+ */
+export const useSnoozeAlertRule = () => {
+  return useMutation({
+    mutationFn: ({ ruleId, durationMinutes }: { ruleId: string; durationMinutes: number }) =>
+      alertRuleService.snoozeRule(ruleId, durationMinutes),
+    onSuccess: (result, { ruleId }) => {
+      // Invalidate the specific rule and lists
+      queryClient.invalidateQueries({ queryKey: alertRuleQueryKeys.byId(ruleId) });
+      queryClient.invalidateQueries({ queryKey: alertRuleQueryKeys.all });
+    },
+  });
+};
+
+/**
+ * Get alert analytics
+ */
+export const useAlertAnalytics = (
+  projectId: string,
+  timeRange: "1d" | "7d" | "30d" = "7d"
+) => {
+  return useQuery({
+    queryKey: [...alertQueryKeys.all, "analytics", projectId, timeRange] as const,
+    queryFn: () => alertRuleService.getAnalytics(projectId, timeRange),
+    enabled: !!projectId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+/**
+ * Get alert timeline
+ */
+export const useAlertTimeline = (
+  projectId: string,
+  startDate: string,
+  endDate: string
+) => {
+  return useQuery({
+    queryKey: [...alertQueryKeys.all, "timeline", projectId, startDate, endDate] as const,
+    queryFn: () => alertRuleService.getTimeline(projectId, startDate, endDate),
+    enabled: !!projectId && !!startDate && !!endDate,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+  });
+};
+
+// === ESCALATION POLICY HOOKS ===
+
+/**
+ * Get escalation policies by project
+ */
+export const useEscalationPolicies = (projectId: string, isActive?: boolean) => {
+  return useQuery({
+    queryKey: escalationPolicyQueryKeys.list(projectId),
+    queryFn: () => escalationPolicyService.getByProject(projectId, isActive),
+    enabled: !!projectId,
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
+/**
+ * Get escalation policy by ID
+ */
+export const useEscalationPolicy = (id: string) => {
+  return useQuery({
+    queryKey: escalationPolicyQueryKeys.byId(id),
+    queryFn: () => escalationPolicyService.getById(id),
+    enabled: !!id,
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
+/**
+ * Create escalation policy
+ */
+export const useCreateEscalationPolicy = () => {
+  return useMutation({
+    mutationFn: (data: Omit<EscalationPolicy, "_id" | "createdAt" | "updatedAt">) =>
+      escalationPolicyService.create(data),
+    onSuccess: (result) => {
+      if (result?.data?.projectId) {
+        queryClient.invalidateQueries({
+          queryKey: escalationPolicyQueryKeys.list(result.data.projectId),
+        });
+      }
+    },
+  });
+};
+
+/**
+ * Update escalation policy
+ */
+export const useUpdateEscalationPolicy = () => {
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<EscalationPolicy> }) =>
+      escalationPolicyService.update(id, data),
+    onSuccess: (result, { id }) => {
+      queryClient.invalidateQueries({ queryKey: escalationPolicyQueryKeys.byId(id) });
+      if (result?.data?.projectId) {
+        queryClient.invalidateQueries({
+          queryKey: escalationPolicyQueryKeys.list(result.data.projectId),
+        });
+      }
+    },
+  });
+};
+
+/**
+ * Delete escalation policy
+ */
+export const useDeleteEscalationPolicy = () => {
+  return useMutation({
+    mutationFn: ({ id, hardDelete = false }: { id: string; hardDelete?: boolean }) =>
+      escalationPolicyService.delete(id, hardDelete),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: escalationPolicyQueryKeys.all });
+    },
+  });
+};
+
+// === MAINTENANCE WINDOW HOOKS ===
+
+/**
+ * Get maintenance windows by project
+ */
+export const useMaintenanceWindows = (
+  projectId: string,
+  isActive?: boolean,
+  includeExpired: boolean = false
+) => {
+  return useQuery({
+    queryKey: maintenanceWindowQueryKeys.list(projectId),
+    queryFn: () =>
+      maintenanceWindowService.getByProject(projectId, isActive, includeExpired),
+    enabled: !!projectId,
+    staleTime: 2 * 60 * 1000,
+  });
+};
+
+/**
+ * Get active maintenance windows
+ */
+export const useActiveMaintenanceWindows = (projectId: string) => {
+  return useQuery({
+    queryKey: maintenanceWindowQueryKeys.active(projectId),
+    queryFn: () => maintenanceWindowService.getActiveByProject(projectId),
+    enabled: !!projectId,
+    staleTime: 1 * 60 * 1000, // 1 minute (more frequent for active windows)
+    refetchInterval: 2 * 60 * 1000, // Refetch every 2 minutes
+  });
+};
+
+/**
+ * Get maintenance window by ID
+ */
+export const useMaintenanceWindow = (id: string) => {
+  return useQuery({
+    queryKey: maintenanceWindowQueryKeys.byId(id),
+    queryFn: () => maintenanceWindowService.getById(id),
+    enabled: !!id,
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
+/**
+ * Create maintenance window
+ */
+export const useCreateMaintenanceWindow = () => {
+  return useMutation({
+    mutationFn: (data: Omit<MaintenanceWindow, "_id" | "createdAt" | "updatedAt">) =>
+      maintenanceWindowService.create(data),
+    onSuccess: (result) => {
+      if (result?.data?.projectId) {
+        queryClient.invalidateQueries({
+          queryKey: maintenanceWindowQueryKeys.list(result.data.projectId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: maintenanceWindowQueryKeys.active(result.data.projectId),
+        });
+      }
+    },
+  });
+};
+
+/**
+ * Update maintenance window
+ */
+export const useUpdateMaintenanceWindow = () => {
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<MaintenanceWindow> }) =>
+      maintenanceWindowService.update(id, data),
+    onSuccess: (result, { id }) => {
+      queryClient.invalidateQueries({ queryKey: maintenanceWindowQueryKeys.byId(id) });
+      if (result?.data?.projectId) {
+        queryClient.invalidateQueries({
+          queryKey: maintenanceWindowQueryKeys.list(result.data.projectId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: maintenanceWindowQueryKeys.active(result.data.projectId),
+        });
+      }
+    },
+  });
+};
+
+/**
+ * Delete maintenance window
+ */
+export const useDeleteMaintenanceWindow = () => {
+  return useMutation({
+    mutationFn: ({ id, hardDelete = false }: { id: string; hardDelete?: boolean }) =>
+      maintenanceWindowService.delete(id, hardDelete),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: maintenanceWindowQueryKeys.all });
+    },
+  });
+};
+
+/**
+ * End maintenance window early
+ */
+export const useEndMaintenanceWindowEarly = () => {
+  return useMutation({
+    mutationFn: (id: string) => maintenanceWindowService.endEarly(id),
+    onSuccess: (result, id) => {
+      queryClient.invalidateQueries({ queryKey: maintenanceWindowQueryKeys.byId(id) });
+      if (result?.data?.projectId) {
+        queryClient.invalidateQueries({
+          queryKey: maintenanceWindowQueryKeys.list(result.data.projectId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: maintenanceWindowQueryKeys.active(result.data.projectId),
+        });
+      }
+    },
+  });
+};

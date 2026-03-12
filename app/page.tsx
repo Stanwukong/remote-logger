@@ -1,25 +1,29 @@
-import { Hero } from "@/components/landing/Hero"
-import { SocialProof } from "@/components/landing/SocialProof"
-import { Features } from "@/components/landing/Features"
-import { Integrations } from "@/components/landing/Integrations"
-// import { Pricing } from "@/components/landing/Pricing"
-// import { FAQ } from "@/components/landing/FAQ"
-import { Newsletter } from "@/components/landing/Newsletter"
-import { Footer } from "@/components/landing/Footer"
-import { Header } from "@/components/landing/Header"
+import { Header } from "@/components/landing/Header";
+import { Footer } from "@/components/landing/Footer";
+import { HeroCanvas } from "@/components/landing/HeroCanvas";
+import { WaitlistPage } from "@/components/waitlist/WaitlistPage";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      <Header />
-      <Hero />
-      <SocialProof />
-      <Features />
-      <Integrations />
-      {/* <Pricing /> */}
-      {/* <FAQ /> */}
-      <Newsletter />
-      <Footer />
+    <div
+      className="relative min-h-screen"
+      style={{
+        background:
+          "linear-gradient(180deg, var(--bg-void) 0%, var(--bg-base) 50%, var(--bg-void) 100%)",
+      }}
+    >
+      {/* Observatory background — full page */}
+      <div className="fixed inset-0 bg-dot-grid opacity-40 pointer-events-none" />
+      <div className="fixed inset-0 pointer-events-none">
+        <HeroCanvas />
+      </div>
+
+      {/* Page content */}
+      <div className="relative z-10">
+        <Header />
+        <WaitlistPage />
+        <Footer />
+      </div>
     </div>
-  )
+  );
 }

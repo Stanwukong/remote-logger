@@ -27,11 +27,8 @@ import {
   Activity,
   Database,
   Clock,
-  Star,
-  Filter,
   Download,
   RefreshCw,
-  Zap,
   TrendingUp,
   Bug,
   FileText,
@@ -41,6 +38,7 @@ import {
 import { useProjects } from "@/hooks/project.hooks"
 import { useLogs } from "@/hooks/log.hooks"
 import { LogEntry } from "@/types/analytics"
+import { SignalDot } from "@/components/shared/SignalDot"
 import { useDebounce } from "@/hooks/useDebounce"
 
 interface CommandPaletteProps {
@@ -69,8 +67,6 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const [searchTerm, setSearchTerm] = useState("")
   const [recentSearches, setRecentSearches] = useState<RecentSearch[]>([])
   const [favorites, setFavorites] = useState<FavoriteItem[]>([])
-  const [selectedTimeRange, setSelectedTimeRange] = useState("24h")
-  
   const debouncedSearchTerm = useDebounce(searchTerm, 300)
   
   // Fetch projects data
@@ -307,9 +303,9 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
       <CommandList className="max-h-[400px]">
         <CommandEmpty>
           <div className="flex flex-col items-center justify-center py-8 text-center">
-            <Search className="h-8 w-8 text-muted-foreground mb-2" />
-            <p className="text-sm text-muted-foreground">No results found</p>
-            <p className="text-xs text-muted-foreground mt-1">
+            <Search className="h-8 w-8 text-text-muted mb-2" />
+            <p className="text-sm text-text-muted">No results found</p>
+            <p className="text-xs text-text-muted mt-1">
               Try searching for projects, logs, or commands
             </p>
           </div>
@@ -328,7 +324,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                   className="flex items-center justify-between"
                 >
                   <div className="flex items-center">
-                    <Clock className="mr-2 h-4 w-4 text-muted-foreground" />
+                    <Clock className="mr-2 h-4 w-4 text-text-muted" />
                     <span>{search.query}</span>
                   </div>
                   <Badge variant="outline" className="text-xs">
@@ -359,10 +355,10 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                   <Icon className="mr-2 h-4 w-4" />
                   <div>
                     <span>{action.name}</span>
-                    <p className="text-xs text-muted-foreground">{action.description}</p>
+                    <p className="text-xs text-text-muted">{action.description}</p>
                   </div>
                 </div>
-                <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-bg-elevated border border-border-subtle px-1.5 font-mono text-[10px] font-medium text-text-muted opacity-100">
                   {action.shortcut}
                 </kbd>
               </CommandItem>
@@ -390,7 +386,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                   <Icon className="mr-2 h-4 w-4" />
                   <div>
                     <span>{item.name}</span>
-                    <p className="text-xs text-muted-foreground">{item.description}</p>
+                    <p className="text-xs text-text-muted">{item.description}</p>
                   </div>
                 </div>
               </CommandItem>
@@ -417,7 +413,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                     <FolderOpen className="mr-2 h-4 w-4" />
                     <div>
                       <span>{project.name}</span>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-text-muted">
                         {project.description || 'No description'}
                       </p>
                     </div>
@@ -426,11 +422,11 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                     <Badge variant="outline" className="text-xs">
                       {project.environment}
                     </Badge>
-                    {project.isActive ? (
-                      <div className="w-2 h-2 bg-green-500 rounded-full" />
-                    ) : (
-                      <div className="w-2 h-2 bg-gray-400 rounded-full" />
-                    )}
+                    <SignalDot
+                      status={project.isActive ? "ok" : "info"}
+                      size="sm"
+                      pulse={project.isActive}
+                    />
                   </div>
                 </CommandItem>
               ))}
@@ -459,7 +455,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                       <LevelIcon className="mr-2 h-4 w-4" />
                       <div className="flex flex-col items-start">
                         <span className="text-sm truncate max-w-[300px]">{log.message}</span>
-                        <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                        <div className="flex items-center space-x-2 text-xs text-text-muted">
                           <span>{log.service || 'unknown'}</span>
                           <span>•</span>
                           <span>{new Date(log.timestamp).toLocaleTimeString()}</span>
@@ -487,7 +483,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
             <Globe className="mr-2 h-4 w-4" />
             <div className="flex items-center justify-between w-full">
               <span>Documentation</span>
-              <ExternalLink className="h-3 w-3 text-muted-foreground" />
+              <ExternalLink className="h-3 w-3 text-text-muted" />
             </div>
           </CommandItem>
           <CommandItem onSelect={() => runCommand(() => window.open("/support", "_blank"), {
@@ -498,7 +494,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
             <Shield className="mr-2 h-4 w-4" />
             <div className="flex items-center justify-between w-full">
               <span>Support</span>
-              <ExternalLink className="h-3 w-3 text-muted-foreground" />
+              <ExternalLink className="h-3 w-3 text-text-muted" />
             </div>
           </CommandItem>
           <CommandItem onSelect={() => runCommand(() => window.open("/api-docs", "_blank"), {
@@ -509,7 +505,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
             <Code className="mr-2 h-4 w-4" />
             <div className="flex items-center justify-between w-full">
               <span>API Reference</span>
-              <ExternalLink className="h-3 w-3 text-muted-foreground" />
+              <ExternalLink className="h-3 w-3 text-text-muted" />
             </div>
           </CommandItem>
         </CommandGroup>

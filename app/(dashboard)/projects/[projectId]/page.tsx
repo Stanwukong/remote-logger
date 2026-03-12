@@ -1,233 +1,266 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { useCallback, useMemo, useState } from "react";
+import { useParams } from "next/navigation";
+import { useProject } from "@/hooks/project.hooks";
+import { useLogSummary } from "@/hooks/log.hooks";
+import { useAlertStats } from "@/hooks/alerts.hook";
+import { useApperioStore } from "@/store/apperio-store";
+import { PageHeader } from "@/components/shared/PageHeader";
+import { MetricCard } from "@/components/shared/MetricCard";
+import { SkeletonDashboard } from "@/components/shared/SkeletonDashboard";
+import { SignalDot } from "@/components/shared/SignalDot";
+import { GettingStartedWizard } from "@/components/shared/GettingStartedWizard";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {
-  LineChart,
-  Line,
+  Area,
+  AreaChart,
+  CartesianGrid,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
 } from "recharts";
-
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-
-import {
+  ScrollText,
+  Bug,
+  Gauge,
   Activity,
+  GitBranch,
   AlertTriangle,
-  Users,
-  FileText,
-  ArrowLeft,
+  Globe,
   Settings,
-  Eye,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  Info,
-  TrendingUp,
-  TrendingDown,
-  Clock,
-  Shield,
-  Zap,
-  Target,
-  Server,
-  Calendar,
-  BarChart3,
-  List,
+  ArrowRight,
 } from "lucide-react";
-import { useProject } from "@/hooks/project.hooks";
 import { Project } from "@/types/project.types";
+import { resolveTimeRangeParams } from "@/lib/format-utils";
 
-// Utility components
-const MetricCard = ({
-  title,
-  value,
-  subtitle,
-  icon: Icon,
-  trend,
-  variant = "default",
-}: {
-  title: string;
-  value: string | number;
-  subtitle?: string;
-  icon: any;
-  trend?: "up" | "down" | "neutral";
-  variant?: "default" | "success" | "warning" | "destructive";
-}) => {
-  const colorClasses = {
-    default: "text-blue-600",
-    success: "text-green-600",
-    warning: "text-yellow-600",
-    destructive: "text-red-600",
-  };
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 
-  const TrendIcon =
-    trend === "up" ? TrendingUp : trend === "down" ? TrendingDown : null;
+function formatNumber(n: number | undefined | null): string {
+  if (n === undefined || n === null) return "0";
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+  return n.toLocaleString();
+}
 
-  return (
-    <Card className="hover:shadow-md transition-shadow">
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <Icon className="h-5 w-5 text-muted-foreground" />
-          {TrendIcon && <TrendIcon className="h-4 w-4 text-muted-foreground" />}
-        </div>
-        <div className="space-y-1">
-          <p className="text-sm font-medium text-muted-foreground">{title}</p>
-          <p className={`text-3xl font-bold ${colorClasses[variant]}`}>
-            {value}
-          </p>
-          {subtitle && (
-            <p className="text-xs text-muted-foreground">{subtitle}</p>
-          )}
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
+function deriveHealthStatus(
+  analytics: Project["analytics"] | undefined
+): "ok" | "warn" | "danger" {
+  if (!analytics) return "ok";
+  const errorRate = analytics.overview?.errorRate ?? 0;
+  const perfHealth = analytics.performance?.health;
+  if (errorRate > 10 || perfHealth === "critical") return "danger";
+  if (errorRate > 5 || perfHealth === "warning" || perfHealth === "degraded") return "warn";
+  return "ok";
+}
 
-const HealthIndicator = ({
-  score,
-  status,
-}: {
-  score: number;
-  status: string;
-}) => {
-  const getHealthColor = (score: number) => {
-    if (score >= 80) return "bg-green-500";
-    if (score >= 60) return "bg-yellow-500";
-    return "bg-red-500";
-  };
+function formatHour(isoStr: string): string {
+  try {
+    const d = new Date(isoStr);
+    return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  } catch {
+    return isoStr;
+  }
+}
 
-  const getHealthVariant = (score: number) => {
-    if (score >= 80) return "default";
-    if (score >= 60) return "secondary";
-    return "destructive";
-  };
+function formatDate(dateStr: string): string {
+  try {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString([], { month: "short", day: "numeric" });
+  } catch {
+    return dateStr;
+  }
+}
 
-  return (
-    <div className="flex items-center gap-4">
-      <div className="relative w-16 h-16">
-        <svg className="w-16 h-16 transform -rotate-90">
-          <circle
-            cx="32"
-            cy="32"
-            r="28"
-            stroke="currentColor"
-            strokeWidth="4"
-            fill="none"
-            className="text-muted"
-          />
-          <circle
-            cx="32"
-            cy="32"
-            r="28"
-            stroke="currentColor"
-            strokeWidth="4"
-            fill="none"
-            strokeDasharray={`${2 * Math.PI * 28}`}
-            strokeDashoffset={`${2 * Math.PI * 28 * (1 - score / 100)}`}
-            className={getHealthColor(score).replace("bg-", "text-")}
-            strokeLinecap="round"
-          />
-        </svg>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-lg font-bold">{score}</span>
-        </div>
-      </div>
-      <div>
-        <p className="font-medium">Health Score</p>
-        <Badge variant={getHealthVariant(score) as any} className="capitalize">
-          {status}
-        </Badge>
-      </div>
-    </div>
-  );
-};
+// ---------------------------------------------------------------------------
+// Chart configs
+// ---------------------------------------------------------------------------
+
+const responseTimeChartConfig = {
+  avgResponseTime: {
+    label: "Avg Response Time",
+    color: "var(--signal)",
+  },
+} satisfies ChartConfig;
+
+const logVolumeChartConfig = {
+  totalLogs: {
+    label: "Total Logs",
+    color: "var(--data)",
+  },
+  errorLogs: {
+    label: "Errors",
+    color: "var(--status-danger)",
+  },
+} satisfies ChartConfig;
+
+// ---------------------------------------------------------------------------
+// Quick link definitions
+// ---------------------------------------------------------------------------
+
+const quickLinks = [
+  {
+    href: "logs",
+    icon: ScrollText,
+    label: "Logs",
+    description: "View and search log entries",
+    color: "text-signal",
+    bgColor: "bg-signal/10",
+  },
+  {
+    href: "errors",
+    icon: Bug,
+    label: "Errors",
+    description: "Track and debug errors",
+    color: "text-status-danger",
+    bgColor: "bg-status-danger/10",
+  },
+  {
+    href: "performance",
+    icon: Gauge,
+    label: "Performance",
+    description: "Response times and throughput",
+    color: "text-data-info",
+    bgColor: "bg-data-info/10",
+  },
+  {
+    href: "web-vitals",
+    icon: Globe,
+    label: "Web Vitals",
+    description: "Core web vitals metrics",
+    color: "text-data-purple",
+    bgColor: "bg-data-purple/10",
+  },
+  {
+    href: "traces",
+    icon: GitBranch,
+    label: "Traces",
+    description: "Distributed tracing",
+    color: "text-status-warn",
+    bgColor: "bg-status-warn/10",
+  },
+  {
+    href: "insights",
+    icon: Activity,
+    label: "Insights",
+    description: "AI-powered analysis",
+    color: "text-signal",
+    bgColor: "bg-signal/10",
+  },
+  {
+    href: "/alerts",
+    icon: AlertTriangle,
+    label: "Alerts",
+    description: "Alert rules and events",
+    color: "text-status-danger",
+    bgColor: "bg-status-danger/10",
+    absolute: true,
+  },
+  {
+    href: "settings",
+    icon: Settings,
+    label: "Settings",
+    description: "Project configuration",
+    color: "text-text-secondary",
+    bgColor: "bg-bg-elevated",
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
 
 export default function ProjectDashboard() {
   const params = useParams<{ projectId: string }>();
-  const router = useRouter();
-  const projectId =
-    typeof params?.projectId === "string" ? params.projectId : "";
-  const { data: projectData, isLoading } = useProject(projectId);
-  
+  const projectId = typeof params?.projectId === "string" ? params.projectId : "";
+  const selectedTimeRange = useApperioStore((s) => s.selectedTimeRange);
+  const customTimeRange = useApperioStore((s) => s.customTimeRange);
+  const timeRangeParams = useMemo(
+    () => resolveTimeRangeParams(selectedTimeRange, customTimeRange),
+    [selectedTimeRange, customTimeRange]
+  );
 
-  if (isLoading) {
+  const { data: projectData, isLoading: projectLoading } = useProject(projectId);
+  useLogSummary(projectId, timeRangeParams.timeRange);
+  const { data: alertStatsResponse } = useAlertStats(projectId);
+
+  // Getting-started wizard visibility
+  const [wizardDismissed, setWizardDismissed] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem(`wizard-dismissed-${projectId}`) === "true";
+  });
+
+  const handleDismissWizard = useCallback(() => {
+    localStorage.setItem(`wizard-dismissed-${projectId}`, "true");
+    setWizardDismissed(true);
+  }, [projectId]);
+
+  // Derived data (must be above early returns to satisfy rules-of-hooks)
+  const pData = projectData as Project | undefined;
+  const analytics = pData?.analytics;
+  const recommendations = pData?.recommendations;
+  const project = pData?.project;
+  const alertStats = alertStatsResponse?.data ?? null;
+
+  const healthStatus = deriveHealthStatus(analytics);
+  const logsToday = analytics?.overview?.recentLogs ?? 0;
+  const errorsToday = analytics?.overview?.errorLogs ?? 0;
+  const avgResponseTime = analytics?.responseTime?.current?.avgResponseTime ?? 0;
+  const perfHealth = analytics?.performance?.health ?? "unknown";
+  const healthScore = recommendations?.healthScore ?? 0;
+  const activeAlertCount = alertStats?.active ?? 0;
+
+  // Build response time chart data from responseTime.trends (hourly buckets)
+  const responseTimeData = useMemo(() => {
+    const trends = analytics?.responseTime?.trends ?? [];
+    return trends.map((point: any) => ({
+      hour: formatHour(point._id?.hour ?? point.timestamp ?? ""),
+      avgResponseTime: Math.round((point.avgResponseTime ?? 0) * 100) / 100,
+    }));
+  }, [analytics?.responseTime?.trends]);
+
+  // Build log volume chart data from trends.logs (daily buckets)
+  const logVolumeData = useMemo(() => {
+    const trends = analytics?.trends?.logs ?? [];
+    return trends.map((point: any) => ({
+      date: formatDate(point._id?.date ?? point.date ?? ""),
+      totalLogs: point.totalLogs ?? 0,
+      errorLogs: point.errorLogs ?? 0,
+    }));
+  }, [analytics?.trends?.logs]);
+
+  if (projectLoading) {
     return (
-      <div className="p-6 max-w-7xl mx-auto space-y-6">
-        <div className="h-8 w-48 bg-muted rounded animate-pulse" />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-32 bg-muted rounded animate-pulse" />
-          ))}
-        </div>
+      <div className="p-6 md:px-8 lg:p-10">
+        <SkeletonDashboard />
       </div>
     );
   }
-
-  if (!projectData || !projectData.project) {
-    return (
-      <div className="p-6 max-w-7xl mx-auto">
-        <div className="text-center py-16">
-          <h2 className="text-2xl font-bold">Project not found</h2>
-          <p className="text-muted-foreground mt-2">
-            The project you are looking for does not exist.
-          </p>
-          <div className="mt-4">
-            <Button asChild>
-              <Link href="/projects">Back to Projects</Link>
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  console.log("PROJECT DATA:", projectData);
-
-  const { project, analytics, recommendations } = projectData as Project;
-
-  const healthScore = recommendations.healthScore || 0;
-
-  const healthStatus =
-    healthScore >= 80
-      ? "excellent"
-      : healthScore >= 60
-      ? "good"
-      : healthScore >= 40
-      ? "fair"
-      : "poor";
-
-  
 
   if (!project) {
     return (
-      <div className="p-6 max-w-7xl mx-auto">
-        <div className="text-center py-16">
-          <h2 className="text-2xl font-bold">Project not found</h2>
-          <p className="text-muted-foreground mt-2">
-            The project you are looking for does not exist.
+      <div className="p-6 md:px-8 lg:p-10">
+        <div className="text-center py-16 bg-bg-surface border border-border-subtle rounded-lg">
+          <h2 className="text-2xl font-display font-bold text-text-primary">
+            Project not found
+          </h2>
+          <p className="text-text-secondary mt-2">
+            The project you are looking for does not exist or you do not have access.
           </p>
-          <div className="mt-4">
-            <Button asChild>
+          <div className="mt-6">
+            <Button variant="signal" asChild>
               <Link href="/projects">Back to Projects</Link>
-          </Button>
+            </Button>
           </div>
         </div>
       </div>
@@ -235,697 +268,347 @@ export default function ProjectDashboard() {
   }
 
   return (
-    <div className="min-h-screen">
-      <div className="p-6 space-y-8 max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/projects">
-                <ArrowLeft className="w-4 h-4" />
-              </Link>
-            </Button>
-            <div>
-              <div className="flex items-center gap-3">
-                <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-slate-900 to-slate-700 dark:from-slate-100 dark:to-slate-300 bg-clip-text text-transparent">
-                  {project.name}
-                </h1>
-                <Badge
-                  variant={!project.isActive ? "default" : "secondary"}
-                  className="text-sm"
-                >
-                  {!project.isActive ? "Active" : "Archived"}
-                </Badge>
-              </div>
-              <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
-                <Server className="w-4 h-4" />
-                <span>ID: {project._id}</span>
-                <span>•</span>
-                <Calendar className="w-4 h-4" />
-                <span>
-                  Created {new Date(project.createdAt).toLocaleDateString()}
-                </span>
-              </div>
-            </div>
+    <div className="p-6 md:px-8 lg:p-10 space-y-6">
+      {/* Page Header */}
+      <PageHeader
+        title={project.name}
+        description={project.description || "Project overview"}
+        badge={
+          <div className="flex items-center gap-2">
+            <SignalDot status={healthStatus} size="md" />
+            <Badge
+              variant={project.isActive ? "outline" : "secondary"}
+              className="text-xs"
+            >
+              {project.isActive ? "Active" : "Inactive"}
+            </Badge>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => router.push(`/projects/${project._id}/settings`)}>
+        }
+        actions={
+          <Button variant="outline" size="sm" asChild className="border-border-subtle">
+            <Link href={`/projects/${projectId}/settings`}>
               <Settings className="w-4 h-4 mr-2" />
               Settings
-            </Button>
-            <Button size="sm" asChild>
-              <Link href={`/logs?projectId=${project._id}`}>
-                <Eye className="w-4 h-4 mr-2" />
-                View Logs
-              </Link>
-            </Button>
-          </div>
-        </div>
+            </Link>
+          </Button>
+        }
+      />
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <MetricCard
-            title="Total Logs"
-            value={analytics.overview.totalLogs}
-            subtitle="Last 7 days"
-            icon={FileText}
-            trend="neutral"
-          />
+      {/* Getting Started Wizard — shown when project has no logs */}
+      {!wizardDismissed || project.logCount === 0 && (
+        <GettingStartedWizard
+          projectId={projectId}
+          apiKey={project.apiKey}
+          onDismiss={handleDismissWizard}
+        />
+      )}
 
-          <MetricCard
-            title="Error Rate"
-            value={`${analytics.overview.errorRate}%`}
-            subtitle={`${analytics.overview.errorLogs} errors`}
-            icon={AlertTriangle}
-            trend="up"
-            variant={
-              analytics.overview.errorRate > 10 ? "destructive" : "warning"
-            }
-          />
+      {/* Metric Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <MetricCard
+          label="Logs Today"
+          value={formatNumber(logsToday)}
+          icon={<ScrollText className="h-4 w-4" />}
+          subtitle={`${formatNumber(analytics?.overview?.totalLogs ?? 0)} total`}
+        />
+        <MetricCard
+          label="Errors Today"
+          value={formatNumber(errorsToday)}
+          icon={<Bug className="h-4 w-4" />}
+          variant={errorsToday > 0 ? "danger" : "default"}
+          subtitle={`${(analytics?.overview?.errorRate ?? 0).toFixed(1)}% error rate`}
+        />
+        <MetricCard
+          label="Performance"
+          value={avgResponseTime > 0 ? `${Math.round(avgResponseTime)}ms` : "N/A"}
+          icon={<Gauge className="h-4 w-4" />}
+          variant={
+            perfHealth === "critical" || perfHealth === "poor"
+              ? "danger"
+              : perfHealth === "warning" || perfHealth === "degraded"
+              ? "warning"
+              : "default"
+          }
+          subtitle={
+            avgResponseTime > 0
+              ? `Health: ${perfHealth}`
+              : `${formatNumber(analytics?.performance?.metrics?.totalRequests ?? 0)} requests tracked`
+          }
+        />
+        <MetricCard
+          label="Health Score"
+          value={`${healthScore}%`}
+          icon={<Activity className="h-4 w-4" />}
+          variant={
+            healthScore >= 80
+              ? "success"
+              : healthScore >= 50
+              ? "warning"
+              : "danger"
+          }
+          subtitle={
+            activeAlertCount > 0
+              ? `${activeAlertCount} active alert${activeAlertCount > 1 ? "s" : ""}`
+              : "No active alerts"
+          }
+        />
+      </div>
 
-          <MetricCard
-            title="Success Rate"
-            value={`${Math.round(
-              (analytics.performance.metrics.successfulRequests /
-                analytics.performance.metrics.totalRequests) *
-                100
-            )}%`}
-            subtitle={`${analytics.performance.metrics.successfulRequests}/${analytics.performance.metrics.totalRequests} requests`}
-            icon={CheckCircle}
-            variant="success"
-          />
+      {/* Charts: Response Time + Log Volume */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Response Time Chart */}
+        <Card className="bg-bg-surface border-border-subtle">
+          <CardHeader>
+            <CardTitle className="text-sm font-body text-text-secondary uppercase tracking-wider">
+              Response Time (Hourly)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {responseTimeData.length > 0 ? (
+              <ChartContainer config={responseTimeChartConfig} className="min-h-[220px] w-full">
+                <AreaChart
+                  accessibilityLayer
+                  data={responseTimeData}
+                  margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
+                >
+                  <defs>
+                    <linearGradient id="responseTimeGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="var(--color-avgResponseTime)" stopOpacity={0.3} />
+                      <stop offset="100%" stopColor="var(--color-avgResponseTime)" stopOpacity={0.02} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid vertical={false} strokeOpacity={0.06} />
+                  <XAxis
+                    dataKey="hour"
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fill: "var(--text-muted)", fontSize: 11 }}
+                    tickMargin={8}
+                  />
+                  <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fill: "var(--text-muted)", fontSize: 11 }}
+                    tickFormatter={(v) => `${v}ms`}
+                    width={52}
+                  />
+                  <ChartTooltip
+                    content={
+                      <ChartTooltipContent
+                        formatter={(value) => [`${Number(value).toFixed(1)}ms`]}
+                      />
+                    }
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="avgResponseTime"
+                    stroke="var(--color-avgResponseTime)"
+                    strokeWidth={2}
+                    fill="url(#responseTimeGrad)"
+                    dot={false}
+                    activeDot={{
+                      r: 4,
+                      strokeWidth: 2,
+                      stroke: "var(--color-avgResponseTime)",
+                      fill: "var(--bg-surface)",
+                    }}
+                  />
+                </AreaChart>
+              </ChartContainer>
+            ) : (
+              <div className="flex items-center justify-center min-h-[220px] text-text-muted text-sm">
+                Response time data will appear once network requests with latency are captured.
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
-          <MetricCard
-            title="Team Members"
-            value={project.teamMembers?.length ?? 0}
-            subtitle="Active contributors"
-            icon={Users}
-            trend="neutral"
-          />
-        </div>
+        {/* Log Volume Chart */}
+        <Card className="bg-bg-surface border-border-subtle">
+          <CardHeader>
+            <CardTitle className="text-sm font-body text-text-secondary uppercase tracking-wider">
+              Log Volume (Daily)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {logVolumeData.length > 0 ? (
+              <ChartContainer config={logVolumeChartConfig} className="min-h-[220px] w-full">
+                <AreaChart
+                  accessibilityLayer
+                  data={logVolumeData}
+                  margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
+                >
+                  <defs>
+                    <linearGradient id="totalLogsGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="var(--color-totalLogs)" stopOpacity={0.3} />
+                      <stop offset="100%" stopColor="var(--color-totalLogs)" stopOpacity={0.02} />
+                    </linearGradient>
+                    <linearGradient id="errorLogsGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="var(--color-errorLogs)" stopOpacity={0.3} />
+                      <stop offset="100%" stopColor="var(--color-errorLogs)" stopOpacity={0.02} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid vertical={false} strokeOpacity={0.06} />
+                  <XAxis
+                    dataKey="date"
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fill: "var(--text-muted)", fontSize: 11 }}
+                    tickMargin={8}
+                  />
+                  <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fill: "var(--text-muted)", fontSize: 11 }}
+                    width={40}
+                  />
+                  <ChartTooltip
+                    content={<ChartTooltipContent />}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="totalLogs"
+                    stroke="var(--color-totalLogs)"
+                    strokeWidth={2}
+                    fill="url(#totalLogsGrad)"
+                    dot={false}
+                    activeDot={{
+                      r: 4,
+                      strokeWidth: 2,
+                      stroke: "var(--color-totalLogs)",
+                      fill: "var(--bg-surface)",
+                    }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="errorLogs"
+                    stroke="var(--color-errorLogs)"
+                    strokeWidth={2}
+                    fill="url(#errorLogsGrad)"
+                    dot={false}
+                    activeDot={{
+                      r: 4,
+                      strokeWidth: 2,
+                      stroke: "var(--color-errorLogs)",
+                      fill: "var(--bg-surface)",
+                    }}
+                  />
+                </AreaChart>
+              </ChartContainer>
+            ) : (
+              <div className="flex items-center justify-center min-h-[220px] text-text-muted text-sm">
+                Log volume data will appear once logs are ingested.
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
 
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="errors">Errors</TabsTrigger>
-            <TabsTrigger value="performance">Performance</TabsTrigger>
-            <TabsTrigger value="usage">Usage</TabsTrigger>
-            <TabsTrigger value="recommendations">Actions</TabsTrigger>
-          </TabsList>
+      {/* Quick Links + Recent Alerts */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Quick Links Grid */}
+        <div className="lg:col-span-2">
+          <Card className="bg-bg-surface border-border-subtle">
+            <CardHeader>
+              <CardTitle className="text-sm font-body text-text-secondary uppercase tracking-wider">
+                Quick Navigation
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {quickLinks.map((link) => {
+                  const Icon = link.icon;
+                  const href = link.absolute
+                    ? link.href
+                    : `/projects/${projectId}/${link.href}`;
 
-          <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Health Overview */}
-              <Card className="lg:col-span-2">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Activity className="w-5 h-5" />
-                    System Health
-                  </CardTitle>
-                  <CardDescription>
-                    Overall system performance and reliability metrics
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <HealthIndicator
-                      score={healthScore}
-                      status={healthStatus}
-                    />
-                    <div className="text-right">
-                      <p className="text-sm text-muted-foreground">
-                        Last updated
-                      </p>
-                      <p className="text-sm font-medium">
-                        {new Date(
-                          analytics.overview.lastUpdated
-                        ).toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <div className="flex justify-between text-sm">
-                      <span>Error Rate</span>
-                      <span className="font-medium">
-                        {analytics.overview.errorRate}%
-                      </span>
-                    </div>
-                    <Progress
-                      value={analytics.overview.errorRate}
-                      className="h-2"
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Team */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Users className="w-5 h-5" />
-                    Team
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Owner</span>
-                      <Badge variant="outline">
-                        {project.teamMembers[0]?.role}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Avatar>
-                        <AvatarFallback>
-                          {(project.name?.[0] ?? "").toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm">Owner</p>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {project.ownerId.firstName +
-                            " " +
-                            project.ownerId.lastName}
+                  return (
+                    <Link
+                      key={link.label}
+                      href={href}
+                      className="group flex flex-col items-center gap-2 p-4 rounded-lg border border-border-subtle bg-bg-base hover:bg-bg-elevated hover:border-border-accent transition-all duration-200 text-center"
+                    >
+                      <div className={`size-10 rounded-lg ${link.bgColor} flex items-center justify-center`}>
+                        <Icon className={`size-5 ${link.color}`} />
+                      </div>
+                      <div>
+                        <p className="text-sm font-display font-semibold text-text-primary group-hover:text-signal transition-colors">
+                          {link.label}
+                        </p>
+                        <p className="text-xs text-text-muted mt-0.5 hidden sm:block">
+                          {link.description}
                         </p>
                       </div>
-                    </div>
-                    <div className="pt-2 space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span>Rate Limit</span>
-                        <span className="font-mono">
-                          {project.rateLimitConfig.maxRequestsPerMinute}/min
-                        </span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span>Burst Limit</span>
-                        <span className="font-mono">
-                          {project.rateLimitConfig.burstLimit}m
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                    </Link>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
-            {/* Service Breakdown */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Server className="w-5 h-5" />
-                    Service Activity
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {analytics.usage.serviceBreakdown.map((service) => (
-                      <div
-                        key={service._id}
-                        className="flex items-center justify-between p-3 border rounded-lg"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                          <div>
-                            <p className="font-medium text-sm">{service._id}</p>
-                            <p className="text-xs text-muted-foreground">
-                              Last active:{" "}
-                              {new Date(service.lastActivity).toLocaleString()}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-bold">{service.requestCount}</p>
-                          <p className="text-xs text-muted-foreground">
-                            requests
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5" />
-                    Environment Stats
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {analytics.usage.environmentBreakdown.map((env) => (
-                      <div key={env._id} className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Badge variant="secondary" className="capitalize">
-                              {env._id}
-                            </Badge>
-                          </div>
-                          <div className="text-right">
-                            <span className="font-bold">
-                              {env.requestCount}
-                            </span>
-                            <span className="text-sm text-muted-foreground ml-1">
-                              requests
-                            </span>
-                          </div>
-                        </div>
-                        <div className="space-y-1">
-                          <div className="flex justify-between text-xs">
-                            <span>Success Rate</span>
-                            <span>
-                              {Math.round(
-                                ((env.requestCount - env.errorCount) /
-                                  env.requestCount) *
-                                  100
-                              )}
-                              %
-                            </span>
-                          </div>
-                          <Progress
-                            value={
-                              ((env.requestCount - env.errorCount) /
-                                env.requestCount) *
-                              100
-                            }
-                            className="h-1"
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-        </TabsContent>
-
-          <TabsContent value="errors" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Error Analysis */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <AlertTriangle className="w-5 h-5" />
-                    Error Analysis
-                  </CardTitle>
-                  <CardDescription>Breakdown by severity level</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {analytics.errors.analysis.map((error, index) => {
-                      const config = {
-                        error: {
-                          color: "text-red-600",
-                          bg: "bg-red-50 border-red-200",
-                          icon: XCircle,
-                        },
-                        warn: {
-                          color: "text-yellow-600",
-                          bg: "bg-yellow-50 border-yellow-200",
-                          icon: AlertCircle,
-                        },
-                        fatal: {
-                          color: "text-red-800",
-                          bg: "bg-red-100 border-red-300",
-                          icon: XCircle,
-                        },
-                      }[error._id.level] || {
-                        color: "text-gray-600",
-                        bg: "bg-gray-50",
-                        icon: Info,
-                      };
-
-                      return (
-                        <div
-                          key={index}
-                          className={`p-4 rounded-lg border ${config.bg}`}
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-2">
-                              <config.icon className="h-4 w-4" />
-                              <span className="font-medium capitalize">
-                                {error._id.level}
-                              </span>
-                            </div>
-                            <Badge variant="outline" className={config.color}>
-                              {error.count} occurrences
-                            </Badge>
-                          </div>
-                          <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-                            <div>Service: {error._id.service}</div>
-                            <div>Environment: {error._id.environment}</div>
-                          </div>
-                          <p className="text-xs text-muted-foreground mt-2">
-                            Last:{" "}
-                            {new Date(error.lastOccurrence).toLocaleString()}
-                          </p>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Top Errors */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Target className="w-5 h-5" />
-                    Critical Issues
-                  </CardTitle>
-                  <CardDescription>
-                    Most frequent error patterns
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {analytics.errors.topErrors.map((error) => (
-                      <div
-                        key={error._id}
-                        className="p-4 border rounded-lg bg-red-50 border-red-200"
-                      >
-                        <div className="flex items-start justify-between mb-3">
-                          <h4 className="font-medium text-sm text-red-800">
-                            {error._id}
-                          </h4>
-                          <Badge variant="destructive" className="text-xs">
-                            {error.count} times
-                          </Badge>
-                        </div>
-                        <div className="space-y-2 text-xs">
-                          <div className="flex items-center gap-2">
-                            <span className="text-muted-foreground">
-                              Services:
-                            </span>
-                            {error.services.map((service) => (
-                              <Badge
-                                key={service}
-                                variant="outline"
-                                className="h-5"
-                              >
-                                {service}
-                              </Badge>
-                            ))}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-muted-foreground">
-                              Environments:
-                            </span>
-                            {error.environments.map((env) => (
-                              <Badge
-                                key={env}
-                                variant="secondary"
-                                className="h-5"
-                              >
-                                {env}
-                              </Badge>
-                            ))}
-                          </div>
-                          <p className="text-muted-foreground">
-                            Last seen:{" "}
-                            {new Date(error.lastSeen).toLocaleString()}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-        </TabsContent>
-
-          <TabsContent value="performance" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <MetricCard
-                title="Total Requests"
-                value={analytics.performance.metrics.totalRequests}
-                subtitle="Last period"
-                icon={Activity}
-              />
-
-              <MetricCard
-                title="Successful Requests"
-                value={analytics.performance.metrics.successfulRequests}
-                subtitle={`${Math.round(
-                  (analytics.performance.metrics.successfulRequests /
-                    analytics.performance.metrics.totalRequests) *
-                    100
-                )}% success rate`}
-                icon={CheckCircle}
-                variant="success"
-              />
-
-              <MetricCard
-                title="Average Response Time"
-                value={analytics.performance.metrics.avgResponseTime?.toFixed() ?? "N/A"}
-                subtitle="Needs attention"
-                icon={XCircle}
-                variant="destructive"
-              />
-
-              
-            </div>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Zap className="w-5 h-5" />
-                  Performance Insights
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <Alert
-                    variant={
-                      analytics.performance.health === "poor"
-                        ? "destructive"
-                        : "default"
-                    }
-                  >
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>
-                      System health is currently{" "}
-                      <strong>{analytics.performance.health}</strong> based on
-                      recent performance metrics.
-                    </AlertDescription>
-                  </Alert>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <h4 className="font-medium text-sm">Key Insights</h4>
-                      <ul className="space-y-1 text-sm text-muted-foreground">
-                        {analytics.usage.insights.map((insight, index) => (
-                          <li key={index} className="flex items-start gap-2">
-                            <div className="w-1 h-1 bg-blue-500 rounded-full mt-2 shrink-0"></div>
-                            {insight}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+        {/* Recent Alerts */}
+        <Card className="bg-bg-surface border-border-subtle">
+          <CardHeader className="flex-row items-center justify-between">
+            <CardTitle className="text-sm font-body text-text-secondary uppercase tracking-wider">
+              Alerts
+            </CardTitle>
+            <Link
+              href="/alerts"
+              className="text-xs text-signal hover:text-signal-bright transition-colors flex items-center gap-1"
+            >
+              View all <ArrowRight className="w-3 h-3" />
+            </Link>
+          </CardHeader>
+          <CardContent>
+            {activeAlertCount > 0 ? (
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 p-3 rounded-lg border border-border-subtle bg-bg-base">
+                  <SignalDot
+                    status={activeAlertCount > 5 ? "danger" : "warn"}
+                    size="md"
+                  />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-text-primary">
+                      {activeAlertCount} Active Alert{activeAlertCount > 1 ? "s" : ""}
+                    </p>
+                    <p className="text-xs text-text-muted mt-0.5">
+                      {alertStats?.bySeverity?.critical
+                        ? `${alertStats.bySeverity.critical} critical`
+                        : "No critical alerts"}
+                      {alertStats?.bySeverity?.warning
+                        ? ` / ${alertStats.bySeverity.warning} warning`
+                        : ""}
+                    </p>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
 
-            {/* Response Time Chart */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Clock className="w-5 h-5" />
-                  Average Response Time
-                </CardTitle>
-                <CardDescription>
-                  Historical trend of response times (in ms)
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart
-                    data={analytics.responseTime.history}
-                    margin={{
-                      top: 5,
-                      right: 30,
-                      left: 20,
-                      bottom: 5,
-                    }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip />
-                    <Line
-                      type="monotone"
-                      dataKey="avgResponseTime"
-                      stroke="#8884d8"
-                      strokeWidth={2}
-                      activeDot={{ r: 8 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-        </TabsContent>
-
-          <TabsContent value="usage" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Usage Patterns */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Clock className="w-5 h-5" />
-                    Usage Patterns
-                  </CardTitle>
-                  <CardDescription>
-                    Activity distribution and trends
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-medium text-sm">Peak Activity</h4>
-                        <Badge variant="outline" className="text-blue-600">
-                          16:00 Wed
-                        </Badge>
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        Highest traffic occurs during hour 16 on weekday 3
-                      </p>
-                    </div>
-
-                    {analytics.usage.insights.map((insight, index) => (
-                      <div
-                        key={index}
-                        className="flex items-start gap-2 text-sm"
-                      >
-                        <Info className="h-4 w-4 text-blue-500 shrink-0 mt-0.5" />
-                        <span className="text-muted-foreground">{insight}</span>
-                      </div>
-                    ))}
+                {/* Stats summary */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="p-2 rounded border border-border-subtle bg-bg-base text-center">
+                    <p className="text-lg font-display font-bold text-text-primary">
+                      {alertStats?.acknowledged ?? 0}
+                    </p>
+                    <p className="text-xs text-text-muted">Acknowledged</p>
                   </div>
-                </CardContent>
-              </Card>
-
-              {/* Configuration */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Settings className="w-5 h-5" />
-                    Configuration
-                  </CardTitle>
-                  <CardDescription>Current project settings</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium">API Key</span>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-7 text-xs"
-                        >
-                          Regenerate
-                        </Button>
-                      </div>
-                      <div className="p-2 bg-muted rounded font-mono text-xs break-all">
-                        {project.apiKey}
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-medium">Rate Limiting</h4>
-                      <div className="grid grid-cols-2 gap-2 text-sm">
-                        <div className="p-2 border rounded text-center">
-                          <div className="font-bold">
-                            {project.rateLimitConfig?.maxRequestsPerMinute}
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            per minute
-                          </div>
-                        </div>
-                        <div className="p-2 border rounded text-center">
-                          <div className="font-bold">
-                            {project.rateLimitConfig?.burstLimit}
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            window (mins)
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                  <div className="p-2 rounded border border-border-subtle bg-bg-base text-center">
+                    <p className="text-lg font-display font-bold text-text-primary">
+                      {alertStats?.resolved ?? 0}
+                    </p>
+                    <p className="text-xs text-text-muted">Resolved</p>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
-        </TabsContent>
-
-          <TabsContent value="recommendations" className="space-y-6">
-            <div className="grid grid-cols-1 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Shield className="w-5 h-5" />
-                    Action Items
-                    <Badge
-                      variant={
-                        recommendations.priority === "high"
-                          ? "destructive"
-                          : "secondary"
-                      }
-                    >
-                      {recommendations.priority} priority
-                    </Badge>
-                  </CardTitle>
-                  <CardDescription>
-                    Recommended improvements based on current metrics
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {Object.entries(recommendations.categories).map(
-                      ([category, items]) => (
-                        <div key={category} className="space-y-3">
-                          <h4 className="font-medium text-sm capitalize flex items-center gap-2">
-                            {category === "performance" && (
-                              <Zap className="w-4 h-4" />
-                            )}
-                            {category === "reliability" && (
-                              <Shield className="w-4 h-4" />
-                            )}
-                            {category === "optimization" && (
-                              <TrendingUp className="w-4 h-4" />
-                            )}
-                            {category === "monitoring" && (
-                              <Activity className="w-4 h-4" />
-                            )}
-                            {category}
-                          </h4>
-                          <ul className="space-y-2">
-                            {items.map((item, index) => (
-                              <li
-                                key={index}
-                                className="flex items-start gap-3 p-3 border rounded-lg hover:bg-muted/50 transition-colors"
-                              >
-                                <List className="h-4 w-4 text-muted-foreground mt-1 shrink-0" />
-                                <span className="text-sm leading-relaxed">
-                                  {item}
-                                </span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-        </TabsContent>
-      </Tabs>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-40 text-center">
+                <SignalDot status="ok" size="lg" className="mb-3" />
+                <p className="text-sm text-text-muted">
+                  No active alerts for this project.
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

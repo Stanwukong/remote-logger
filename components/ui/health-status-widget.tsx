@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { 
-  type LucideIcon, 
-  CheckCircle, 
-  AlertTriangle, 
+import {
+  type LucideIcon,
+  CheckCircle,
+  AlertTriangle,
   XCircle,
   HelpCircle,
   TrendingUp,
@@ -21,7 +21,6 @@ export interface HealthStatusWidgetProps {
 
 export function HealthStatusWidget({
   status,
-  grade,
   message,
   details,
 }: HealthStatusWidgetProps) {
@@ -42,19 +41,21 @@ export function HealthStatusWidget({
   const getStatusColor = () => {
     switch (status) {
       case "healthy":
-        return "text-green-600"
+      case "excellent":
+        return "text-status-ok"
       case "warning":
-        return "text-yellow-600"
+        return "text-status-warn"
       case "critical":
-        return "text-red-600"
+        return "text-status-danger"
       default:
-        return "text-muted-foreground"
+        return "text-text-muted"
     }
   }
 
   const getStatusBadgeVariant = () => {
     switch (status) {
       case "healthy":
+      case "excellent":
         return "default"
       case "warning":
         return "secondary"
@@ -69,6 +70,8 @@ export function HealthStatusWidget({
     switch (status) {
       case "healthy":
         return "Healthy"
+      case "excellent":
+        return "Excellent"
       case "warning":
         return "Warning"
       case "critical":
@@ -81,6 +84,7 @@ export function HealthStatusWidget({
   const getTrendIcon = () => {
     switch (status) {
       case "healthy":
+      case "excellent":
         return TrendingUp
       case "critical":
         return TrendingDown
@@ -89,44 +93,29 @@ export function HealthStatusWidget({
     }
   }
 
-  const getTrendColor = () => {
-    switch (status) {
-      case "healthy":
-        return "text-green-600"
-      case "warning":
-        return "text-yellow-600"
-      case "critical":
-        return "text-red-600"
-      default:
-        return "text-muted-foreground"
-    }
-  }
-
   const StatusIcon = getStatusIcon()
   const TrendIcon = getTrendIcon()
-
-  console.log(grade)
 
   return (
     <Card className="hover:shadow-md transition-shadow w-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">System Health</CardTitle>
+        <CardTitle className="text-sm font-medium text-text-secondary">System Health</CardTitle>
         <StatusIcon
           className={cn("h-4 w-4", getStatusColor())}
         />
       </CardHeader>
       <CardContent>
         <div className="flex items-center space-x-2 mb-2">
-          <div className="text-2xl font-bold">{getStatusText()}</div>
+          <div className="text-2xl font-bold font-mono text-text-primary">{getStatusText()}</div>
           <Badge variant={getStatusBadgeVariant()} className="text-xs">
             {status && status.toUpperCase()}
           </Badge>
         </div>
         <div className="flex items-center space-x-1 text-xs mt-1">
-          <TrendIcon className={cn("h-3 w-3", getTrendColor())} />
-          <span className={getTrendColor()}>{message}</span>
+          <TrendIcon className={cn("h-3 w-3", getStatusColor())} />
+          <span className={getStatusColor()}>{message}</span>
         </div>
-        {details && <p className="text-xs text-muted-foreground mt-2">{details}</p>}
+        {details && <p className="text-xs text-text-muted mt-2">{details}</p>}
       </CardContent>
     </Card>
   )

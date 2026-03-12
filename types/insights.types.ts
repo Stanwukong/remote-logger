@@ -42,3 +42,32 @@ export interface InsightsFilters {
   timeRange?: number;
   includeRecommendations?: boolean;
 }
+
+// ============================================
+// AI Insights Types
+// ============================================
+
+export interface RootCauseAnalysis {
+  analysis: string;
+  source: "ai" | "heuristic";
+  confidence: "high" | "medium" | "low";
+}
+
+export interface AskQuestionResponse {
+  answer: string;
+  source: "ai" | "heuristic";
+}
+
+export interface OptimizationSuggestion {
+  title: string;
+  description: string;
+  priority: string;
+  source: "ai" | "heuristic";
+}
+
+export interface EnrichedInsights {
+  insights: ProjectInsights;
+  aiSummary: string | null;
+  anomalyCount: number;
+  source: "ai" | "heuristic";
+}

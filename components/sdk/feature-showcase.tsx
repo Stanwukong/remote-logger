@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Card,
   CardContent,
@@ -8,114 +10,144 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Search,
-  Filter,
-  Bell,
-  BarChart3,
-  Shield,
-  Zap,
-  Database,
-  Clock,
+  ShieldCheck,
+  Wifi,
+  WifiOff,
+  Shrink,
+  HeartPulse,
+  Repeat2,
+  Radar,
+  Settings,
+  Sparkles,
+  CheckCircle2,
 } from "lucide-react";
 import { CodeBlock } from "./code-block";
 
 export function FeatureShowcase() {
   return (
-    <Tabs
-      defaultValue="search"
-      className="w-full border-2 rounded-xl border-amber-400"
-    >
-      <p className="text-center w-full text-amber-600 animate-pulse text-xs sm:text-sm px-4 py-2">IN DEVELOPMENT</p>
-      <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 max-w-full mx-auto mb-6 sm:mb-8 gap-1 px-2 sm:px-4">
-        <TabsTrigger value="search" className="text-xs sm:text-sm py-2 sm:py-3 px-2">
-          <span className="hidden sm:inline">Search & Filter</span>
-          <span className="sm:hidden">Search</span>
+    <Tabs defaultValue="circuit-breaker" className="w-full">
+      <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 max-w-3xl mx-auto mb-8 gap-1 bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm">
+        <TabsTrigger
+          value="circuit-breaker"
+          className="text-xs sm:text-sm py-2.5 data-[state=active]:bg-signal/10 data-[state=active]:text-signal transition-all duration-200"
+        >
+          <ShieldCheck className="w-3.5 h-3.5 mr-1.5 hidden sm:inline-block" />
+          Circuit Breaker
         </TabsTrigger>
-        <TabsTrigger value="alerts" className="text-xs sm:text-sm py-2 sm:py-3 px-2">
-          <span className="hidden sm:inline">Smart Alerts</span>
-          <span className="sm:hidden">Alerts</span>
+        <TabsTrigger
+          value="offline"
+          className="text-xs sm:text-sm py-2.5 data-[state=active]:bg-signal/10 data-[state=active]:text-signal transition-all duration-200"
+        >
+          <WifiOff className="w-3.5 h-3.5 mr-1.5 hidden sm:inline-block" />
+          Offline Queue
         </TabsTrigger>
-        <TabsTrigger value="analytics" className="text-xs sm:text-sm py-2 sm:py-3 px-2">
-          Analytics
+        <TabsTrigger
+          value="compression"
+          className="text-xs sm:text-sm py-2.5 data-[state=active]:bg-signal/10 data-[state=active]:text-signal transition-all duration-200"
+        >
+          <Shrink className="w-3.5 h-3.5 mr-1.5 hidden sm:inline-block" />
+          Compression
         </TabsTrigger>
-        <TabsTrigger value="performance" className="text-xs sm:text-sm py-2 sm:py-3 px-2">
-          Performance
+        <TabsTrigger
+          value="health"
+          className="text-xs sm:text-sm py-2.5 data-[state=active]:bg-signal/10 data-[state=active]:text-signal transition-all duration-200"
+        >
+          <HeartPulse className="w-3.5 h-3.5 mr-1.5 hidden sm:inline-block" />
+          Health Metrics
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="search" className="space-y-6 sm:space-y-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center space-x-2">
-                <Search className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 flex-shrink-0" />
-                <span className="text-sm sm:text-base">Advanced Search</span>
+      {/* Circuit Breaker */}
+      <TabsContent value="circuit-breaker" className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-text-primary font-display">
+                <div className="w-8 h-8 bg-signal/10 rounded-lg flex items-center justify-center">
+                  <ShieldCheck className="w-4 h-4 text-signal" />
+                </div>
+                Circuit Breaker Pattern
               </CardTitle>
-              <CardDescription className="text-xs sm:text-sm">
-                Powerful query language with full-text search and filters
+              <CardDescription className="text-text-secondary">
+                Protects your app when the API is unreachable. Automatically stops sending,
+                tests recovery, and resumes when healthy.
               </CardDescription>
             </CardHeader>
-            <CardContent className="pt-0">
-              <div className="space-y-4">
-                <div>
-                  <h4 className="font-semibold text-xs sm:text-sm mb-2">
-                    Full-text Search
-                  </h4>
-                  <CodeBlock
-                    language="text"
-                    code='error AND database AND "connection timeout"'
-                    showCopy={false}
-                  />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-xs sm:text-sm mb-2">
-                    Field-specific Queries
-                  </h4>
-                  <CodeBlock
-                    language="text"
-                    code="level:error service:api-server userId:123"
-                    showCopy={false}
-                  />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-xs sm:text-sm mb-2">
-                    Time Range Filters
-                  </h4>
-                  <CodeBlock
-                    language="text"
-                    code="timestamp:[2024-01-01 TO 2024-01-31] AND level:warn"
-                    showCopy={false}
-                  />
-                </div>
-              </div>
+            <CardContent>
+              <CodeBlock
+                language="typescript"
+                code={`const logger = new Apperio({
+  apiKey: "your-api-key",
+  projectId: "your-project-id",
+
+  // Circuit breaker configuration
+  circuitBreaker: {
+    failureThreshold: 5,   // Open after 5 failures
+    resetTimeout: 30000,   // Try again after 30s
+    halfOpenRequests: 1,   // Test with 1 request
+  },
+});
+
+// SDK handles state transitions automatically:
+// CLOSED  -> normal operation, sending logs
+// OPEN    -> API failing, logs buffered locally
+// HALF_OPEN -> testing if API recovered`}
+                showCopy
+                title="circuit-breaker.ts"
+              />
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center space-x-2">
-                <Filter className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0" />
-                <span className="text-sm sm:text-base">Smart Filtering</span>
+          <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
+            <CardHeader>
+              <CardTitle className="text-text-primary font-display text-base">
+                State Machine
               </CardTitle>
-              <CardDescription className="text-xs sm:text-sm">
-                Filter logs by any field with autocomplete suggestions
-              </CardDescription>
             </CardHeader>
-            <CardContent className="pt-0">
+            <CardContent className="space-y-4">
+              {/* Visual state diagram */}
               <div className="space-y-3">
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline" className="text-xs">level:error</Badge>
-                  <Badge variant="outline" className="text-xs">service:auth</Badge>
-                  <Badge variant="outline" className="text-xs">environment:prod</Badge>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="secondary" className="text-xs">userId:123</Badge>
-                  <Badge variant="secondary" className="text-xs">requestId:req_abc</Badge>
-                  <Badge variant="secondary" className="text-xs">region:us-east-1</Badge>
-                </div>
-                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                  Combine multiple filters with AND/OR logic. Save frequently
-                  used filter combinations.
+                {[
+                  {
+                    state: "CLOSED",
+                    desc: "Normal operation. Logs sent to API. Failure counter tracks errors.",
+                    color: "bg-status-ok/10 border-status-ok/30 text-status-ok",
+                    dot: "bg-status-ok",
+                  },
+                  {
+                    state: "OPEN",
+                    desc: "API unreachable. Logs buffered in memory. No requests sent until timeout.",
+                    color: "bg-status-danger/10 border-status-danger/30 text-status-danger",
+                    dot: "bg-status-danger",
+                  },
+                  {
+                    state: "HALF_OPEN",
+                    desc: "Testing recovery. One probe request sent. Success closes, failure reopens.",
+                    color: "bg-status-warn/10 border-status-warn/30 text-status-warn",
+                    dot: "bg-status-warn",
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.state}
+                    className={`p-3 rounded-lg border ${item.color}`}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className={`w-2 h-2 rounded-full ${item.dot}`} />
+                      <span className="font-mono text-sm font-semibold">
+                        {item.state}
+                      </span>
+                    </div>
+                    <p className="text-xs text-text-secondary leading-relaxed">
+                      {item.desc}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-2 pt-2">
+                <Repeat2 className="w-4 h-4 text-text-muted" />
+                <p className="text-xs text-text-muted">
+                  Transitions are automatic. Zero developer intervention needed.
                 </p>
               </div>
             </CardContent>
@@ -123,279 +155,336 @@ export function FeatureShowcase() {
         </div>
       </TabsContent>
 
-      <TabsContent value="alerts" className="space-y-6 sm:space-y-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center space-x-2">
-                <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0" />
-                <span className="text-sm sm:text-base">Intelligent Alerts</span>
+      {/* Offline Queue */}
+      <TabsContent value="offline" className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-text-primary font-display">
+                <div className="w-8 h-8 bg-data/10 rounded-lg flex items-center justify-center">
+                  <WifiOff className="w-4 h-4 text-data" />
+                </div>
+                Offline Queue
               </CardTitle>
-              <CardDescription className="text-xs sm:text-sm">
-                ML-powered anomaly detection and custom thresholds
+              <CardDescription className="text-text-secondary">
+                Detects offline state, queues logs in memory with priority-based eviction,
+                and auto-retries when connection is restored.
               </CardDescription>
             </CardHeader>
-            <CardContent className="pt-0">
+            <CardContent>
               <CodeBlock
-                language="yaml"
-                code={`# Alert Configuration
-name: "High Error Rate"
-condition:
-  query: "level:error"
-  threshold: 10
-  window: "5m"
-  
-# Anomaly Detection
-anomaly_detection:
-  enabled: true
-  sensitivity: "medium"
-  baseline_period: "7d"
-  
-# Notifications
-notifications:
-  - type: "slack"
-    channel: "#alerts"
-  - type: "email"
-    recipients: ["team@company.com"]
-  - type: "webhook"
-    url: "https://api.pagerduty.com/webhook"`}
+                language="typescript"
+                code={`const logger = new Apperio({
+  apiKey: "your-api-key",
+  projectId: "your-project-id",
+
+  // Offline queue configuration
+  offlineQueue: {
+    maxSize: 500,         // Max queued logs
+    priorityEviction: true, // Keep errors, drop debug
+  },
+});
+
+// When offline:
+// 1. Logs are queued in memory
+// 2. Priority: fatal > error > warn > info > debug > trace
+// 3. When queue is full, lowest priority logs are evicted
+// 4. On reconnection, queued logs are flushed automatically`}
                 showCopy
-                title="alert-config.yml"
+                title="offline-queue.ts"
               />
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center space-x-2">
-                <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 flex-shrink-0" />
-                <span className="text-sm sm:text-base">Multi-Channel Notifications</span>
+          <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
+            <CardHeader>
+              <CardTitle className="text-text-primary font-display text-base">
+                How It Works
               </CardTitle>
-              <CardDescription className="text-xs sm:text-sm">
-                Send alerts to Slack, email, webhooks, and more
-              </CardDescription>
             </CardHeader>
-            <CardContent className="pt-0">
-              <div className="space-y-3 sm:space-y-4">
-                <div className="flex items-center space-x-3 p-2 sm:p-3 border rounded-lg">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <span className="text-green-500 font-bold text-xs sm:text-sm">S</span>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h4 className="font-semibold text-xs sm:text-sm">Slack Integration</h4>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      Real-time alerts to your team channels
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3 p-2 sm:p-3 border rounded-lg">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <span className="text-blue-500 font-bold text-xs sm:text-sm">@</span>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h4 className="font-semibold text-xs sm:text-sm">
-                      Email Notifications
-                    </h4>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      Customizable email templates
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3 p-2 sm:p-3 border rounded-lg">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <span className="text-orange-500 font-bold text-xs sm:text-sm">W</span>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h4 className="font-semibold text-xs sm:text-sm">Webhooks</h4>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      Integrate with PagerDuty, Opsgenie, etc.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </TabsContent>
-
-      <TabsContent value="analytics" className="space-y-6 sm:space-y-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center space-x-2">
-                <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 flex-shrink-0" />
-                <span className="text-sm sm:text-base">Real-time Analytics</span>
-              </CardTitle>
-              <CardDescription className="text-xs sm:text-sm">
-                Comprehensive metrics and trend analysis
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                  <div className="text-center p-2 sm:p-3 bg-muted/30 rounded-lg">
-                    <div className="text-lg sm:text-2xl font-bold text-blue-500">1.2M</div>
-                    <div className="text-xs text-muted-foreground">
-                      Logs Today
-                    </div>
-                  </div>
-                  <div className="text-center p-2 sm:p-3 bg-muted/30 rounded-lg">
-                    <div className="text-lg sm:text-2xl font-bold text-red-500">23</div>
-                    <div className="text-xs text-muted-foreground">
-                      Active Errors
-                    </div>
-                  </div>
-                </div>
-                <div className="h-20 sm:h-24 bg-muted/30 rounded-lg flex items-end justify-center space-x-1 p-2 sm:p-4">
-                  {[40, 60, 30, 80, 45, 70, 55, 90, 35, 65].map(
-                    (height, index) => (
-                      <div
-                        key={index}
-                        className="bg-blue-500/60 rounded-t flex-1"
-                        style={{ height: `${height}%` }}
-                      />
-                    )
-                  )}
-                </div>
-                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                  Track log volume, error rates, response times, and custom
-                  metrics over time.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center space-x-2">
-                <Database className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0" />
-                <span className="text-sm sm:text-base">Custom Dashboards</span>
-              </CardTitle>
-              <CardDescription className="text-xs sm:text-sm">
-                Build personalized views for your team
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <CodeBlock
-                language="json"
-                code={`{
-  "dashboard": {
-    "name": "Production Overview",
-    "widgets": [
-      {
-        "type": "metric",
-        "title": "Error Rate",
-        "query": "level:error",
-        "visualization": "line_chart"
-      },
-      {
-        "type": "table",
-        "title": "Recent Errors",
-        "query": "level:error",
-        "limit": 10
-      },
-      {
-        "type": "pie_chart",
-        "title": "Logs by Service",
-        "group_by": "service"
-      }
-    ]
-  }
-}`}
-                showCopy
-                title="dashboard-config.json"
-              />
-            </CardContent>
-          </Card>
-        </div>
-      </TabsContent>
-
-      <TabsContent value="performance" className="space-y-6 sm:space-y-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center space-x-2">
-                <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 flex-shrink-0" />
-                <span className="text-sm sm:text-base">High Performance</span>
-              </CardTitle>
-              <CardDescription className="text-xs sm:text-sm">
-                Handle millions of logs with minimal latency
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                  <div className="text-center p-2 sm:p-3 bg-muted/30 rounded-lg">
-                    <div className="text-lg sm:text-2xl font-bold text-green-500">
-                      {"<50ms"}
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      Ingestion Latency
-                    </div>
-                  </div>
-                  <div className="text-center p-2 sm:p-3 bg-muted/30 rounded-lg">
-                    <div className="text-lg sm:text-2xl font-bold text-blue-500">10M+</div>
-                    <div className="text-xs text-muted-foreground">
-                      Logs/Second
-                    </div>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs sm:text-sm">
-                    <span>Batch Processing</span>
-                    <span className="text-green-500">Optimized</span>
-                  </div>
-                  <div className="flex justify-between text-xs sm:text-sm">
-                    <span>Compression</span>
-                    <span className="text-green-500">Enabled</span>
-                  </div>
-                  <div className="flex justify-between text-xs sm:text-sm">
-                    <span>Auto-scaling</span>
-                    <span className="text-green-500">Active</span>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center space-x-2">
-                <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-red-500 flex-shrink-0" />
-                <span className="text-sm sm:text-base">Enterprise Security</span>
-              </CardTitle>
-              <CardDescription className="text-xs sm:text-sm">
-                SOC 2 compliant with end-to-end encryption
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-0">
+            <CardContent className="space-y-4">
               <div className="space-y-3">
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0" />
-                  <span className="text-xs sm:text-sm leading-relaxed">AES-256 encryption at rest</span>
+                {[
+                  {
+                    icon: WifiOff,
+                    label: "Connection Lost",
+                    desc: "Navigator.onLine and fetch failures detected instantly",
+                  },
+                  {
+                    icon: Settings,
+                    label: "Priority Queuing",
+                    desc: "Errors and fatals kept. Debug and trace evicted first when full",
+                  },
+                  {
+                    icon: Wifi,
+                    label: "Auto Recovery",
+                    desc: "Online event fires, queued logs flushed in order",
+                  },
+                  {
+                    icon: CheckCircle2,
+                    label: "Zero Data Loss",
+                    desc: "Critical logs preserved even during extended outages",
+                  },
+                ].map((item, idx) => (
+                  <div key={idx} className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-white/[0.03] border border-white/[0.06] rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <item.icon className="w-4 h-4 text-signal" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-semibold text-text-primary">
+                        {item.label}
+                      </h4>
+                      <p className="text-xs text-text-secondary leading-relaxed">
+                        {item.desc}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </TabsContent>
+
+      {/* Compression */}
+      <TabsContent value="compression" className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-text-primary font-display">
+                <div className="w-8 h-8 bg-data-bright/10 rounded-lg flex items-center justify-center">
+                  <Shrink className="w-4 h-4 text-data-bright" />
                 </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0" />
-                  <span className="text-xs sm:text-sm leading-relaxed">TLS 1.3 encryption in transit</span>
+                Payload Compression
+              </CardTitle>
+              <CardDescription className="text-text-secondary">
+                Automatically compresses log payloads before sending to reduce bandwidth usage.
+                Works in both browser and Node.js environments.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <CodeBlock
+                language="typescript"
+                code={`const logger = new Apperio({
+  apiKey: "your-api-key",
+  projectId: "your-project-id",
+
+  // Enable compression
+  compression: true,
+});
+
+// Browser: Uses CompressionStream API (gzip)
+// Node.js: Uses zlib compression
+// Automatic fallback to uncompressed if not supported
+// Typical compression ratio: 60-80% reduction`}
+                showCopy
+                title="compression.ts"
+              />
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
+            <CardHeader>
+              <CardTitle className="text-text-primary font-display text-base">
+                Bandwidth Savings
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Visual comparison bars */}
+              <div className="space-y-4">
+                <div>
+                  <div className="flex justify-between text-xs text-text-secondary mb-1">
+                    <span>Uncompressed</span>
+                    <span className="font-mono">~12 KB</span>
+                  </div>
+                  <div className="h-3 rounded-full bg-white/[0.04] overflow-hidden">
+                    <div className="h-full w-full bg-status-danger/40 rounded-full" />
+                  </div>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0" />
-                  <span className="text-xs sm:text-sm leading-relaxed">SOC 2 Type II certified</span>
+                <div>
+                  <div className="flex justify-between text-xs text-text-secondary mb-1">
+                    <span>Gzip Compressed</span>
+                    <span className="font-mono text-signal">~3 KB</span>
+                  </div>
+                  <div className="h-3 rounded-full bg-white/[0.04] overflow-hidden">
+                    <div className="h-full w-1/4 bg-signal/60 rounded-full" />
+                  </div>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0" />
-                  <span className="text-xs sm:text-sm leading-relaxed">GDPR & CCPA compliant</span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 pt-2">
+                <div className="p-3 rounded-lg bg-white/[0.03] border border-white/[0.06] text-center">
+                  <div className="text-lg font-display font-bold text-signal">
+                    ~75%
+                  </div>
+                  <div className="text-xs text-text-muted">Size Reduction</div>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0" />
-                  <span className="text-xs sm:text-sm leading-relaxed">Role-based access control</span>
+                <div className="p-3 rounded-lg bg-white/[0.03] border border-white/[0.06] text-center">
+                  <div className="text-lg font-display font-bold text-data">
+                    Auto
+                  </div>
+                  <div className="text-xs text-text-muted">Fallback</div>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0" />
-                  <span className="text-xs sm:text-sm leading-relaxed">
-                    Audit logs & compliance reports
+              </div>
+
+              <div className="flex items-start gap-2 pt-2">
+                <Badge
+                  variant="outline"
+                  className="text-[10px] border-white/[0.08] text-text-muted"
+                >
+                  Browser
+                </Badge>
+                <span className="text-xs text-text-secondary">
+                  CompressionStream API (Chrome 80+, Firefox 113+, Safari 16.4+)
+                </span>
+              </div>
+              <div className="flex items-start gap-2">
+                <Badge
+                  variant="outline"
+                  className="text-[10px] border-white/[0.08] text-text-muted"
+                >
+                  Node.js
+                </Badge>
+                <span className="text-xs text-text-secondary">
+                  Native zlib module, no additional dependencies
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </TabsContent>
+
+      {/* Health Metrics */}
+      <TabsContent value="health" className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-text-primary font-display">
+                <div className="w-8 h-8 bg-status-ok/10 rounded-lg flex items-center justify-center">
+                  <HeartPulse className="w-4 h-4 text-status-ok" />
+                </div>
+                SDK Health Metrics
+              </CardTitle>
+              <CardDescription className="text-text-secondary">
+                Monitor the SDK itself. Track buffer utilization, flush success rates,
+                circuit breaker state, and sanitization activity.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <CodeBlock
+                language="typescript"
+                code={`const metrics = logger.getHealthMetrics();
+
+console.log(metrics);
+// {
+//   bufferSize: 12,
+//   maxBufferSize: 1000,
+//   bufferUtilization: 0.012,
+//   flushSuccessCount: 847,
+//   flushFailureCount: 2,
+//   droppedLogCount: 0,
+//   circuitBreakerState: "CLOSED",
+//   sanitizationCount: 156,
+//   lastFlushTime: "2026-03-08T14:23:01Z",
+//   uptime: 3600000
+// }`}
+                showCopy
+                title="health-metrics.ts"
+              />
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
+            <CardHeader>
+              <CardTitle className="text-text-primary font-display text-base">
+                Live Dashboard Preview
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {/* Simulated health dashboard */}
+              {[
+                {
+                  label: "Buffer Utilization",
+                  value: "1.2%",
+                  bar: 1.2,
+                  color: "bg-status-ok",
+                },
+                {
+                  label: "Flush Success Rate",
+                  value: "99.8%",
+                  bar: 99.8,
+                  color: "bg-signal",
+                },
+                {
+                  label: "Sanitization Rate",
+                  value: "18%",
+                  bar: 18,
+                  color: "bg-data",
+                },
+              ].map((metric, idx) => (
+                <div key={idx}>
+                  <div className="flex justify-between text-xs text-text-secondary mb-1">
+                    <span>{metric.label}</span>
+                    <span className="font-mono text-text-primary">
+                      {metric.value}
+                    </span>
+                  </div>
+                  <div className="h-2 rounded-full bg-white/[0.04] overflow-hidden">
+                    <div
+                      className={`h-full ${metric.color}/60 rounded-full transition-all duration-500`}
+                      style={{ width: `${Math.min(metric.bar, 100)}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+
+              <div className="grid grid-cols-3 gap-3 pt-3">
+                <div className="p-2 rounded-lg bg-white/[0.03] border border-white/[0.06] text-center">
+                  <div className="text-xs text-text-muted mb-0.5">
+                    Circuit Breaker
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className="text-[10px] border-status-ok/30 text-status-ok bg-status-ok/10"
+                  >
+                    CLOSED
+                  </Badge>
+                </div>
+                <div className="p-2 rounded-lg bg-white/[0.03] border border-white/[0.06] text-center">
+                  <div className="text-xs text-text-muted mb-0.5">
+                    Dropped
+                  </div>
+                  <span className="text-sm font-mono font-semibold text-status-ok">
+                    0
                   </span>
                 </div>
+                <div className="p-2 rounded-lg bg-white/[0.03] border border-white/[0.06] text-center">
+                  <div className="text-xs text-text-muted mb-0.5">Uptime</div>
+                  <span className="text-sm font-mono font-semibold text-text-primary">
+                    1h
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 pt-2">
+                <Radar className="w-4 h-4 text-signal" />
+                <p className="text-xs text-text-muted">
+                  Access via{" "}
+                  <code className="font-mono text-text-code">
+                    logger.getHealthMetrics()
+                  </code>{" "}
+                  at any time
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-data" />
+                <p className="text-xs text-text-muted">
+                  PII audit trail via{" "}
+                  <code className="font-mono text-text-code">
+                    logger.getSanitizationAuditTrail()
+                  </code>
+                </p>
               </div>
             </CardContent>
           </Card>

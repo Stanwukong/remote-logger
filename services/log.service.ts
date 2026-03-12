@@ -207,6 +207,218 @@ export const logService = {
       handleApiError(error);
     }
   },
+
+  // Export logs to CSV or JSON
+  exportLogs: async (
+    projectId: string,
+    format: "csv" | "json",
+    filters: LogFilters = {}
+  ) => {
+    try {
+      // Build export body: pick only fields the ExportLogsQueryDTO expects
+      // and override limit to allow up to 10000 entries for export
+      const exportBody: Record<string, any> = { format };
+      if (filters.levels && filters.levels.length > 0) exportBody.levels = filters.levels;
+      if (filters.services && filters.services.length > 0) exportBody.services = filters.services;
+      if ((filters as any).environments && (filters as any).environments.length > 0) {
+        exportBody.environments = (filters as any).environments;
+      }
+      if (filters.search) exportBody.search = filters.search;
+      if (filters.startDate) exportBody.startDate = filters.startDate;
+      // endDate defaults to now on the backend if not provided
+      exportBody.limit = 10000;
+
+      const response = await apiClient.post(
+        `/${projectId}/logs/export`,
+        exportBody,
+        {
+          responseType: "blob",
+        }
+      );
+
+      // Determine filename from Content-Disposition header or generate a fallback
+      let filename = `apperio-logs-${projectId}.${format}`;
+      const disposition = response.headers["content-disposition"];
+      if (disposition) {
+        const match = disposition.match(/filename="?([^";\n]+)"?/);
+        if (match && match[1]) {
+          filename = match[1];
+        }
+      }
+
+      // Create download link
+      const blob = new Blob([response.data], {
+        type: format === "csv" ? "text/csv" : "application/json",
+      });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      return true;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  // Batch create logs
+  batchCreateLogs: async (projectId: string, logs: any[]) => {
+    try {
+      const response = await apiClient.post<ApiResponse>(
+        `/${projectId}/logs/batch`,
+        { logs }
+      );
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to batch create logs",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return response.data.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  // Structured query search
+  structuredSearch: async (
+    projectId: string,
+    query: string,
+    page: number = 1,
+    limit: number = 100
+  ) => {
+    try {
+      const response = await apiClient.post<ApiResponse>(
+        `/${projectId}/logs/search`,
+        { query, page, limit }
+      );
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to execute structured search",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return {
+        logs: response.data.data || [],
+        meta: response.data.meta,
+      };
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  // Saved Searches
+  getSavedSearches: async (projectId: string) => {
+    try {
+      const response = await apiClient.get<ApiResponse>(
+        `/projects/${projectId}/saved-searches`
+      );
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to fetch saved searches",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return response.data.data || [];
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  getDefaultSavedSearch: async (projectId: string) => {
+    try {
+      const response = await apiClient.get<ApiResponse>(
+        `/projects/${projectId}/saved-searches/default`
+      );
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to fetch default saved search",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return response.data.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  createSavedSearch: async (projectId: string, data: any) => {
+    try {
+      const response = await apiClient.post<ApiResponse>(
+        `/projects/${projectId}/saved-searches`,
+        data
+      );
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to create saved search",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return response.data.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  updateSavedSearch: async (projectId: string, searchId: string, data: any) => {
+    try {
+      const response = await apiClient.put<ApiResponse>(
+        `/projects/${projectId}/saved-searches/${searchId}`,
+        data
+      );
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to update saved search",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return response.data.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  deleteSavedSearch: async (projectId: string, searchId: string) => {
+    try {
+      const response = await apiClient.delete<ApiResponse>(
+        `/projects/${projectId}/saved-searches/${searchId}`
+      );
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to delete saved search",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return response.data.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
 };
 
 
@@ -219,3 +431,11 @@ export const getLogTrends = logService.getLogTrends;
 export const getDistinctValues = logService.getDistinctValues;
 export const getUniqueErrors = logService.getUniqueErrors;
 export const deleteLogs = logService.deleteLogs;
+export const exportLogs = logService.exportLogs;
+export const batchCreateLogs = logService.batchCreateLogs;
+export const structuredSearch = logService.structuredSearch;
+export const getSavedSearches = logService.getSavedSearches;
+export const getDefaultSavedSearch = logService.getDefaultSavedSearch;
+export const createSavedSearch = logService.createSavedSearch;
+export const updateSavedSearch = logService.updateSavedSearch;
+export const deleteSavedSearch = logService.deleteSavedSearch;

@@ -16,6 +16,9 @@ export interface AlertRule {
     emails?: string[];
     slackWebhookUrl?: string;
     webhookUrl?: string;
+    github?: {
+      enabled?: boolean;
+    };
   };
   createdAt: string;
   updatedAt: string;
@@ -53,6 +56,9 @@ export interface CreateAlertRuleData {
     emails?: string[];
     slackWebhookUrl?: string;
     webhookUrl?: string;
+    github?: {
+      enabled?: boolean;
+    };
   };
 }
 
@@ -70,6 +76,9 @@ export interface UpdateAlertRuleData {
     emails?: string[];
     slackWebhookUrl?: string;
     webhookUrl?: string;
+    github?: {
+      enabled?: boolean;
+    };
   };
 }
 

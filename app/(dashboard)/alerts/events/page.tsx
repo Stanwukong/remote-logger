@@ -150,7 +150,7 @@ function AlertEventsContent({
     return (
       <Card>
         <CardContent className="p-12 text-center">
-          <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
+          <CheckCircle className="w-12 h-12 text-status-ok mx-auto mb-4" />
           <h3 className="text-lg font-semibold mb-2">No alert events</h3>
           <p className="text-muted-foreground">
             All clear! No alerts have been triggered recently.
@@ -199,13 +199,13 @@ function AlertEventCard({
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case "critical":
-        return "border-red-500 bg-red-50";
+        return "border-status-danger bg-status-danger/10";
       case "high":
-        return "border-orange-500 bg-orange-50";
+        return "border-status-warn bg-status-warn/10";
       case "medium":
-        return "border-yellow-500 bg-yellow-50";
+        return "border-level-warn bg-level-warn/10";
       case "low":
-        return "border-blue-500 bg-blue-50";
+        return "border-data-info bg-data-info/10";
       default:
         return "border-gray-500 bg-gray-50";
     }
@@ -214,11 +214,11 @@ function AlertEventCard({
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "active":
-        return <AlertTriangle className="w-5 h-5 text-red-500" />;
+        return <AlertTriangle className="w-5 h-5 text-status-danger" />;
       case "acknowledged":
-        return <Clock className="w-5 h-5 text-yellow-500" />;
+        return <Clock className="w-5 h-5 text-level-warn" />;
       case "resolved":
-        return <CheckCircle className="w-5 h-5 text-green-500" />;
+        return <CheckCircle className="w-5 h-5 text-status-ok" />;
       default:
         return <XCircle className="w-5 h-5 text-gray-500" />;
     }

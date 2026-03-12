@@ -5,6 +5,9 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
 import { Input } from "../ui/input";
+import { Badge } from "../ui/badge";
+import { WifiOff } from "lucide-react";
+import { ResolvedStackTrace } from "@/components/dashboard/logs/ResolvedStackTrace";
 
 
 interface LogDetailsDialogProps {
@@ -27,10 +30,22 @@ export const LogDetailsDialog: React.FC<LogDetailsDialogProps> = ({ log, onClose
           <DialogTitle className="flex items-center space-x-2">
             {levelIcon}
             <span>Log Details</span>
+            {log.release && (
+              <Badge variant="outline" className="font-mono text-xs bg-bg-elevated border-border-subtle">
+                v{log.release}
+              </Badge>
+            )}
           </DialogTitle>
           <DialogDescription>Full log entry with all available metadata</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
+          {/* Offline Queue Notice */}
+          {(log.data?.offlineQueued || log.metadata?.offlineQueued) && (
+            <div className="flex items-center gap-2 text-xs text-status-warn bg-status-warn/5 border border-status-warn/20 rounded-md px-3 py-2">
+              <WifiOff className="h-3 w-3" />
+              This log was queued while offline and synced later
+            </div>
+          )}
           <div>
             <Label className="text-sm font-medium">Message</Label>
             <Textarea value={log.message} readOnly className="mt-1 min-h-[60px]" />
@@ -53,6 +68,17 @@ export const LogDetailsDialog: React.FC<LogDetailsDialogProps> = ({ log, onClose
               <Input value={log.environment || "N/A"} readOnly className="mt-1" />
             </div>
           </div>
+          {/* Resolved Stack Trace */}
+          {log.error?.stack && log.release && (
+            <div>
+              <Label className="text-sm font-medium mb-2 block">Stack Trace</Label>
+              <ResolvedStackTrace
+                projectId={log.projectId}
+                release={log.release}
+                stackTrace={log.error.stack}
+              />
+            </div>
+          )}
           <div>
             <Label className="text-sm font-medium">Raw Log Data</Label>
             <Textarea

@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { AlertRule } from "@/types/alert.types";
-import { Bell, Edit, Trash2, Clock, AlertCircle } from "lucide-react";
+import { Bell, Edit, Trash2, Clock, AlertCircle, Mail, MessageSquare, Webhook, Github } from "lucide-react";
 import { useUpdateAlertRule, useDeleteAlertRule } from "@/hooks/useAlerts";
 import { useState } from "react";
 import {
@@ -58,13 +58,13 @@ export function AlertRuleCard({ rule, projectId, apiKey }: AlertRuleCardProps) {
     switch (level.toLowerCase()) {
       case "fatal":
       case "error":
-        return "text-red-600 bg-red-50 border-red-200";
+        return "text-level-error bg-level-error/10 border-level-error/30";
       case "warn":
-        return "text-yellow-600 bg-yellow-50 border-yellow-200";
+        return "text-level-warn bg-level-warn/10 border-level-warn/30";
       case "info":
-        return "text-blue-600 bg-blue-50 border-blue-200";
+        return "text-level-info bg-level-info/10 border-level-info/30";
       default:
-        return "text-gray-600 bg-gray-50 border-gray-200";
+        return "text-text-muted bg-bg-surface border-border-subtle";
     }
   };
 
@@ -125,15 +125,24 @@ export function AlertRuleCard({ rule, projectId, apiKey }: AlertRuleCardProps) {
             <div>
               <p className="text-sm font-medium mb-2">Notification Channels</p>
               <div className="flex flex-wrap gap-2">
-                {rule.notifyChannels.map((channel) => (
-                  <Badge
-                    key={channel}
-                    variant="secondary"
-                    className="capitalize"
-                  >
-                    {channel}
-                  </Badge>
-                ))}
+                {rule.notifyChannels.map((channel) => {
+                  const ChannelIcon = {
+                    email: Mail,
+                    slack: MessageSquare,
+                    webhook: Webhook,
+                    github: Github,
+                  }[channel] || Bell;
+                  return (
+                    <Badge
+                      key={channel}
+                      variant="secondary"
+                      className="capitalize flex items-center gap-1"
+                    >
+                      <ChannelIcon className="h-3 w-3" />
+                      {channel === "github" ? "GitHub Issue" : channel}
+                    </Badge>
+                  );
+                })}
               </div>
             </div>
           )}

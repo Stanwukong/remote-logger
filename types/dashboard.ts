@@ -11,6 +11,12 @@ export interface DashboardFiltersWithUser {
   specificProjectIds?: string[];
 }
 
+export interface PeriodComparison {
+  current: number;
+  previous: number;
+  change: number;
+}
+
 export interface DashboardOverview {
   health: {
     criticalProjects: number;
@@ -32,12 +38,31 @@ export interface DashboardOverview {
   topIssues: {
     mostFrequentError: string | null;
     recentCriticalErrors: any[];
-    slowestEndpoint: string | null
-  }
+    slowestEndpoint: string | null;
+  };
   trends: {
     errorRateChange: number;
-    logVolumeChange: number
-  }
+    logVolumeChange: number;
+  };
+  comparison?: {
+    totalLogs: PeriodComparison;
+    totalErrors: PeriodComparison;
+    errorRate: PeriodComparison;
+    averageResponseTime: PeriodComparison;
+    totalWarnings: PeriodComparison;
+  };
+  sparklines?: {
+    logs: number[];
+    errors: number[];
+    errorRate: number[];
+    responseTime: number[];
+  };
+  logsOverTime?: Array<{
+    timestamp: string;
+    total: number;
+    errors: number;
+    warnings: number;
+  }>;
 }
 
 export interface MetricData {

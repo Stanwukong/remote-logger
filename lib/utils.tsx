@@ -22,35 +22,39 @@ export function cn(...inputs: ClassValue[]) {
 
 export const getLevelIcon = (level: string) => {
   switch (level) {
+    case "fatal":
+      return <AlertTriangle className="w-4 h-4 text-level-fatal" />;
     case "error":
-      return <AlertTriangle className="w-4 h-4 text-red-500" />;
+      return <AlertTriangle className="w-4 h-4 text-level-error" />;
     case "warn":
-      return <AlertTriangle className="w-4 h-4 text-yellow-500" />;
+      return <AlertTriangle className="w-4 h-4 text-level-warn" />;
     case "info":
-      return <Info className="w-4 h-4 text-blue-500" />;
+      return <Info className="w-4 h-4 text-level-info" />;
     case "debug":
-      return <Bug className="w-4 h-4 text-gray-500" />;
+      return <Bug className="w-4 h-4 text-level-debug" />;
     case "trace":
-      return <Zap className="w-4 h-4 text-gray-400" />;
+      return <Zap className="w-4 h-4 text-level-trace" />;
     default:
-      return <Info className="w-4 h-4 text-gray-500" />;
+      return <Info className="w-4 h-4 text-level-debug" />;
   }
 };
 
 export const getLevelColor = (level: string) => {
   switch (level) {
+    case "fatal":
+      return "border-l-level-fatal bg-level-fatal/5";
     case "error":
-      return "border-l-red-500 bg-red-50/50 dark:bg-red-950/20";
+      return "border-l-level-error bg-level-error/5";
     case "warn":
-      return "border-l-yellow-500 bg-yellow-50/50 dark:bg-yellow-950/20";
+      return "border-l-level-warn bg-level-warn/5";
     case "info":
-      return "border-l-blue-500 bg-blue-50/50 dark:bg-blue-950/20";
+      return "border-l-level-info bg-level-info/5";
     case "debug":
-      return "border-l-gray-500 bg-gray-50/50 dark:bg-gray-950/20";
+      return "border-l-level-debug bg-level-debug/5";
     case "trace":
-      return "border-l-gray-400 bg-gray-50/30 dark:bg-gray-950/10";
+      return "border-l-level-trace bg-level-trace/5";
     default:
-      return "border-l-gray-500 bg-gray-50/50 dark:bg-gray-950/20";
+      return "border-l-level-debug bg-level-debug/5";
   }
 };
 

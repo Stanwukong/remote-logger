@@ -89,6 +89,11 @@ export const authService = {
         )
       }
 
+      // If MFA is required, return immediately without storing JWT
+      if (response.data.data?.requiresMfa) {
+        return response.data.data;
+      }
+
       if (response.data.data.token) {
         Cookies.set('authToken', response.data.data.token, { expires: 7 });
       }
@@ -132,13 +137,41 @@ export const authService = {
   },
 
   /**
+   * OAuth login (GitHub / Google)
+   */
+  oauthLogin: async (code: string, provider: "github" | "google") => {
+    try {
+      const response = await apiClient.post<ApiResponse>(
+        "/users/oauth/login",
+        { code, provider }
+      );
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "OAuth login failed.",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      if (response.data.data?.token) {
+        Cookies.set("authToken", response.data.data.token, { expires: 7 });
+      }
+
+      return response.data.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  /**
    * Reset password with token
   */
   resetPassword: async (token: string, newPassword: string) => {
     try {
       const response = await apiClient.post<ApiResponse>(
         '/users/reset-password',
-        { token, password: newPassword}
+        { token, newPassword }
       )
 
       if (response.data.status === "error") {
@@ -157,5 +190,6 @@ export const authService = {
 export const signupUser = authService.signUp
 export const signinUser = authService.signIn
 export const signoutUser = authService.signOut
+export const oauthLogin = authService.oauthLogin
 export const passwordResetRequest = authService.requestPasswordReset
 export const changePassword = authService.resetPassword

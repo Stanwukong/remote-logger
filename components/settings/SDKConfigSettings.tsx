@@ -15,9 +15,12 @@ import {
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { TerminalBlock } from "@/components/shared/TerminalBlock";
+import { SignalDot } from "@/components/shared/SignalDot";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -656,6 +659,48 @@ export default function SDKConfigSettings({
               </div>
             </>
           )}
+        </CardContent>
+      </Card>
+
+      {/* SDK Initialization Preview */}
+      <Card className="bg-bg-surface border-border-subtle">
+        <CardHeader>
+          <CardTitle className="text-sm font-display text-text-primary">SDK Initialization Preview</CardTitle>
+          <CardDescription className="text-text-muted">How your config translates to SDK code</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <TerminalBlock
+            filename="sdk-setup.ts"
+            language="typescript"
+            code={`import { Apperio } from 'apperio';
+
+const logger = new Apperio({
+  apiKey: '${projectId.slice(0, 6)}...${"*".repeat(8)}',
+  projectId: '${projectId}',
+  minLogLevel: '${config.minLogLevel}',
+  batchSize: ${config.batchSize},
+  flushIntervalMs: ${config.flushIntervalMs},
+  autoCapture: {
+    errors: ${config.autoCapture.errors},
+    performance: ${config.autoCapture.performance},
+    userInteractions: ${config.autoCapture.userInteractions},
+    networkRequests: ${config.autoCapture.networkRequests},
+    consoleMessages: ${config.autoCapture.consoleMessages},
+    pageViews: ${config.autoCapture.pageViews},
+  },
+});
+
+logger.init();`}
+          />
+          <div className="flex items-center gap-2 text-xs text-text-muted">
+            <SignalDot status="ok" size="sm" pulse />
+            <span>Remote config active</span>
+            {config.updatedAt && (
+              <span className="font-mono">
+                - Last synced {new Date(config.updatedAt).toLocaleString()}
+              </span>
+            )}
+          </div>
         </CardContent>
       </Card>
 

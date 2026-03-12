@@ -35,10 +35,34 @@ export const dashboardService = {
 
   /**
    * Get dashboard overview with summary of all key metrics.
+   * Passes includeComparison=true by default for period-over-period data + sparklines.
    */
-  getOverview: async () => {
+  getOverview: async (params?: {
+    startDate?: string;
+    endDate?: string;
+    includeComparison?: boolean;
+    environment?: string;
+    specificProjectIds?: string[];
+  }) => {
     try {
-      const response = await apiClient.get<ApiResponse>("/dashboard/overview");
+      const searchParams = new URLSearchParams();
+      if (params?.startDate) searchParams.append("startDate", params.startDate);
+      if (params?.endDate) searchParams.append("endDate", params.endDate);
+      searchParams.append(
+        "includeComparison",
+        params?.includeComparison !== false ? "true" : "false"
+      );
+      if (params?.environment)
+        searchParams.append("environment", params.environment);
+      if (params?.specificProjectIds) {
+        params.specificProjectIds.forEach((id) =>
+          searchParams.append("specificProjectIds", id)
+        );
+      }
+
+      const response = await apiClient.get<ApiResponse>(
+        `/dashboard/overview?${searchParams.toString()}`
+      );
       if (response.data.status === "error") {
         throw new ApiError(
           response.data.message || "Failed to fetch dashboard overview",

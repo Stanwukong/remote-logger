@@ -1,10 +1,5 @@
-import React from 'react'
+import { redirect } from "next/navigation";
 
-
-const DocumentationPage = () => {
-  return (
-    <div>DocumentationPage</div>
-  )
+export default function DocsIndexPage() {
+  redirect("/docs/introduction");
 }
-
-export default DocumentationPage

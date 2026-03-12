@@ -21,6 +21,11 @@ export interface LogEntry {
   url?: string
   responseTime?: string
   referrer?: string
+  correlationId?: string
+  sessionId?: string
+  metadata?: Record<string, any>
+  release?: string
+  traceId?: string
 }
 
 export interface Project {
@@ -60,14 +65,17 @@ export interface ChartDataPoint {
 
 export interface LogFilters {
   level?: LogEntry['level'] | 'all';
+  levels?: LogEntry['level'][]; // Support multiple levels
   source?: string;
   service?: string;
+  services?: string[]; // Support multiple services
   startDate?: string;
   endDate?: string;
   search?: string;
   tags?: string[];
   limit?: number;
   offset?: number;
+  release?: string;
 }
 
 export interface LogSummary {

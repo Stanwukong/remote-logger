@@ -3,103 +3,317 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ============================================================================
+   OBSERVATORY DESIGN SYSTEM — Apperio
+   "A precision instrument pointed at a vast, complex sky"
+
+   Palette:
+     Mint Cream  #f7fff7  — light backgrounds
+     Grey Olive  #969a96  — muted text, subtle borders
+     Graphite    #343434  — dark backgrounds, primary text (light)
+     Taupe       #97716a  — warm tertiary accent
+     Apricot Cream #fcca87 — warm highlight, warnings
+     Steel Blue  #AEF78E  — primary accent, signal, info
+   ============================================================================ */
+
+/* Light mode — Mint Cream base */
 :root {
-  --background: oklch(0.9900 0 0);
-  --foreground: oklch(0 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0 0 0);
-  --popover: oklch(0.9900 0 0);
-  --popover-foreground: oklch(0 0 0);
-  --primary: oklch(0 0 0);
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.9400 0 0);
-  --secondary-foreground: oklch(0 0 0);
-  --muted: oklch(0.9700 0 0);
-  --muted-foreground: oklch(0.4400 0 0);
-  --accent: oklch(0.9400 0 0);
-  --accent-foreground: oklch(0 0 0);
-  --destructive: oklch(0.6300 0.1900 23.0300);
-  --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.9200 0 0);
-  --input: oklch(0.9400 0 0);
-  --ring: oklch(0 0 0);
-  --chart-1: oklch(0.8100 0.1700 75.3500);
-  --chart-2: oklch(0.5500 0.2200 264.5300);
-  --chart-3: oklch(0.7200 0 0);
-  --chart-4: oklch(0.9200 0 0);
-  --chart-5: oklch(0.5600 0 0);
-  --sidebar: oklch(0.9900 0 0);
-  --sidebar-foreground: oklch(0 0 0);
-  --sidebar-primary: oklch(0 0 0);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.9400 0 0);
-  --sidebar-accent-foreground: oklch(0 0 0);
-  --sidebar-border: oklch(0.9400 0 0);
-  --sidebar-ring: oklch(0 0 0);
-  --font-sans: Geist, sans-serif;
+  --background: #f7fff7;
+  --foreground: #343434;
+  --card: #ffffff;
+  --card-foreground: #343434;
+  --popover: #ffffff;
+  --popover-foreground: #343434;
+  --primary: #5a8fa8;
+  --primary-foreground: #ffffff;
+  --secondary: #f0f5f0;
+  --secondary-foreground: #343434;
+  --muted: #f0f5f0;
+  --muted-foreground: #969a96;
+  --accent: #f0f5f0;
+  --accent-foreground: #343434;
+  --destructive: #d94f4f;
+  --destructive-foreground: #ffffff;
+  --border: #d4d8d4;
+  --input: #d4d8d4;
+  --ring: #5a8fa8;
+  --chart-1: #5a8fa8;
+  --chart-2: #d4a55c;
+  --chart-3: #97716a;
+  --chart-4: #d94f4f;
+  --chart-5: #AEF78E;
+  --sidebar: #eef4ee;
+  --sidebar-foreground: #343434;
+  --sidebar-primary: #5a8fa8;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e2e8e2;
+  --sidebar-accent-foreground: #343434;
+  --sidebar-border: #c4c8c4;
+  --sidebar-ring: #5a8fa8;
+
+  --font-sans: var(--font-body), "DM Sans", sans-serif;
   --font-serif: Georgia, serif;
-  --font-mono: Geist Mono, monospace;
+  --font-mono: var(--font-code), "Geist Mono", "Fira Code", monospace;
+
   --radius: 0.5rem;
-  --shadow-2xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.09);
-  --shadow-xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.09);
-  --shadow-sm: 0px 1px 2px 0px hsl(0 0% 0% / 0.18), 0px 1px 2px -1px hsl(0 0% 0% / 0.18);
-  --shadow: 0px 1px 2px 0px hsl(0 0% 0% / 0.18), 0px 1px 2px -1px hsl(0 0% 0% / 0.18);
-  --shadow-md: 0px 1px 2px 0px hsl(0 0% 0% / 0.18), 0px 2px 4px -1px hsl(0 0% 0% / 0.18);
-  --shadow-lg: 0px 1px 2px 0px hsl(0 0% 0% / 0.18), 0px 4px 6px -1px hsl(0 0% 0% / 0.18);
-  --shadow-xl: 0px 1px 2px 0px hsl(0 0% 0% / 0.18), 0px 8px 10px -1px hsl(0 0% 0% / 0.18);
-  --shadow-2xl: 0px 1px 2px 0px hsl(0 0% 0% / 0.45);
+
+  --shadow-2xs: 0 1px 2px 0 rgba(52, 52, 52, 0.04);
+  --shadow-xs: 0 1px 2px 0 rgba(52, 52, 52, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(52, 52, 52, 0.08), 0 1px 2px -1px rgba(52, 52, 52, 0.08);
+  --shadow: 0 1px 3px 0 rgba(52, 52, 52, 0.08), 0 1px 2px -1px rgba(52, 52, 52, 0.08);
+  --shadow-md: 0 4px 6px -1px rgba(52, 52, 52, 0.08), 0 2px 4px -2px rgba(52, 52, 52, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(52, 52, 52, 0.08), 0 4px 6px -4px rgba(52, 52, 52, 0.06);
+  --shadow-xl: 0 20px 25px -5px rgba(52, 52, 52, 0.08), 0 8px 10px -6px rgba(52, 52, 52, 0.06);
+  --shadow-2xl: 0 25px 50px -12px rgba(52, 52, 52, 0.15);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
+
+  /* =========================================================================
+     OBSERVATORY EXTENSION TOKENS — Light Mode
+     ========================================================================= */
+
+  /* Background layers — mint cream depth hierarchy */
+  --bg-void: #e8f0e8;
+  --bg-base: #f7fff7;
+  --bg-surface: #ffffff;
+  --bg-elevated: #f0f5f0;
+  --bg-overlay: #ffffff;
+
+  /* Borders — grey-olive derived, soft */
+  --border-faint: #dde1dd;
+  --border-subtle: #c4c8c4;
+  --border-accent: #969a96;
+
+  /* Signal — Steel Blue (darker for light bg contrast) */
+  --signal: #5a8fa8;
+  --signal-glow: #5a8fa820;
+  --signal-muted: #5a8fa810;
+  --signal-bright: #AEF78E;
+
+  /* Data — Apricot Cream (darker for light bg) */
+  --data: #d4a55c;
+  --data-muted: #d4a55c15;
+  --data-bright: #fcca87;
+
+  /* Status colors — tuned for light bg */
+  --status-warn: #d4a55c;
+  --status-danger: #d94f4f;
+  --status-fatal: #b93a3a;
+  --status-ok: #5a8fa8;
+
+  /* Web Vital rating colors */
+  --rating-good: #5a8fa8;
+  --rating-needs-improvement: #d4a55c;
+  --rating-poor: #d94f4f;
+
+  /* Log level palette — readable on light bg */
+  --level-trace: #969a96;
+  --level-debug: #7a7e7a;
+  --level-info: #5a8fa8;
+  --level-warn: #d4a55c;
+  --level-error: #d94f4f;
+  --level-fatal: #993333;
+
+  /* Text hierarchy — graphite on mint cream */
+  --text-primary: #343434;
+  --text-secondary: #5c605c;
+  --text-muted: #969a96;
+  --text-code: #4a7f96;
+
+  /* Glow effects — very subtle on light */
+  --glow-signal: 0 0 20px #5a8fa812, 0 0 40px #5a8fa808;
+  --glow-signal-sm: 0 0 8px #5a8fa818;
+  --glow-data: 0 0 20px #d4a55c12, 0 0 40px #d4a55c08;
+  --glow-danger: 0 0 20px #d94f4f12, 0 0 40px #d94f4f08;
+
+  /* Card shadows — light and crisp */
+  --shadow-card: 0 1px 3px #3434340a, 0 1px 2px #34343408;
+  --shadow-float: 0 10px 40px #34343412, 0 4px 12px #3434340a;
+  --shadow-lift: 0 20px 60px #34343418, 0 8px 24px #34343410;
+
+  /* Inner glow for active borders */
+  --border-glow: inset 0 1px 0 #ffffff80;
+
+  /* Syntax highlighting — light bg variants */
+  --syntax-keyword: #97716a;
+  --syntax-string: #4a7f96;
+  --syntax-number: #c27a3c;
+  --syntax-comment: #969a96;
+  --syntax-function: #5a8fa8;
+  --syntax-type: #97716a;
+  --syntax-property: #343434;
+  --syntax-operator: #5c605c;
+
+  /* Motion system — same timing for both modes */
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-snap: cubic-bezier(0.2, 0, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+
+  --dur-instant: 80ms;
+  --dur-fast: 150ms;
+  --dur-normal: 250ms;
+  --dur-slow: 400ms;
+  --dur-xslow: 700ms;
+  --dur-scene: 1200ms;
 }
 
+/* ============================================================================
+   DARK MODE — Vercel-style near-black
+   Near-black base (#0a0a0a), layered neutral grays, white-alpha borders.
+   Accent colors from the custom palette (Steel Blue, Apricot, Taupe).
+   ============================================================================ */
 .dark {
-  --background: oklch(0 0 0);
-  --foreground: oklch(1 0 0);
-  --card: oklch(0.1400 0 0);
-  --card-foreground: oklch(1 0 0);
-  --popover: oklch(0.1800 0 0);
-  --popover-foreground: oklch(1 0 0);
-  --primary: oklch(1 0 0);
-  --primary-foreground: oklch(0 0 0);
-  --secondary: oklch(0.2500 0 0);
-  --secondary-foreground: oklch(1 0 0);
-  --muted: oklch(0.2300 0 0);
-  --muted-foreground: oklch(0.7200 0 0);
-  --accent: oklch(0.3200 0 0);
-  --accent-foreground: oklch(1 0 0);
-  --destructive: oklch(0.6900 0.2000 23.9100);
-  --destructive-foreground: oklch(0 0 0);
-  --border: oklch(0.2600 0 0);
-  --input: oklch(0.3200 0 0);
-  --ring: oklch(0.7200 0 0);
-  --chart-1: oklch(0.8100 0.1700 75.3500);
-  --chart-2: oklch(0.5800 0.2100 260.8400);
-  --chart-3: oklch(0.5600 0 0);
-  --chart-4: oklch(0.4400 0 0);
-  --chart-5: oklch(0.9200 0 0);
-  --sidebar: oklch(0.1800 0 0);
-  --sidebar-foreground: oklch(1 0 0);
-  --sidebar-primary: oklch(1 0 0);
-  --sidebar-primary-foreground: oklch(0 0 0);
-  --sidebar-accent: oklch(0.3200 0 0);
-  --sidebar-accent-foreground: oklch(1 0 0);
-  --sidebar-border: oklch(0.3200 0 0);
-  --sidebar-ring: oklch(0.7200 0 0);
-  --font-sans: Geist, sans-serif;
+  /* Core shadcn mappings → Vercel neutral scale */
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --card: #1a1a1a;
+  --card-foreground: #ededed;
+  --popover: #1a1a1a;
+  --popover-foreground: #ededed;
+  --primary: #AEF78E;
+  --primary-foreground: #0a0a0a;
+  --secondary: #262626;
+  --secondary-foreground: #ededed;
+  --muted: #262626;
+  --muted-foreground: #a0a0a0;
+  --accent: #262626;
+  --accent-foreground: #ededed;
+  --destructive: #e5484d;
+  --destructive-foreground: #ededed;
+  --border: rgba(255, 255, 255, 0.10);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #AEF78E;
+
+  /* Chart colors — palette accents on Vercel dark */
+  --chart-1: #AEF78E;
+  --chart-2: #fcca87;
+  --chart-3: #97716a;
+  --chart-4: #e5484d;
+  --chart-5: #8bbdd4;
+
+  /* Sidebar — pure black base */
+  --sidebar: #000000;
+  --sidebar-foreground: #ededed;
+  --sidebar-primary: #AEF78E;
+  --sidebar-primary-foreground: #0a0a0a;
+  --sidebar-accent: #1a1a1a;
+  --sidebar-accent-foreground: #ededed;
+  --sidebar-border: rgba(255, 255, 255, 0.10);
+  --sidebar-ring: #AEF78E;
+
+  /* Font stacks */
+  --font-sans: var(--font-body), "DM Sans", sans-serif;
   --font-serif: Georgia, serif;
-  --font-mono: Geist Mono, monospace;
+  --font-mono: var(--font-code), "Geist Mono", "Fira Code", monospace;
+
   --radius: 0.5rem;
-  --shadow-2xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.09);
-  --shadow-xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.09);
-  --shadow-sm: 0px 1px 2px 0px hsl(0 0% 0% / 0.18), 0px 1px 2px -1px hsl(0 0% 0% / 0.18);
-  --shadow: 0px 1px 2px 0px hsl(0 0% 0% / 0.18), 0px 1px 2px -1px hsl(0 0% 0% / 0.18);
-  --shadow-md: 0px 1px 2px 0px hsl(0 0% 0% / 0.18), 0px 2px 4px -1px hsl(0 0% 0% / 0.18);
-  --shadow-lg: 0px 1px 2px 0px hsl(0 0% 0% / 0.18), 0px 4px 6px -1px hsl(0 0% 0% / 0.18);
-  --shadow-xl: 0px 1px 2px 0px hsl(0 0% 0% / 0.18), 0px 8px 10px -1px hsl(0 0% 0% / 0.18);
-  --shadow-2xl: 0px 1px 2px 0px hsl(0 0% 0% / 0.45);
+
+  /* Shadows — Vercel deep blacks */
+  --shadow-2xs: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+
+  /* =========================================================================
+     OBSERVATORY EXTENSION TOKENS — Dark Mode (Vercel)
+     ========================================================================= */
+
+  /* Background layers — Vercel near-black depth hierarchy */
+  --bg-void: #000000;
+  --bg-base: #0a0a0a;
+  --bg-surface: #1a1a1a;
+  --bg-elevated: #262626;
+  --bg-overlay: #2e2e2e;
+
+  /* Borders — white-alpha, Vercel style */
+  --border-faint: rgba(255, 255, 255, 0.06);
+  --border-subtle: rgba(255, 255, 255, 0.10);
+  --border-accent: rgba(255, 255, 255, 0.15);
+
+  /* Signal — Steel Blue */
+  --signal: #AEF78E;
+  --signal-glow: #AEF78E26;
+  --signal-muted: #AEF78E12;
+  --signal-bright: #AEF78E;
+
+  /* Data — Apricot Cream */
+  --data: #fcca87;
+  --data-muted: #fcca8718;
+  --data-bright: #fdd9a5;
+
+  /* Status colors — Vercel-aligned red, custom accents */
+  --status-warn: #ffba18;
+  --status-danger: #e5484d;
+  --status-fatal: #c0392b;
+  --status-ok: #AEF78E;
+
+  /* Web Vital rating colors */
+  --rating-good: #AEF78E;
+  --rating-needs-improvement: #ffba18;
+  --rating-poor: #e5484d;
+
+  /* Log level palette — neutral trace/debug, accent info+ */
+  --level-trace: #454545;
+  --level-debug: #878787;
+  --level-info: #AEF78E;
+  --level-warn: #ffba18;
+  --level-error: #e5484d;
+  --level-fatal: #c0392b;
+
+  /* Text hierarchy — Vercel gray scale */
+  --text-primary: #ededed;
+  --text-secondary: #a0a0a0;
+  --text-muted: #6e6e6e;
+  --text-code: #018E42;
+
+  /* Glow effects — subtle against near-black */
+  --glow-signal: 0 0 30px #AEF78E25, 0 0 60px #AEF78E10;
+  --glow-signal-sm: 0 0 12px #AEF78E35;
+  --glow-data: 0 0 30px #fcca8725, 0 0 60px #fcca8710;
+  --glow-danger: 0 0 30px #e5484d25, 0 0 60px #e5484d10;
+
+  /* Card shadows — deep on near-black */
+  --shadow-card: 0 4px 24px #00000050, 0 1px 4px #00000070;
+  --shadow-float: 0 20px 60px #00000070, 0 8px 24px #00000050;
+  --shadow-lift: 0 40px 80px #00000090, 0 16px 40px #00000070;
+
+  /* Inner glow for active borders */
+  --border-glow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+  /* Syntax highlighting — warm palette on Vercel dark */
+  --syntax-keyword: #97716a;
+  --syntax-string: #8bbdd4;
+  --syntax-number: #fcca87;
+  --syntax-comment: #6e6e6e;
+  --syntax-function: #AEF78E;
+  --syntax-type: #fcca87;
+  --syntax-property: #ededed;
+  --syntax-operator: #a0a0a0;
+
+  /* Motion system */
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-snap: cubic-bezier(0.2, 0, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+
+  --dur-instant: 80ms;
+  --dur-fast: 150ms;
+  --dur-normal: 250ms;
+  --dur-slow: 400ms;
+  --dur-xslow: 700ms;
+  --dur-scene: 1200ms;
 }
 
+/* ============================================================================
+   TAILWIND THEME — Register all Observatory tokens as utilities
+   ============================================================================ */
 @theme inline {
+  /* Core shadcn color mappings */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -133,15 +347,75 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
+  /* Observatory background layers */
+  --color-bg-void: var(--bg-void, #000000);
+  --color-bg-base: var(--bg-base, #0a0a0a);
+  --color-bg-surface: var(--bg-surface, #1a1a1a);
+  --color-bg-elevated: var(--bg-elevated, #262626);
+  --color-bg-overlay: var(--bg-overlay, #2e2e2e);
+
+  /* Observatory borders */
+  --color-border-faint: var(--border-faint, rgba(255, 255, 255, 0.06));
+  --color-border-subtle: var(--border-subtle, rgba(255, 255, 255, 0.10));
+  --color-border-accent: var(--border-accent, rgba(255, 255, 255, 0.15));
+
+  /* Signal system — Steel Blue */
+  --color-signal: var(--signal, #AEF78E);
+  --color-signal-bright: var(--signal-bright, #8bbdd4);
+  --color-signal-muted: var(--signal-muted, #AEF78E15);
+
+  /* Data — Apricot Cream */
+  --color-data: var(--data, #fcca87);
+  --color-data-bright: var(--data-bright, #fdd9a5);
+  --color-data-muted: var(--data-muted, #fcca8720);
+
+  /* Status colors */
+  --color-status-warn: var(--status-warn, #ffba18);
+  --color-status-danger: var(--status-danger, #e5484d);
+  --color-status-fatal: var(--status-fatal, #c0392b);
+  --color-status-ok: var(--status-ok, #AEF78E);
+
+  /* Web Vital rating colors */
+  --color-rating-good: var(--rating-good, #AEF78E);
+  --color-rating-needs-improvement: var(--rating-needs-improvement, #ffba18);
+  --color-rating-poor: var(--rating-poor, #e5484d);
+
+  /* Log level colors */
+  --color-level-trace: var(--level-trace, #454545);
+  --color-level-debug: var(--level-debug, #878787);
+  --color-level-info: var(--level-info, #AEF78E);
+  --color-level-warn: var(--level-warn, #ffba18);
+  --color-level-error: var(--level-error, #e5484d);
+  --color-level-fatal: var(--level-fatal, #c0392b);
+
+  /* Text hierarchy */
+  --color-text-primary: var(--text-primary, #ededed);
+  --color-text-secondary: var(--text-secondary, #a0a0a0);
+  --color-text-muted: var(--text-muted, #6e6e6e);
+  --color-text-code: var(--text-code, #8bbdd4);
+
+  /* Syntax highlighting colors */
+  --color-syntax-keyword: var(--syntax-keyword, #97716a);
+  --color-syntax-string: var(--syntax-string, #8bbdd4);
+  --color-syntax-number: var(--syntax-number, #fcca87);
+  --color-syntax-comment: var(--syntax-comment, #6e6e6e);
+  --color-syntax-function: var(--syntax-function, #AEF78E);
+  --color-syntax-type: var(--syntax-type, #fcca87);
+  --color-syntax-property: var(--syntax-property, #ededed);
+  --color-syntax-operator: var(--syntax-operator, #a0a0a0);
+
+  /* Font stacks */
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
   --font-serif: var(--font-serif);
 
+  /* Border radii */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 
+  /* Shadow scale */
   --shadow-2xs: var(--shadow-2xs);
   --shadow-xs: var(--shadow-xs);
   --shadow-sm: var(--shadow-sm);
@@ -161,12 +435,55 @@
   }
 }
 
+/* Font utility classes */
+.font-display {
+  font-family: var(--font-display), "Syne", sans-serif;
+}
+
+.font-body {
+  font-family: var(--font-body), "DM Sans", sans-serif;
+}
+
+.font-code {
+  font-family: var(--font-code), "Geist Mono", "Fira Code", monospace;
+}
+
 .font-mono {
   font-family: var(--font-mono);
 }
 
-
+/* Scrollbar hide utility */
 .scrollbar-hide {
   scrollbar-width: none;
   -ms-overflow-style: none;
+}
+
+/* ============================================================================
+   SYNTAX HIGHLIGHTING — CSS classes for CodeBlock component
+   Maps to Observatory syntax token CSS properties defined above.
+   ============================================================================ */
+.syntax-keyword {
+  color: var(--syntax-keyword);
+}
+.syntax-string {
+  color: var(--syntax-string);
+}
+.syntax-number {
+  color: var(--syntax-number);
+}
+.syntax-comment {
+  color: var(--syntax-comment);
+  font-style: italic;
+}
+.syntax-function {
+  color: var(--syntax-function);
+}
+.syntax-type {
+  color: var(--syntax-type);
+}
+.syntax-property {
+  color: var(--syntax-property);
+}
+.syntax-operator {
+  color: var(--syntax-operator);
 }

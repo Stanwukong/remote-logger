@@ -136,23 +136,23 @@ export function ProjectDetailsModal({
   };
 
   const getHealthScoreColor = (score: number) => {
-    if (score >= 80) return "text-green-600 dark:text-green-400";
-    if (score >= 60) return "text-yellow-600 dark:text-yellow-400";
-    return "text-red-600 dark:text-red-400";
+    if (score >= 80) return "text-status-ok";
+    if (score >= 60) return "text-status-warn";
+    return "text-status-danger";
   };
 
   const getHealthScoreBackground = (score: number) => {
-    if (score >= 80) return "bg-green-100 dark:bg-green-900/20";
-    if (score >= 60) return "bg-yellow-100 dark:bg-yellow-900/20";
-    return "bg-red-100 dark:bg-red-900/20";
+    if (score >= 80) return "bg-status-ok/15";
+    if (score >= 60) return "bg-level-warn/15";
+    return "bg-status-danger/15";
   };
 
   const getTrendIcon = (trend: string) => {
     switch (trend) {
       case "up":
-        return <TrendingUp className="w-4 h-4 text-green-500" />;
+        return <TrendingUp className="w-4 h-4 text-status-ok" />;
       case "down":
-        return <TrendingDown className="w-4 h-4 text-red-500" />;
+        return <TrendingDown className="w-4 h-4 text-status-danger" />;
       default:
         return <Minus className="w-4 h-4 text-gray-500" />;
     }
@@ -161,9 +161,9 @@ export function ProjectDetailsModal({
   const getTrendColor = (trend: string) => {
     switch (trend) {
       case "up":
-        return "text-green-600 dark:text-green-400";
+        return "text-status-ok";
       case "down":
-        return "text-red-600 dark:text-red-400";
+        return "text-status-danger";
       default:
         return "text-gray-600 dark:text-gray-400";
     }
@@ -189,7 +189,7 @@ export function ProjectDetailsModal({
             <div className="flex items-center space-x-3">
               <div
                 className={`w-3 h-3 rounded-full ${
-                  project.isActive ? "bg-green-500" : "bg-gray-400"
+                  project.isActive ? "bg-status-ok" : "bg-gray-400"
                 }`}
               />
               <div>
@@ -309,7 +309,7 @@ export function ProjectDetailsModal({
               <Card>
                 <CardContent className="p-4">
                   <div className="flex items-center space-x-2">
-                    <FileText className="w-4 h-4 text-blue-500" />
+                    <FileText className="w-4 h-4 text-data-info" />
                     <div>
                       <p className="text-2xl font-bold">
                         {project.metrics.totalLogs.toLocaleString()}
@@ -325,7 +325,7 @@ export function ProjectDetailsModal({
               <Card>
                 <CardContent className="p-4">
                   <div className="flex items-center space-x-2">
-                    <AlertTriangle className="w-4 h-4 text-red-500" />
+                    <AlertTriangle className="w-4 h-4 text-status-danger" />
                     <div>
                       <p className="text-2xl font-bold">
                         {project.metrics.totalErrorCount}
@@ -341,7 +341,7 @@ export function ProjectDetailsModal({
               <Card>
                 <CardContent className="p-4">
                   <div className="flex items-center space-x-2">
-                    <Target className="w-4 h-4 text-green-500" />
+                    <Target className="w-4 h-4 text-status-ok" />
                     <div>
                       <p className="text-2xl font-bold">
                         {project.alertRuleCount}
@@ -395,7 +395,7 @@ export function ProjectDetailsModal({
                         }
                       >
                         {copiedField === "projectId" ? (
-                          <Check className="w-4 h-4 text-green-500" />
+                          <Check className="w-4 h-4 text-status-ok" />
                         ) : (
                           <Copy className="w-4 h-4" />
                         )}
@@ -433,7 +433,7 @@ export function ProjectDetailsModal({
                         }
                       >
                         {copiedField === "apiKey" ? (
-                          <Check className="w-4 h-4 text-green-500" />
+                          <Check className="w-4 h-4 text-status-ok" />
                         ) : (
                           <Copy className="w-4 h-4" />
                         )}
@@ -481,7 +481,7 @@ export function ProjectDetailsModal({
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                    <div className="text-3xl font-bold text-data-info">
                       {project.metrics.averageResponseTime}ms
                     </div>
                     <p className="text-sm text-muted-foreground mt-1">
@@ -499,7 +499,7 @@ export function ProjectDetailsModal({
                   </div>
 
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-green-600 dark:text-green-400">
+                    <div className="text-3xl font-bold text-status-ok">
                       {project.metrics.performance.uptimePercentage}%
                     </div>
                     <p className="text-sm text-muted-foreground mt-1">Uptime</p>
@@ -549,7 +549,7 @@ export function ProjectDetailsModal({
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="p-4 bg-muted/50 rounded-lg">
-                    <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                    <div className="text-2xl font-bold text-status-warn">
                       {project.rateLimitConfig.maxRequestsPerMinute}
                     </div>
                     <p className="text-sm text-muted-foreground">
@@ -558,7 +558,7 @@ export function ProjectDetailsModal({
                   </div>
 
                   <div className="p-4 bg-muted/50 rounded-lg">
-                    <div className="text-2xl font-bold text-red-600 dark:text-red-400">
+                    <div className="text-2xl font-bold text-status-danger">
                       {project.rateLimitConfig.burstLimit}
                     </div>
                     <p className="text-sm text-muted-foreground">Burst Limit</p>
@@ -702,9 +702,9 @@ export function ProjectDetailsModal({
             </Card>
 
             {/* Danger Zone */}
-            <Card className="border-red-200 dark:border-red-800">
+            <Card className="border-status-danger/30">
               <CardHeader>
-                <CardTitle className="text-red-600 dark:text-red-400">
+                <CardTitle className="text-status-danger">
                   Danger Zone
                 </CardTitle>
                 <CardDescription>
@@ -714,13 +714,13 @@ export function ProjectDetailsModal({
               <CardContent className="space-y-3">
                 <Button
                   variant="outline"
-                  className="w-full border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950 bg-transparent"
+                  className="w-full border-status-danger/30 text-status-danger hover:bg-status-danger/10 bg-transparent"
                 >
                   Reset API Key
                 </Button>
                 <Button
                   variant="outline"
-                  className="w-full border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950 bg-transparent"
+                  className="w-full border-status-danger/30 text-status-danger hover:bg-status-danger/10 bg-transparent"
                 >
                   Delete Project
                 </Button>

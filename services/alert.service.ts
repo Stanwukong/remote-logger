@@ -67,23 +67,83 @@ export interface AlertFilters {
   tags?: string;
 }
 
+// Phase 2.2: Extended types for composite conditions
+export interface SimpleCondition {
+  level?: string;
+  keyword?: string;
+  frequency?: number;
+  intervalMinutes?: number;
+  service?: string;
+  environment?: string;
+  responseTimeThreshold?: number;
+  eventType?: string;
+}
+
+export interface CompositeCondition {
+  operator: "AND" | "OR";
+  conditions: SimpleCondition[];
+  frequency?: number;
+  intervalMinutes?: number;
+}
+
 export interface AlertRule {
   _id: string;
   name: string;
+  description?: string;
   projectId: string;
-  condition: {
-    level?: string;
-    keyword?: string;
-    frequency?: number;
-    intervalMinutes?: number;
-  };
+  condition: SimpleCondition | CompositeCondition;
   isActive: boolean;
   notifyChannels: string[];
   notificationConfig: {
     emails?: string[];
     slackWebhookUrl?: string;
     webhookUrl?: string;
+    github?: {
+      enabled?: boolean;
+    };
   };
+  escalationPolicyId?: string;
+  snoozeUntil?: string;
+  createdBy?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Phase 2.2: Escalation Policy types
+export interface EscalationLevel {
+  level: number;
+  delayMinutes: number;
+  notifyChannels: ("email" | "slack" | "webhook" | "github")[];
+  recipients: string[];
+  webhookUrl?: string;
+}
+
+export interface EscalationPolicy {
+  _id: string;
+  projectId: string;
+  name: string;
+  description?: string;
+  levels: EscalationLevel[];
+  isActive: boolean;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Phase 2.2: Maintenance Window types
+export interface MaintenanceWindow {
+  _id: string;
+  projectId: string;
+  name: string;
+  description?: string;
+  startTime: string;
+  endTime: string;
+  reason?: string;
+  affectedServices?: string[];
+  affectedEnvironments?: string[];
+  suppressAllAlerts: boolean;
+  createdBy: string;
+  isActive: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -103,6 +163,9 @@ export interface CreateAlertRuleData {
     emails?: string[];
     slackWebhookUrl?: string;
     webhookUrl?: string;
+    github?: {
+      enabled?: boolean;
+    };
   };
 }
 
@@ -390,17 +453,12 @@ export const alertRuleService = {
 
   /**
    * Get rules by project
-   * GET /api/alert-rules
+   * GET /api/alert-rules/project/:projectId
    */
   getRulesByProject: async (projectId: string) => {
     try {
       const response = await apiClient.get<ApiResponse<AlertRule[]>>(
-        `/alert-rules`,
-        {
-          headers: {
-            'X-Project-ID': projectId
-          }
-        }
+        `/alert-rules/project/${projectId}`
       );
 
       if (response.data.status === "error") {
@@ -486,6 +544,138 @@ export const alertRuleService = {
           response.data.errors
         );
       }
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  // === PHASE 2.2 ENHANCEMENTS ===
+
+  /**
+   * Test alert rule against recent logs (dry-run)
+   * POST /api/alert-rules/:id/test
+   */
+  testRule: async (ruleId: string, limitLogs: number = 100) => {
+    try {
+      const response = await apiClient.post<ApiResponse<{
+        ruleId: string;
+        matchedCount: number;
+        previewLogs: any[];
+        message: string;
+      }>>(`/alert-rules/${ruleId}/test`, null, {
+        params: { limit: limitLogs }
+      });
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to test alert rule",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  /**
+   * Snooze alert rule for specified duration
+   * POST /api/alert-rules/:id/snooze
+   */
+  snoozeRule: async (ruleId: string, durationMinutes: number) => {
+    try {
+      const response = await apiClient.post<ApiResponse<AlertRule>>(
+        `/alert-rules/${ruleId}/snooze`,
+        { durationMinutes }
+      );
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to snooze alert rule",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  /**
+   * Get alert analytics (trends, MTTR, noisiest rules)
+   * GET /api/alert-rules/analytics/:projectId
+   */
+  getAnalytics: async (projectId: string, timeRange: "1d" | "7d" | "30d" = "7d") => {
+    try {
+      const response = await apiClient.get<ApiResponse<{
+        frequencyTrends: Array<{ _id: string; count: number }>;
+        noisiestRules: Array<{
+          ruleId: string;
+          ruleName: string;
+          count: number;
+          lastTriggered: string;
+        }>;
+        mttr: {
+          avgMinutes: number;
+          minMinutes: number;
+          maxMinutes: number;
+          resolvedCount: number;
+        };
+        severityDistribution: Array<{ _id: string; count: number }>;
+        timeRange: string;
+      }>>(`/alert-rules/analytics/${projectId}`, {
+        params: { timeRange }
+      });
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to fetch alert analytics",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  /**
+   * Get alert timeline for incident tracking
+   * GET /api/alert-rules/timeline/:projectId
+   */
+  getTimeline: async (projectId: string, startDate: string, endDate: string) => {
+    try {
+      const response = await apiClient.get<ApiResponse<{
+        timeline: Alert[];
+        summary: {
+          total: number;
+          bySeverity: { info: number; warning: number; critical: number };
+          byStatus: {
+            active: number;
+            acknowledged: number;
+            resolved: number;
+            snoozed: number;
+          };
+        };
+      }>>(`/alert-rules/timeline/${projectId}`, {
+        params: { startDate, endDate }
+      });
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to fetch alert timeline",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return response.data;
     } catch (error) {
       handleApiError(error);
     }
@@ -597,5 +787,307 @@ export const alertHelpers = {
       groups[severity].push(alert);
       return groups;
     }, {} as Record<Alert["severity"], Alert[]>);
+  },
+};
+
+// === PHASE 2.2: ESCALATION POLICY SERVICE ===
+export const escalationPolicyService = {
+  /**
+   * Create escalation policy
+   * POST /api/escalation-policies
+   */
+  create: async (data: Omit<EscalationPolicy, "_id" | "createdAt" | "updatedAt">) => {
+    try {
+      const response = await apiClient.post<ApiResponse<EscalationPolicy>>(
+        `/escalation-policies`,
+        data
+      );
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to create escalation policy",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  /**
+   * Get escalation policies by project
+   * GET /api/escalation-policies/project/:projectId
+   */
+  getByProject: async (projectId: string, isActive?: boolean) => {
+    try {
+      const response = await apiClient.get<ApiResponse<EscalationPolicy[]>>(
+        `/escalation-policies/project/${projectId}`,
+        { params: { isActive } }
+      );
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to fetch escalation policies",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  /**
+   * Get escalation policy by ID
+   * GET /api/escalation-policies/:id
+   */
+  getById: async (id: string) => {
+    try {
+      const response = await apiClient.get<ApiResponse<EscalationPolicy>>(
+        `/escalation-policies/${id}`
+      );
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to fetch escalation policy",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  /**
+   * Update escalation policy
+   * PUT /api/escalation-policies/:id
+   */
+  update: async (id: string, data: Partial<EscalationPolicy>) => {
+    try {
+      const response = await apiClient.put<ApiResponse<EscalationPolicy>>(
+        `/escalation-policies/${id}`,
+        data
+      );
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to update escalation policy",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  /**
+   * Delete escalation policy
+   * DELETE /api/escalation-policies/:id
+   */
+  delete: async (id: string, hardDelete: boolean = false) => {
+    try {
+      const response = await apiClient.delete(
+        `/escalation-policies/${id}`,
+        { params: { hard: hardDelete } }
+      );
+
+      if (response.status === 204) return;
+
+      if (response.data && response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to delete escalation policy",
+          response.status,
+          response.data.errors
+        );
+      }
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+};
+
+// === PHASE 2.2: MAINTENANCE WINDOW SERVICE ===
+export const maintenanceWindowService = {
+  /**
+   * Create maintenance window
+   * POST /api/maintenance-windows
+   */
+  create: async (data: Omit<MaintenanceWindow, "_id" | "createdAt" | "updatedAt">) => {
+    try {
+      const response = await apiClient.post<ApiResponse<MaintenanceWindow>>(
+        `/maintenance-windows`,
+        data
+      );
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to create maintenance window",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  /**
+   * Get maintenance windows by project
+   * GET /api/maintenance-windows/project/:projectId
+   */
+  getByProject: async (projectId: string, isActive?: boolean, includeExpired: boolean = false) => {
+    try {
+      const response = await apiClient.get<ApiResponse<MaintenanceWindow[]>>(
+        `/maintenance-windows/project/${projectId}`,
+        { params: { isActive, includeExpired } }
+      );
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to fetch maintenance windows",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  /**
+   * Get currently active maintenance windows
+   * GET /api/maintenance-windows/project/:projectId/active
+   */
+  getActiveByProject: async (projectId: string) => {
+    try {
+      const response = await apiClient.get<ApiResponse<MaintenanceWindow[]>>(
+        `/maintenance-windows/project/${projectId}/active`
+      );
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to fetch active maintenance windows",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  /**
+   * Get maintenance window by ID
+   * GET /api/maintenance-windows/:id
+   */
+  getById: async (id: string) => {
+    try {
+      const response = await apiClient.get<ApiResponse<MaintenanceWindow>>(
+        `/maintenance-windows/${id}`
+      );
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to fetch maintenance window",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  /**
+   * Update maintenance window
+   * PUT /api/maintenance-windows/:id
+   */
+  update: async (id: string, data: Partial<MaintenanceWindow>) => {
+    try {
+      const response = await apiClient.put<ApiResponse<MaintenanceWindow>>(
+        `/maintenance-windows/${id}`,
+        data
+      );
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to update maintenance window",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  /**
+   * Delete maintenance window
+   * DELETE /api/maintenance-windows/:id
+   */
+  delete: async (id: string, hardDelete: boolean = false) => {
+    try {
+      const response = await apiClient.delete(
+        `/maintenance-windows/${id}`,
+        { params: { hard: hardDelete } }
+      );
+
+      if (response.status === 204) return;
+
+      if (response.data && response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to delete maintenance window",
+          response.status,
+          response.data.errors
+        );
+      }
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
+
+  /**
+   * End maintenance window early
+   * POST /api/maintenance-windows/:id/end
+   */
+  endEarly: async (id: string) => {
+    try {
+      const response = await apiClient.post<ApiResponse<MaintenanceWindow>>(
+        `/maintenance-windows/${id}/end`
+      );
+
+      if (response.data.status === "error") {
+        throw new ApiError(
+          response.data.message || "Failed to end maintenance window",
+          response.status,
+          response.data.errors
+        );
+      }
+
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
   },
 };

@@ -20,10 +20,10 @@ export type TeamMember = {
 
 // Integration settings for a project.
 export type IntegrationSettings = {
-  id: string;
-  name: string;
-  isEnabled: boolean;
-  config: Record<string, any>;
+  slack?: { webhookUrl?: string };
+  email?: { recipients?: string[] };
+  webhook?: { url?: string; headers?: Record<string, string> };
+  github?: { repo?: string; owner?: string; enabled?: boolean };
 };
 
 // The main project data structure.
@@ -31,6 +31,7 @@ export type Project = {
   project: {
     _id: string;
     name: string;
+    description?: string;
     apiKey: string;
     ownerId: {
       _id: string;
@@ -56,6 +57,7 @@ export type Project = {
       burstLimit: number;
     };
     tags: string[];
+    integrationSettings?: IntegrationSettings;
     createdAt: string;
     updatedAt: string;
   };
@@ -71,12 +73,17 @@ export type Project = {
     responseTime: {
       current: {
         avgResponseTime: number;
+        minResponseTime?: number;
+        maxResponseTime?: number;
+        responseTimeCount?: number;
         health: string;
       };
-      history: Array<{
-        timestamp: string;
+      trends: Array<{
+        _id: { hour: string };
         avgResponseTime: number;
+        requestCount: number;
       }>;
+      health?: string;
     };
     errors: {
       analysis: Array<{
@@ -95,6 +102,11 @@ export type Project = {
         services: string[];
         environments: string[];
       }>;
+      trends?: Array<{
+        _id: { date: string };
+        errorCount: number;
+        uniqueErrorCount?: number;
+      }>;
       health: string;
     };
     performance: {
@@ -103,7 +115,20 @@ export type Project = {
         successfulRequests: number;
         errorRequests: number;
         avgResponseTime: number | null;
+        slowestRequests?: number | null;
+        fastestRequests?: number | null;
       };
+      uptime?: Array<{
+        _id: { day: string };
+        totalLogs: number;
+        errorLogs: number;
+        avgResponseTime: number | null;
+      }>;
+      trends?: Array<{
+        _id: { date: string };
+        avgResponseTime: number;
+        requestCount: number;
+      }>;
       health: string;
     };
     usage: {
@@ -119,6 +144,25 @@ export type Project = {
         errorCount: number;
       }>;
       insights: string[];
+    };
+    trends?: {
+      logs: Array<{
+        _id: { date: string };
+        totalLogs: number;
+        errorLogs: number;
+        avgResponseTime: number | null;
+      }>;
+      errors: Array<{
+        _id: { date: string };
+        errorCount: number;
+        uniqueErrorCount?: number;
+      }>;
+      performance: Array<{
+        _id: { date: string };
+        avgResponseTime: number;
+        requestCount: number;
+      }>;
+      analysis?: Record<string, unknown>;
     };
   };
   recommendations: {
@@ -143,6 +187,7 @@ export type ProjectCreateData = {
 export type ProjectUpdateData = {
   name?: string;
   description?: string;
+  isActive?: boolean;
   tags?: ProjectTag[];
   rateLimit?: {
     maxRequests: number;

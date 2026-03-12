@@ -10,9 +10,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
-  Code,
   ExternalLink,
   BookOpen,
   Zap,
@@ -21,19 +19,12 @@ import {
   Package,
   Rocket,
   CheckCircle2,
-  AlertTriangle,
   Star,
   Github,
-  Play,
   Clock,
-  TrendingUp,
   Settings,
-  Database,
-  Server,
   Layers,
   ArrowRight,
-  Lightbulb,
-  Target,
   Activity,
   Eye,
   MousePointer,
@@ -42,1876 +33,1784 @@ import {
   Gauge,
   Globe,
   Lock,
-  Smartphone,
-  RefreshCw,
-  Heart,
-  MessageCircle,
-  GitBranch,
   Sparkles,
   Brain,
   Fingerprint,
-  Workflow,
-  Palette,
-  TestTube,
+  GitBranch,
+  ChevronRight,
+  Radar,
+  Timer,
+  Cpu,
+  FileCode,
+  AlertTriangle,
+  Hash,
+  Heart,
+  Copy,
 } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { InteractiveDemo } from "@/components/sdk/interactive-demo";
 import { CodeBlock } from "@/components/sdk/code-block";
 import { FeatureShowcase } from "@/components/sdk/feature-showcase";
+import { HeroCanvas } from "@/components/landing/HeroCanvas";
 
 export default function SDKPage() {
+  const [installCopied, setInstallCopied] = useState(false);
+
+  const handleCopyInstall = async () => {
+    await navigator.clipboard.writeText("npm install apperio");
+    setInstallCopied(true);
+    setTimeout(() => setInstallCopied(false), 2000);
+  };
+
   return (
-    <div className="min-h-screen scrollbar-hide bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-border/40 backdrop-blur-sm bg-background/95">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+    <div
+      className="relative min-h-screen scrollbar-hide"
+      style={{
+        background:
+          "linear-gradient(180deg, var(--bg-void) 0%, var(--bg-base) 50%, var(--bg-void) 100%)",
+      }}
+    >
+      {/* Observatory background — full page */}
+      <div className="fixed inset-0 bg-dot-grid opacity-40 pointer-events-none" />
+      <div className="fixed inset-0 pointer-events-none">
+        <HeroCanvas />
+      </div>
+
+      <div className="relative z-10">
+      {/* ================================================================
+          SECTION 1: HEADER — Sticky glassmorphism nav
+          ================================================================ */}
+      <header className="sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-3.5 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Link href="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <Code className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <span className="text-xl font-semibold">Monita</span>
+            <Link href="/" className="flex items-center gap-2.5">
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 28 28"
+                fill="none"
+                className="text-signal"
+              >
+                <path
+                  d="M4 20L4 16L8 12L12 18L18 8L22 14L24 10"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <circle cx="4" cy="20" r="2" fill="currentColor" />
+                <circle cx="24" cy="10" r="2" fill="currentColor" />
+              </svg>
+              <span className="font-display font-semibold text-lg text-text-primary tracking-[-0.02em]">
+                apperio
+              </span>
             </Link>
             <div className="items-center space-x-2 ml-4 hidden md:flex">
-              <Badge variant="secondary" className="text-xs">
+              <Badge
+                variant="secondary"
+                className="text-xs bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm"
+              >
                 <Package className="w-3 h-3 mr-1" />
-                v1.0.3
+                v1.2.2
               </Badge>
-              <Badge variant="outline" className="text-xs">
-                <Star className="w-3 h-3 mr-1 text-yellow-500" />
+              <Badge
+                variant="outline"
+                className="text-xs border-white/[0.06]"
+              >
+                <Star className="w-3 h-3 mr-1 text-data" />
                 MIT
               </Badge>
             </div>
           </div>
-          <nav className="hidden md:flex items-center space-x-6">
+          <nav className="hidden lg:flex items-center space-x-6">
             <a
               href="#quickstart"
-              className="text-sm font-medium hover:text-primary transition-colors"
+              className="text-sm font-medium text-text-secondary hover:text-signal transition-colors duration-150"
             >
               Quick Start
             </a>
             <a
-              href="#features"
-              className="text-sm font-medium hover:text-primary transition-colors"
+              href="#auto-instrumentation"
+              className="text-sm font-medium text-text-secondary hover:text-signal transition-colors duration-150"
             >
               Features
             </a>
             <a
-              href="#examples"
-              className="text-sm font-medium hover:text-primary transition-colors"
+              href="#frameworks"
+              className="text-sm font-medium text-text-secondary hover:text-signal transition-colors duration-150"
             >
-              Examples
+              Frameworks
             </a>
             <a
-              href="#reference"
-              className="text-sm font-medium hover:text-primary transition-colors"
+              href="#api-reference"
+              className="text-sm font-medium text-text-secondary hover:text-signal transition-colors duration-150"
             >
               API Reference
             </a>
           </nav>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3">
             <ThemeToggle />
-            <Button variant="default" asChild>
+            <Button variant="signal" size="sm" asChild>
               <Link href="/dashboard">Dashboard</Link>
             </Button>
           </div>
         </div>
+        <div
+          className="absolute bottom-0 left-0 right-0 h-px"
+          style={{
+            background:
+              "linear-gradient(90deg, transparent 0%, var(--signal) 50%, transparent 100%)",
+            opacity: 0.15,
+          }}
+        />
       </header>
 
-      <div className="container mx-auto px-3 sm:px-4 py-12 max-w-full overflow-hidden scrollbar-hide">
-        {/* Hero Section */}
-        <div className="text-center mb-16">
-          <Badge variant="secondary" className="mb-6">
-            <Sparkles className="w-3 h-3 mr-1" />
-            Zero-Config Auto-Instrumentation
-          </Badge>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-6 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent px-2">
-            Monita SDK {" "}
-            <br className="md:hidden"/>
-            <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-              Intelligent Logging
-            </span>
-          </h1>
-          <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 leading-relaxed px-4 sm:px-0">
-            A powerful, TypeScript-first logging SDK with automatic error
-            tracking, performance monitoring, and user interaction capture.
-            Similar to Sentry and LogRocket, but with full control over your
-            data.
-          </p>
+      <div className="container mx-auto px-3 sm:px-4 py-12 max-w-6xl overflow-hidden scrollbar-hide">
+        {/* ================================================================
+            SECTION 2: HERO — Title, stats, install command, CTAs
+            ================================================================ */}
+        <div
+          className="relative text-center mb-20 -mx-3 sm:-mx-4 px-3 sm:px-4 py-16 sm:py-24 overflow-hidden"
+        >
+          <div
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] pointer-events-none"
+            style={{
+              background:
+                "radial-gradient(ellipse at center, var(--signal-glow) 0%, transparent 70%)",
+              opacity: 0.4,
+            }}
+          />
 
-          {/* Feature Highlights */}
-          <div className="flex flex-wrap justify-center gap-3 sm:gap-6 mb-12 text-xs sm:text-sm px-4 sm:px-0">
-            <div className="flex items-center space-x-2">
-              <Bug className="w-3 h-3 sm:w-4 sm:h-4 text-red-500 flex-shrink-0" />
-              <span className="font-medium">Auto Error Tracking</span>
+          <div className="relative z-10">
+            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-signal/20 bg-signal-muted backdrop-blur-sm mb-6">
+              <Sparkles className="w-3 h-3 text-signal" />
+              <span className="text-xs font-display font-semibold uppercase tracking-[0.08em] text-signal">
+                Full-Stack Observability SDK
+              </span>
             </div>
-            <div className="flex items-center space-x-2">
-              <Gauge className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 flex-shrink-0" />
-              <span className="font-medium">Performance Monitoring</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Network className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 flex-shrink-0" />
-              <span className="font-medium">Network Tracking</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <MousePointer className="w-3 h-3 sm:w-4 sm:h-4 text-purple-500 flex-shrink-0" />
-              <span className="font-medium">User Interactions</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Lock className="w-3 h-3 sm:w-4 sm:h-4 text-orange-500 flex-shrink-0" />
-              <span className="font-medium">Privacy-First</span>
-            </div>
-          </div>
 
-          {/* Quick Stats */}
-          <div className="flex flex-wrap justify-center gap-4 sm:gap-8 mb-12 text-xs sm:text-sm px-4 sm:px-0">
-            {/* <div className="flex items-center space-x-2">
-              <Download className="w-4 h-4 text-green-500" />
-              <span className="font-medium">500K+</span>
-              <span className="text-muted-foreground">Downloads</span>
-            </div> */}
-            <div className="flex items-center space-x-2">
-              <Package className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 flex-shrink-0" />
-              <span className="font-medium">~50KB</span>
-              <span className="text-muted-foreground">Gzipped</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-purple-500 flex-shrink-0" />
-              <span className="font-medium">{"<30s"}</span>
-              <span className="text-muted-foreground">Setup Time</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Zap className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500 flex-shrink-0" />
-              <span className="font-medium">Zero Config</span>
-              <span className="text-muted-foreground">Required</span>
-            </div>
-          </div>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-extrabold tracking-[-0.03em] mb-6 px-2">
+              <span className="text-text-primary">Apperio SDK</span>
+            </h1>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 sm:px-0">
-            <Button size="lg" className="text-sm sm:text-base w-full sm:w-auto" asChild>
-              <Link href="#quickstart">
-                <Rocket className="mr-2 w-4 h-4" />
-                Quick Start Guide
-              </Link>
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="text-sm sm:text-base bg-transparent w-full sm:w-auto"
-              asChild
-            >
-              <Link href="#demo">
-                <Play className="mr-2 w-4 h-4" />
-                Try Interactive Demo
-              </Link>
-            </Button>
-            <Button size="lg" variant="ghost" className="text-sm sm:text-base w-full sm:w-auto" asChild>
-              <Link
-                href="https://github.com/Stanwukong/loghive-sdk"
-                target="_blank"
+            <p className="text-base sm:text-lg md:text-xl text-text-secondary max-w-3xl mx-auto mb-8 leading-relaxed px-4 sm:px-0">
+              Auto-instrumentation, distributed tracing, PII protection, and resilient delivery
+              in a single TypeScript package. Like Sentry + LogRocket, but with full control.
+            </p>
+
+            {/* Framework badges */}
+            <div className="flex flex-wrap justify-center gap-2 mb-8 px-4 sm:px-0">
+              {[
+                { label: "TypeScript", icon: FileCode },
+                { label: "React", icon: Layers },
+                { label: "Next.js", icon: Globe },
+              ].map((fw) => (
+                <div
+                  key={fw.label}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm"
+                >
+                  <fw.icon className="w-3.5 h-3.5 text-signal" />
+                  <span className="text-xs font-medium text-text-primary">
+                    {fw.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Key stats */}
+            <div className="flex flex-wrap justify-center gap-4 sm:gap-6 mb-10 text-xs sm:text-sm px-4 sm:px-0">
+              <div className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm">
+                <Package className="w-3.5 h-3.5 text-data flex-shrink-0" />
+                <span className="font-medium text-text-primary">~50KB</span>
+                <span className="text-text-muted">gzipped</span>
+              </div>
+              <div className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm">
+                <Clock className="w-3.5 h-3.5 text-data-bright flex-shrink-0" />
+                <span className="font-medium text-text-primary">{"<30s"}</span>
+                <span className="text-text-muted">setup</span>
+              </div>
+              <div className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm">
+                <Zap className="w-3.5 h-3.5 text-signal flex-shrink-0" />
+                <span className="font-medium text-text-primary">15+</span>
+                <span className="text-text-muted">features</span>
+              </div>
+            </div>
+
+            {/* Install command inline */}
+            <div className="flex justify-center mb-10 px-4 sm:px-0">
+              <button
+                onClick={handleCopyInstall}
+                className="flex items-center gap-3 px-5 py-3 rounded-lg bg-bg-void/80 border border-white/[0.08] hover:border-signal/30 transition-all duration-200 group cursor-pointer"
               >
-                <Github className="mr-2 w-4 h-4" />
-                View on GitHub
-              </Link>
-            </Button>
+                <Terminal className="w-4 h-4 text-text-muted" />
+                <code className="font-mono text-sm text-text-primary">
+                  npm install apperio
+                </code>
+                <span className="text-text-muted group-hover:text-signal transition-colors">
+                  {installCopied ? (
+                    <CheckCircle2 className="w-4 h-4 text-signal" />
+                  ) : (
+                    <Copy className="w-4 h-4" />
+                  )}
+                </span>
+              </button>
+            </div>
+
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 sm:px-0">
+              <Button
+                variant="signal"
+                size="lg"
+                className="text-sm sm:text-base font-display font-bold w-full sm:w-auto"
+                asChild
+              >
+                <Link href="#quickstart">
+                  <Rocket className="mr-2 w-4 h-4" />
+                  Quick Start Guide
+                </Link>
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="text-sm sm:text-base bg-white/[0.03] border-white/[0.08] hover:bg-white/[0.06] hover:border-signal/30 transition-all duration-200 w-full sm:w-auto"
+                asChild
+              >
+                <Link
+                  href="https://github.com/Stanwukong/loghive-sdk"
+                  target="_blank"
+                >
+                  <Github className="mr-2 w-4 h-4" />
+                  View on GitHub
+                </Link>
+              </Button>
+              <Button
+                size="lg"
+                variant="ghost"
+                className="text-sm sm:text-base text-text-secondary hover:text-text-primary w-full sm:w-auto"
+                asChild
+              >
+                <Link
+                  href="https://npmjs.com/package/apperio"
+                  target="_blank"
+                >
+                  <Package className="mr-2 w-4 h-4" />
+                  npm: apperio
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
 
-        {/* Auto-Capture Features */}
-        <section id="features" className="mb-24">
-          <div className="text-center mb-12">
-            <Badge variant="outline" className="mb-4">
-              <Brain className="w-3 h-3 mr-1" />
-              Auto-Instrumentation
-            </Badge>
-            <h2 className="text-3xl font-bold mb-4">
-              What Gets Captured Automatically
-            </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              With zero configuration, the SDK automatically captures
-              comprehensive telemetry data
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-12">
-            {[
-              {
-                icon: Bug,
-                title: "Errors",
-                description: "Uncaught exceptions, promise rejections",
-                level: "ERROR",
-                color: "text-red-500",
-                bgColor: "bg-red-500/10",
-                features: [
-                  "JavaScript errors",
-                  "Promise rejections",
-                  "Stack traces",
-                  "Source maps",
-                ],
-              },
-              {
-                icon: Gauge,
-                title: "Performance",
-                description: "Page loads, resource timing, Core Web Vitals",
-                level: "DEBUG/INFO/WARN",
-                color: "text-blue-500",
-                bgColor: "bg-blue-500/10",
-                features: [
-                  "Core Web Vitals",
-                  "Resource timing",
-                  "Navigation timing",
-                  "Memory usage",
-                ],
-              },
-              {
-                icon: Network,
-                title: "Network",
-                description: "Fetch/XHR requests with status and timing",
-                level: "DEBUG/WARN/ERROR",
-                color: "text-green-500",
-                bgColor: "bg-green-500/10",
-                features: [
-                  "HTTP requests",
-                  "Response times",
-                  "Status codes",
-                  "Request/response size",
-                ],
-              },
-              {
-                icon: Globe,
-                title: "Page Views",
-                description: "Navigation and SPA route changes",
-                level: "INFO",
-                color: "text-purple-500",
-                bgColor: "bg-purple-500/10",
-                features: [
-                  "Page navigation",
-                  "SPA routing",
-                  "Referrer tracking",
-                  "Session duration",
-                ],
-              },
-              {
-                icon: Terminal,
-                title: "Console",
-                description: "console.error() and console.warn() calls",
-                level: "ERROR/WARN",
-                color: "text-orange-500",
-                bgColor: "bg-orange-500/10",
-                features: [
-                  "Console errors",
-                  "Console warnings",
-                  "Stack traces",
-                  "Arguments capture",
-                ],
-              },
-              {
-                icon: MousePointer,
-                title: "Interactions",
-                description: "User clicks, scrolls (optional)",
-                level: "DEBUG/TRACE",
-                color: "text-pink-500",
-                bgColor: "bg-pink-500/10",
-                features: [
-                  "Click events",
-                  "Scroll tracking",
-                  "Form interactions",
-                  "Element selectors",
-                ],
-              },
-            ].map((feature, index) => (
-              <Card key={index} className="hover:shadow-md transition-shadow">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start space-x-3">
-                    <div
-                      className={`w-10 h-10 sm:w-12 sm:h-12 ${feature.bgColor} rounded-lg flex items-center justify-center flex-shrink-0`}
-                    >
-                      <feature.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${feature.color}`} />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <CardTitle className="text-base sm:text-lg leading-tight">{feature.title}</CardTitle>
-                      <Badge variant="outline" className="text-xs mt-1">
-                        {feature.level}
-                      </Badge>
-                    </div>
-                  </div>
-                  <CardDescription className="text-sm mt-3">
-                    {feature.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <ul className="space-y-2">
-                    {feature.features.map((item, idx) => (
-                      <li
-                        key={idx}
-                        className="flex items-start text-xs sm:text-sm text-muted-foreground"
-                      >
-                        <CheckCircle2 className="w-3 h-3 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                        <span className="leading-relaxed">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </section>
-
-        {/* Interactive Demo Section */}
-        <section id="demo" className="mb-24">
-          <div className="text-center mb-12 px-4 sm:px-0">
-            <Badge variant="outline" className="mb-4">
-              <Play className="w-3 h-3 mr-1" />
-              Interactive Demo
-            </Badge>
-            <h2 className="text-2xl sm:text-3xl font-bold mb-4">Try Monita Live</h2>
-            <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
-              Experience auto-instrumentation in action. Trigger events and see
-              real-time capture.
-            </p>
-          </div>
-          <div className="px-3 sm:px-0">
-            <InteractiveDemo />
-          </div>
-        </section>
-
-        {/* Quick Start Section */}
+        {/* ================================================================
+            SECTION 3: QUICK START — Framework tabs (Vanilla TS / React / Next.js)
+            ================================================================ */}
         <section id="quickstart" className="mb-24">
           <div className="text-center mb-12">
-            <Badge variant="outline" className="mb-4">
-              <Zap className="w-3 h-3 mr-1" />
-              Zero-Config Setup
-            </Badge>
-            <h2 className="text-3xl font-bold mb-4">
-              Get Started in 30 Seconds
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-signal/20 bg-signal-muted backdrop-blur-sm mb-4">
+              <Zap className="w-3 h-3 text-signal" />
+              <span className="text-xs font-display font-semibold uppercase tracking-[0.06em] text-signal">
+                Get Started
+              </span>
+            </div>
+            <h2 className="text-3xl font-display font-bold mb-4 text-text-primary">
+              Quick Start
             </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Install, initialize, and start capturing events automatically
+            <p className="text-text-secondary text-lg max-w-2xl mx-auto">
+              Three steps. Any framework. Under 30 seconds.
             </p>
           </div>
 
-          <Tabs defaultValue="basic" className="w-full">
+          <Tabs defaultValue="vanilla" className="w-full">
             <div className="flex justify-center mb-8">
-              <TabsList className="grid grid-cols-2 gap-1 sm:gap-2 md:grid-cols-4 w-full max-w-full mb-4 px-2 sm:px-0">
+              <TabsList className="grid grid-cols-3 gap-1 w-full max-w-lg bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm">
                 <TabsTrigger
-                  value="basic"
-                  className="flex items-center space-x-1 sm:space-x-2 py-2 sm:py-3 text-xs sm:text-sm"
+                  value="vanilla"
+                  className="flex items-center gap-1.5 py-2.5 text-xs sm:text-sm data-[state=active]:bg-signal/10 data-[state=active]:text-signal transition-all duration-200"
                 >
-                  <Rocket className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                  <span className="truncate">Basic Setup</span>
+                  <FileCode className="w-3.5 h-3.5" />
+                  <span>Vanilla TS</span>
                 </TabsTrigger>
                 <TabsTrigger
-                  value="advanced"
-                  className="flex items-center space-x-1 sm:space-x-2 py-2 sm:py-3 text-xs sm:text-sm"
+                  value="react"
+                  className="flex items-center gap-1.5 py-2.5 text-xs sm:text-sm data-[state=active]:bg-signal/10 data-[state=active]:text-signal transition-all duration-200"
                 >
-                  <Settings className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                  <span className="truncate">Advanced</span>
+                  <Layers className="w-3.5 h-3.5" />
+                  <span>React</span>
                 </TabsTrigger>
                 <TabsTrigger
-                  value="frameworks"
-                  className="flex items-center space-x-1 sm:space-x-2 py-2 sm:py-3 text-xs sm:text-sm"
+                  value="nextjs"
+                  className="flex items-center gap-1.5 py-2.5 text-xs sm:text-sm data-[state=active]:bg-signal/10 data-[state=active]:text-signal transition-all duration-200"
                 >
-                  <Layers className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                  <span className="truncate">Frameworks</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="environments"
-                  className="flex items-center space-x-1 sm:space-x-2 py-2 sm:py-3 text-xs sm:text-sm"
-                >
-                  <Globe className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                  <span className="truncate">Environments</span>
+                  <Globe className="w-3.5 h-3.5" />
+                  <span>Next.js</span>
                 </TabsTrigger>
               </TabsList>
             </div>
 
-            <TabsContent value="basic" className="space-y-8 mt-4 w-full">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-                <div className="space-y-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                          1
-                        </div>
-                        <span>Install the SDK</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <CodeBlock
-                        language="bash"
-                        code="npm install monita"
-                        showCopy
-                        title="Terminal"
-                      />
-                      <div className="flex gap-2 mt-3 text-sm text-muted-foreground">
-                        <span>Or:</span>
-                        <code className="bg-muted px-1 rounded">
-                          yarn add monita
-                        </code>
-                        <code className="bg-muted px-1 rounded">
-                          pnpm add monita
-                        </code>
-                      </div>
-                    </CardContent>
-                  </Card>
+            {/* Vanilla TypeScript */}
+            <TabsContent value="vanilla" className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <StepCard step={1} title="Install">
+                  <CodeBlock
+                    language="bash"
+                    code="npm install apperio"
+                    showCopy
+                    title="Terminal"
+                  />
+                  <div className="flex gap-2 mt-3 text-xs text-text-muted">
+                    <span>Or:</span>
+                    <code className="font-mono text-text-code">yarn add apperio</code>
+                    <code className="font-mono text-text-code">pnpm add apperio</code>
+                  </div>
+                </StepCard>
 
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                          2
-                        </div>
-                        <span>Initialize with Auto-Instrumentation</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <CodeBlock
-                        language="typescript"
-                        code={`import { Monita } from "monita";
+                <StepCard step={2} title="Initialize">
+                  <CodeBlock
+                    language="typescript"
+                    code={`import { Apperio } from "apperio";
 
-// Initialize with auto-instrumentation
-const logger = new Monita({
+const logger = new Apperio({
   apiKey: "your-api-key",
   projectId: "your-project-id",
   environment: "production",
   serviceName: "my-web-app",
-});
-
-// That's it! Auto-capture is already working:
-// ✅ JavaScript errors are automatically captured
-// ✅ Network requests are monitored
-// ✅ Performance metrics are collected
-// ✅ Page views are tracked`}
-                        showCopy
-                        title="app.ts"
-                      />
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                          3
-                        </div>
-                        <span>Optional Manual Logging</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <CodeBlock
-                        language="typescript"
-                        code={`// Manual logging (optional - auto-capture handles most cases)
-logger.info("User started checkout");
-logger.error("Payment failed", new Error("Card declined"));
-
-// Enhanced logging with context
-logger.setContext({
-  userId: "12345",
-  feature: "checkout",
-  experimentId: "ab-test-v2",
-});
-
-// Capture exceptions with additional context
-logger.captureException(new Error("Something broke"), {
-  component: "PaymentForm",
-  action: "submit",
 });`}
-                        showCopy
-                        title="manual-logging.ts"
-                      />
-                    </CardContent>
-                  </Card>
-                </div>
+                    showCopy
+                    title="app.ts"
+                  />
+                </StepCard>
 
-                <div className="space-y-6">
-                  <Alert>
-                    <Sparkles className="h-4 w-4" />
-                    <AlertDescription>
-                      <strong>Zero Configuration Required!</strong> The SDK
-                      automatically starts capturing errors, performance
-                      metrics, network requests, and page views as soon as you
-                      initialize it.
-                    </AlertDescription>
-                  </Alert>
+                <StepCard step={3} title="Log">
+                  <CodeBlock
+                    language="typescript"
+                    code={`// Manual logging (optional)
+logger.info("User signed up", {
+  plan: "pro",
+});
 
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>What Happens Automatically</CardTitle>
-                      <CardDescription>
-                        Events captured without any additional code
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="space-y-3">
-                        <div className="flex items-center space-x-3">
-                          <Bug className="w-4 h-4 text-red-500" />
-                          <div>
-                            <h4 className="font-semibold text-sm">
-                              Error Tracking
-                            </h4>
-                            <p className="text-xs text-muted-foreground">
-                              Uncaught exceptions and promise rejections
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                          <Gauge className="w-4 h-4 text-blue-500" />
-                          <div>
-                            <h4 className="font-semibold text-sm">
-                              Performance Monitoring
-                            </h4>
-                            <p className="text-xs text-muted-foreground">
-                              Core Web Vitals, page load times
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                          <Network className="w-4 h-4 text-green-500" />
-                          <div>
-                            <h4 className="font-semibold text-sm">
-                              Network Requests
-                            </h4>
-                            <p className="text-xs text-muted-foreground">
-                              Fetch/XHR monitoring with timing
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                          <Globe className="w-4 h-4 text-purple-500" />
-                          <div>
-                            <h4 className="font-semibold text-sm">
-                              Page Views
-                            </h4>
-                            <p className="text-xs text-muted-foreground">
-                              Navigation and SPA route changes
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Bundle Impact</CardTitle>
-                      <CardDescription>
-                        Lightweight and performant
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid grid-cols-2 gap-4 text-center">
-                        <div className="p-3 bg-muted/50 rounded-lg">
-                          <Package className="w-6 h-6 mx-auto mb-2 text-blue-500" />
-                          <div className="font-semibold">~50KB</div>
-                          <div className="text-xs text-muted-foreground">
-                            Gzipped
-                          </div>
-                        </div>
-                        <div className="p-3 bg-muted/50 rounded-lg">
-                          <Activity className="w-6 h-6 mx-auto mb-2 text-green-500" />
-                          <div className="font-semibold">Minimal</div>
-                          <div className="text-xs text-muted-foreground">
-                            CPU Impact
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
+// Auto-capture is already active:
+// Errors, performance, network,
+// page views, console, interactions`}
+                    showCopy
+                    title="usage.ts"
+                  />
+                </StepCard>
               </div>
             </TabsContent>
 
-            <TabsContent value="advanced" className="space-y-8">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-                <div className="space-y-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Auto-Capture Configuration</CardTitle>
-                      <CardDescription>
-                        Fine-tune what gets captured automatically
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <CodeBlock
-                        language="typescript"
-                        code={`import { Monita, LogLevel } from "monita";
+            {/* React */}
+            <TabsContent value="react" className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <StepCard step={1} title="Install">
+                  <CodeBlock
+                    language="bash"
+                    code="npm install apperio @apperio/react"
+                    showCopy
+                    title="Terminal"
+                  />
+                </StepCard>
 
-const logger = new Monita({
-  apiKey: "your-api-key",
-  projectId: "your-project-id",
-  
-  // Configure auto-capture behavior
-  autoCapture: {
-    errors: true, // Uncaught errors (recommended)
-    performance: true, // Performance metrics (recommended)
-    networkRequests: true, // HTTP requests (recommended)
-    pageViews: true, // Page navigation (recommended)
-    consoleMessages: false, // Console.error/warn (can be noisy)
-    userInteractions: false, // Clicks, scrolls (very verbose)
-    
-    // Customize log levels for different events
-    logLevels: {
-      networkSuccess: LogLevel.TRACE, // Quiet successful requests
-      performanceFast: LogLevel.TRACE, // Quiet fast performance
-      interactions: LogLevel.DEBUG, // User interactions
-      console: {
-        error: LogLevel.FATAL, // Escalate console errors
-        warn: LogLevel.ERROR, // Escalate console warnings
-      },
-    },
-  },
-});`}
-                        showCopy
-                        title="advanced-config.ts"
-                      />
-                    </CardContent>
-                  </Card>
+                <StepCard step={2} title="Wrap Provider">
+                  <CodeBlock
+                    language="tsx"
+                    code={`import { ApperioProvider } from "@apperio/react";
 
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Context Management</CardTitle>
-                      <CardDescription>
-                        Global context included in all events
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <CodeBlock
-                        language="typescript"
-                        code={`// Set global context (included in all logs)
-logger.setContext({
-  userId: "12345",
-  feature: "checkout",
-  experimentId: "ab-test-v2",
-  userPlan: "premium",
-});
-
-// Context is automatically included in all events
-logger.error("Payment failed"); // Will include userId, feature, etc.
-
-// Add breadcrumbs for debugging
-logger.addBreadcrumb("User clicked pay button", "user-action");
-logger.addBreadcrumb("Validation passed", "validation");
-logger.addBreadcrumb("API call started", "network");
-
-// Enhanced exception capture
-logger.captureException(new Error("Payment processing failed"), {
-  component: "PaymentForm",
-  action: "submit",
-  paymentMethod: "credit_card",
-  amount: 99.99,
-});`}
-                        showCopy
-                        title="context-management.ts"
-                      />
-                    </CardContent>
-                  </Card>
-                </div>
-
-                <div className="space-y-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Performance Optimization</CardTitle>
-                      <CardDescription>
-                        Configure batching and delivery
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <CodeBlock
-                        language="typescript"
-                        code={`const logger = new Monita({
-  apiKey: "your-api-key",
-  projectId: "your-project-id",
-  
-  // Performance settings
-  batchSize: 50, // Batch events for efficiency
-  flushInterval: 3000, // Flush every 3 seconds
-  maxRetries: 3, // Retry failed requests
-  
-  // Memory management
-  maxBreadcrumbs: 50, // Limit breadcrumb history
-  maxEvents: 100, // Limit event buffer
-  
-  // Network optimization
-  compression: true, // Compress payloads
-  timeout: 10000, // Request timeout
-  
-  // Privacy settings
-  sanitizeUrls: true, // Remove sensitive URL params
-  sanitizeForms: true, // Protect form data
-  
-  // Error handling
-  onError: (error) => {
-    console.warn('Monita SDK error:', error);
-  },
-});`}
-                        showCopy
-                        title="performance-config.ts"
-                      />
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Privacy & Security</CardTitle>
-                      <CardDescription>
-                        Built-in data protection
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="space-y-3">
-                        <div className="flex items-start space-x-3">
-                          <Lock className="w-4 h-4 text-green-500 mt-0.5" />
-                          <div>
-                            <h4 className="font-semibold text-sm">
-                              URL Sanitization
-                            </h4>
-                            <p className="text-xs text-muted-foreground">
-                              Removes token, key, password, secret query
-                              parameters
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-start space-x-3">
-                          <Fingerprint className="w-4 h-4 text-green-500 mt-0.5" />
-                          <div>
-                            <h4 className="font-semibold text-sm">
-                              Form Protection
-                            </h4>
-                            <p className="text-xs text-muted-foreground">
-                              Keyboard events don&apos;t capture actual
-                              keystrokes
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-start space-x-3">
-                          <Eye className="w-4 h-4 text-green-500 mt-0.5" />
-                          <div>
-                            <h4 className="font-semibold text-sm">
-                              Element Safety
-                            </h4>
-                            <p className="text-xs text-muted-foreground">
-                              Uses CSS selectors, not text content
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-start space-x-3">
-                          <Database className="w-4 h-4 text-green-500 mt-0.5" />
-                          <div>
-                            <h4 className="font-semibold text-sm">
-                              No Storage
-                            </h4>
-                            <p className="text-xs text-muted-foreground">
-                              No localStorage/sessionStorage usage
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="frameworks" className="space-y-8">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-                <div className="space-y-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <div className="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center">
-                          <Layers className="w-4 h-4 text-blue-500" />
-                        </div>
-                        <span>React Integration</span>
-                      </CardTitle>
-                      <CardDescription>
-                        Error boundaries and hooks
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <CodeBlock
-                        language="typescript"
-                        code={`import { Monita } from "monita";
-import React from "react";
-
-// Initialize SDK
-const logger = new Monita({
-  apiKey: process.env.REACT_APP_MONITA_API_KEY,
-  projectId: "my-react-app",
-  environment: process.env.NODE_ENV,
-});
-
-// Error Boundary Component
-class ErrorBoundary extends React.Component {
-  componentDidCatch(error: Error, errorInfo: any) {
-    logger.captureException(error, {
-      componentStack: errorInfo.componentStack,
-      errorBoundary: true,
-      component: errorInfo.componentStack?.split('\\n')[1],
-    });
-  }
-
-  render() {
-    if (this.state?.hasError) {
-      return <div>Something went wrong.</div>;
-    }
-    return this.props.children;
-  }
-}
-
-// Custom Hook for Context
-function useMonitaContext(userId: string, userPlan: string) {
-  React.useEffect(() => {
-    logger.setContext({
-      userId,
-      userPlan,
-      component: 'UserDashboard',
-    });
-  }, [userId, userPlan]);
+function App() {
+  return (
+    <ApperioProvider config={{
+      apiKey: "your-api-key",
+      projectId: "your-project-id",
+      environment: "production",
+    }}>
+      <YourApp />
+    </ApperioProvider>
+  );
 }`}
-                        showCopy
-                        title="react-integration.tsx"
-                      />
-                    </CardContent>
-                  </Card>
+                    showCopy
+                    title="App.tsx"
+                  />
+                </StepCard>
 
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <div className="w-8 h-8 bg-green-500/10 rounded-lg flex items-center justify-center">
-                          <Zap className="w-4 h-4 text-green-500" />
-                        </div>
-                        <span>Vue.js Integration</span>
-                      </CardTitle>
-                      <CardDescription>
-                        Global error handler and composition API
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <CodeBlock
-                        language="typescript"
-                        code={`import { createApp } from 'vue';
-import { Monita } from 'monita';
+                <StepCard step={3} title="Use Hooks">
+                  <CodeBlock
+                    language="tsx"
+                    code={`import { useApperio, useLogError }
+  from "@apperio/react";
 
-const logger = new Monita({
-  apiKey: process.env.VUE_APP_MONITA_API_KEY,
-  projectId: 'my-vue-app',
-  environment: process.env.NODE_ENV,
-});
+function Dashboard() {
+  const logger = useApperio();
+  const logError = useLogError();
 
-const app = createApp(App);
-
-// Global error handler
-app.config.errorHandler = (error, instance, info) => {
-  logger.captureException(error, {
-    vueInfo: info,
-    component: instance?.$options.name || instance?.$options.__name,
-    lifecycle: info,
-  });
-};
-
-// Composition API helper
-import { onMounted } from 'vue';
-
-export function useMonita() {
-  onMounted(() => {
-    logger.addBreadcrumb('Component mounted', 'lifecycle');
-  });
-
-  const trackEvent = (event: string, data?: any) => {
-    logger.info(event, data);
+  const handleClick = () => {
+    logger.info("Button clicked");
   };
 
-  return { trackEvent };
+  return <button onClick={handleClick}>
+    Track
+  </button>;
 }`}
-                        showCopy
-                        title="vue-integration.ts"
-                      />
-                    </CardContent>
-                  </Card>
-                </div>
-
-                <div className="space-y-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <div className="w-8 h-8 bg-purple-500/10 rounded-lg flex items-center justify-center">
-                          <Server className="w-4 h-4 text-purple-500" />
-                        </div>
-                        <span>Next.js Integration</span>
-                      </CardTitle>
-                      <CardDescription>
-                        App Router and Pages Router support
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <CodeBlock
-                        language="typescript"
-                        code={`// app/layout.tsx (App Router)
-import { Monita } from 'monita';
-
-const logger = new Monita({
-  apiKey: process.env.MONITA_API_KEY,
-  projectId: 'my-nextjs-app',
-  environment: process.env.NODE_ENV,
-});
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
-  );
-}
-
-// API Route monitoring (app/api/users/route.ts)
-export async function GET(request: Request) {
-  try {
-    const users = await fetchUsers();
-    logger.info('Users fetched successfully', {
-      count: users.length,
-      route: '/api/users',
-    });
-    return Response.json(users);
-  } catch (error) {
-    logger.captureException(error, {
-      route: '/api/users',
-      method: 'GET',
-    });
-    throw error;
-  }
-}`}
-                        showCopy
-                        title="nextjs-integration.tsx"
-                      />
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <div className="w-8 h-8 bg-orange-500/10 rounded-lg flex items-center justify-center">
-                          <Smartphone className="w-4 h-4 text-orange-500" />
-                        </div>
-                        <span>React Native (Coming Soon)</span>
-                      </CardTitle>
-                      <CardDescription>
-                        Mobile app monitoring and crash reporting
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-center py-8">
-                        <Rocket className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                        <h3 className="font-semibold mb-2">
-                          React Native Support
-                        </h3>
-                        <p className="text-sm text-muted-foreground mb-4">
-                          Full React Native support is coming soon with native
-                          crash reporting and performance monitoring.
-                        </p>
-                        <Badge variant="outline">
-                          <Clock className="w-3 h-3 mr-1" />
-                          Coming soon.
-                        </Badge>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
+                    showCopy
+                    title="Dashboard.tsx"
+                  />
+                </StepCard>
               </div>
             </TabsContent>
 
-            <TabsContent value="environments" className="space-y-8">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-                <div className="space-y-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <div className="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center">
-                          <Code className="w-4 h-4 text-blue-500" />
-                        </div>
-                        <span>Development Configuration</span>
-                      </CardTitle>
-                      <CardDescription>
-                        Verbose logging for debugging
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <CodeBlock
-                        language="typescript"
-                        code={`import { Monita, LogLevel } from "monita";
+            {/* Next.js */}
+            <TabsContent value="nextjs" className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <StepCard step={1} title="Install">
+                  <CodeBlock
+                    language="bash"
+                    code="npm install apperio @apperio/nextjs"
+                    showCopy
+                    title="Terminal"
+                  />
+                </StepCard>
 
-const devLogger = new Monita({
-  apiKey: process.env.MONITA_DEV_API_KEY,
-  projectId: "my-app-dev",
-  environment: "development",
-  
-  // Development-specific settings
-  minLogLevel: LogLevel.DEBUG, // Capture everything
-  
-  autoCapture: {
-    errors: true,
-    performance: true,
-    networkRequests: true,
-    pageViews: true,
-    consoleMessages: true, // Capture all console output
-    userInteractions: true, // Useful for debugging UX
-  },
-  
-  // More verbose in development
-  batchSize: 1, // Send immediately
-  flushInterval: 1000, // Flush every second
-  
-  // Debug mode
-  debug: true, // Enable SDK debug logs
-  
-  onError: (error) => {
-    console.error('Monita SDK error:', error);
-  },
-});`}
-                        showCopy
-                        title="development.ts"
-                      />
-                    </CardContent>
-                  </Card>
+                <StepCard step={2} title="Add Middleware">
+                  <CodeBlock
+                    language="typescript"
+                    code={`// middleware.ts
+import { withApperioMiddleware }
+  from "@apperio/nextjs";
+import { NextResponse } from "next/server";
 
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <div className="w-8 h-8 bg-yellow-500/10 rounded-lg flex items-center justify-center">
-                          <TestTube className="w-4 h-4 text-yellow-500" />
-                        </div>
-                        <span>Staging Configuration</span>
-                      </CardTitle>
-                      <CardDescription>
-                        Production-like with extra debugging
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <CodeBlock
-                        language="typescript"
-                        code={`const stagingLogger = new Monita({
-  apiKey: process.env.MONITA_STAGING_API_KEY,
-  projectId: "my-app-staging",
-  environment: "staging",
-  
-  // Staging-specific settings
-  minLogLevel: LogLevel.INFO, // Skip debug logs
-  
-  autoCapture: {
-    errors: true,
-    performance: true,
-    networkRequests: true,
-    pageViews: true,
-    consoleMessages: true, // Still useful for testing
-    userInteractions: false, // Reduce noise
-  },
-  
-  // Balanced performance
-  batchSize: 25,
-  flushInterval: 2000,
-  
-  // Additional context for staging
-  defaultContext: {
-    buildId: process.env.BUILD_ID,
-    deploymentId: process.env.DEPLOYMENT_ID,
-    testSuite: process.env.TEST_SUITE,
-  },
-});`}
-                        showCopy
-                        title="staging.ts"
-                      />
-                    </CardContent>
-                  </Card>
-                </div>
+const middleware = () => NextResponse.next();
 
-                <div className="space-y-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <div className="w-8 h-8 bg-green-500/10 rounded-lg flex items-center justify-center">
-                          <Shield className="w-4 h-4 text-green-500" />
-                        </div>
-                        <span>Production Configuration</span>
-                      </CardTitle>
-                      <CardDescription>
-                        Optimized for performance and reliability
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <CodeBlock
-                        language="typescript"
-                        code={`const prodLogger = new Monita({
-  apiKey: process.env.MONITA_PROD_API_KEY,
-  projectId: "my-app-prod",
-  environment: "production",
-  
-  // Production-optimized settings
-  minLogLevel: LogLevel.WARN, // Only warnings and errors
-  
-  autoCapture: {
-    errors: true, // Critical for production
-    performance: true, // Monitor performance
-    networkRequests: true, // Track API issues
-    pageViews: true, // Analytics
-    consoleMessages: false, // Skip in production
-    userInteractions: false, // Reduce noise
-  },
-  
-  // Optimized for performance
-  batchSize: 100, // Larger batches
-  flushInterval: 5000, // Less frequent flushes
-  maxRetries: 5, // More resilient
-  
-  // Production context
-  defaultContext: {
-    version: process.env.APP_VERSION,
-    region: process.env.AWS_REGION,
-    instance: process.env.INSTANCE_ID,
-  },
-  
-  // Graceful error handling
-  onError: () => {
-    // Silent in production
-  },
-});`}
-                        showCopy
-                        title="production.ts"
-                      />
-                    </CardContent>
-                  </Card>
+export default withApperioMiddleware(
+  middleware,
+  {
+    apiKey: "your-api-key",
+    projectId: "your-project-id",
+  }
+);`}
+                    showCopy
+                    title="middleware.ts"
+                  />
+                </StepCard>
 
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Environment Comparison</CardTitle>
-                      <CardDescription>
-                        Configuration differences at a glance
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="overflow-x-auto -mx-4 sm:mx-0">
-                        <div className="min-w-full px-4 sm:px-0">
-                          <table className="w-full text-sm">
-                            <thead>
-                              <tr className="border-b">
-                                <th className="text-left py-2 pr-2">Setting</th>
-                                <th className="text-center py-2 px-1 sm:px-2">Dev</th>
-                                <th className="text-center py-2 px-1 sm:px-2">Staging</th>
-                                <th className="text-center py-2 px-1 sm:px-2">Prod</th>
-                              </tr>
-                            </thead>
-                            <tbody className="space-y-2">
-                              <tr className="border-b">
-                                <td className="py-2 pr-2 text-xs sm:text-sm">Min Log Level</td>
-                                <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">DEBUG</td>
-                                <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">INFO</td>
-                                <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">WARN</td>
-                              </tr>
-                              <tr className="border-b">
-                                <td className="py-2 pr-2 text-xs sm:text-sm">Console Messages</td>
-                                <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">✅</td>
-                                <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">✅</td>
-                                <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">❌</td>
-                              </tr>
-                              <tr className="border-b">
-                                <td className="py-2 pr-2 text-xs sm:text-sm">User Interactions</td>
-                                <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">✅</td>
-                                <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">❌</td>
-                                <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">❌</td>
-                              </tr>
-                              <tr className="border-b">
-                                <td className="py-2 pr-2 text-xs sm:text-sm">Batch Size</td>
-                                <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">1</td>
-                                <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">25</td>
-                                <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">100</td>
-                              </tr>
-                              <tr>
-                                <td className="py-2 pr-2 text-xs sm:text-sm">Flush Interval</td>
-                                <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">1s</td>
-                                <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">2s</td>
-                                <td className="text-center px-1 sm:px-2 text-xs sm:text-sm">5s</td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
+                <StepCard step={3} title="Server Logger">
+                  <CodeBlock
+                    language="typescript"
+                    code={`// app/api/users/route.ts
+import { createServerLogger }
+  from "@apperio/nextjs";
+
+const logger = createServerLogger({
+  apiKey: "your-api-key",
+  projectId: "your-project-id",
+});
+
+export async function GET() {
+  logger.info("Users fetched");
+  return Response.json({ ok: true });
+}`}
+                    showCopy
+                    title="route.ts"
+                  />
+                </StepCard>
               </div>
             </TabsContent>
           </Tabs>
         </section>
 
-        {/* Feature Showcase */}
-        <section className="mb-24">
-          <div className="text-center mb-12 px-4 sm:px-0">
-            <Badge variant="outline" className="mb-4">
-              <Target className="w-3 h-3 mr-1" />
-              Advanced Capabilities
-            </Badge>
-            <h2 className="text-2xl sm:text-3xl font-bold mb-4">Beyond Basic Logging</h2>
-            <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
-              Comprehensive observability with intelligent automation and
-              privacy protection
-            </p>
-          </div>
-          <div className="px-3 sm:px-0">
-            <FeatureShowcase />
-          </div>
-        </section>
-
-        {/* API Reference */}
-        <section id="reference" className="mb-24">
-          <div className="text-center mb-12 px-4 sm:px-0">
-            <Badge variant="outline" className="mb-4">
-              <BookOpen className="w-3 h-3 mr-1" />
-              API Reference
-            </Badge>
-            <h2 className="text-2xl sm:text-3xl font-bold mb-4">
-              Complete API Documentation
-            </h2>
-            <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
-              Comprehensive reference for all methods, options, and
-              configuration
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center space-x-2">
-                  <Rocket className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 flex-shrink-0" />
-                  <span className="text-sm sm:text-base">Core Methods</span>
-                </CardTitle>
-                <CardDescription className="text-xs sm:text-sm">Essential logging methods</CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0 space-y-2">
-                <div className="space-y-2">
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    logger.info(message, data?)
-                  </code>
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    logger.warn(message, data?)
-                  </code>
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    logger.error(message, error?)
-                  </code>
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    logger.debug(message, data?)
-                  </code>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center space-x-2">
-                  <Bug className="w-4 h-4 sm:w-5 sm:h-5 text-red-500 flex-shrink-0" />
-                  <span className="text-sm sm:text-base">Exception Handling</span>
-                </CardTitle>
-                <CardDescription className="text-xs sm:text-sm">Advanced error capture</CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0 space-y-2">
-                <div className="space-y-2">
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    captureException(error, context?)
-                  </code>
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    captureMessage(message, level, data?)
-                  </code>
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    addBreadcrumb(message, category?)
-                  </code>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center space-x-2">
-                  <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0" />
-                  <span className="text-sm sm:text-base">Context Management</span>
-                </CardTitle>
-                <CardDescription className="text-xs sm:text-sm">Global and scoped context</CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0 space-y-2">
-                <div className="space-y-2">
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    setContext(context)
-                  </code>
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    clearContext()
-                  </code>
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    withContext(context, callback)
-                  </code>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center space-x-2">
-                  <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 flex-shrink-0" />
-                  <span className="text-sm sm:text-base">Performance</span>
-                </CardTitle>
-                <CardDescription className="text-xs sm:text-sm">
-                  Performance monitoring methods
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0 space-y-2">
-                <div className="space-y-2">
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    startTimer(name)
-                  </code>
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    endTimer(name)
-                  </code>
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    measureFunction(fn, name?)
-                  </code>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center space-x-2">
-                  <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0" />
-                  <span className="text-sm sm:text-base">Lifecycle</span>
-                </CardTitle>
-                <CardDescription className="text-xs sm:text-sm">SDK lifecycle management</CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0 space-y-2">
-                <div className="space-y-2">
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    logger.flush()
-                  </code>
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    logger.close()
-                  </code>
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    logger.isEnabled()
-                  </code>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center space-x-2">
-                  <Workflow className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 flex-shrink-0" />
-                  <span className="text-sm sm:text-base">Configuration</span>
-                </CardTitle>
-                <CardDescription className="text-xs sm:text-sm">Runtime configuration</CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0 space-y-2">
-                <div className="space-y-2">
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    logger.setLogLevel(level)
-                  </code>
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    logger.enable() / logger.disable()
-                  </code>
-                  <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded block break-all">
-                    logger.updateConfig(config)
-                  </code>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </section>
-
-        {/* Best Practices */}
-        <section className="mb-24">
-          <div className="text-center mb-12 px-4 sm:px-0">
-            <Badge variant="outline" className="mb-4">
-              <Lightbulb className="w-3 h-3 mr-1" />
-              Best Practices
-            </Badge>
-            <h2 className="text-2xl sm:text-3xl font-bold mb-4">
-              Production-Ready Implementation
-            </h2>
-            <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
-              Follow these guidelines to maximize the value of
-              auto-instrumentation
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-            <div className="space-y-6">
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center space-x-2">
-                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0" />
-                    <span className="text-sm sm:text-base">Recommended Practices</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0 space-y-4">
-                  <div className="flex items-start space-x-3">
-                    <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 mt-1 flex-shrink-0" />
-                    <div className="min-w-0">
-                      <h4 className="font-semibold text-xs sm:text-sm">
-                        Trust auto-instrumentation
-                      </h4>
-                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                        Let the SDK capture most events automatically - manual
-                        logging should be minimal
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 mt-1 flex-shrink-0" />
-                    <div className="min-w-0">
-                      <h4 className="font-semibold text-xs sm:text-sm">
-                        Set meaningful context
-                      </h4>
-                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                        Use setContext() to add user ID, feature flags, and
-                        business context
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 mt-1 flex-shrink-0" />
-                    <div className="min-w-0">
-                      <h4 className="font-semibold text-xs sm:text-sm">
-                        Configure by environment
-                      </h4>
-                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                        Use different log levels and capture settings for
-                        dev/staging/prod
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 mt-1 flex-shrink-0" />
-                    <div className="min-w-0">
-                      <h4 className="font-semibold text-xs sm:text-sm">
-                        Add breadcrumbs for complex flows
-                      </h4>
-                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                        Use breadcrumbs to trace user journeys through
-                        multi-step processes
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 mt-1 flex-shrink-0" />
-                    <div className="min-w-0">
-                      <h4 className="font-semibold text-xs sm:text-sm">
-                        Monitor bundle size impact
-                      </h4>
-                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                        The SDK is lightweight (~50KB) but monitor your bundle
-                        analyzer
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+        {/* ================================================================
+            SECTION 4: AUTO-INSTRUMENTATION — 7 cards + Web Vitals deep dive
+            ================================================================ */}
+        <section id="auto-instrumentation" className="mb-24">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-signal/20 bg-signal-muted backdrop-blur-sm mb-4">
+              <Brain className="w-3 h-3 text-signal" />
+              <span className="text-xs font-display font-semibold uppercase tracking-[0.06em] text-signal">
+                Auto-Instrumentation
+              </span>
             </div>
-
-            <div className="space-y-6">
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center space-x-2">
-                    <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-red-500 flex-shrink-0" />
-                    <span className="text-sm sm:text-base">Common Pitfalls</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0 space-y-4">
-                  <div className="flex items-start space-x-3">
-                    <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4 text-red-500 mt-1 flex-shrink-0" />
-                    <div className="min-w-0">
-                      <h4 className="font-semibold text-xs sm:text-sm">
-                        Don&apos;t over-log manually
-                      </h4>
-                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                        Auto-capture handles most cases - excessive manual
-                        logging creates noise
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4 text-red-500 mt-1 flex-shrink-0" />
-                    <div className="min-w-0">
-                      <h4 className="font-semibold text-xs sm:text-sm">
-                        Don&apos;t enable all features in production
-                      </h4>
-                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                        User interactions and console messages can be very
-                        verbose
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4 text-red-500 mt-1 flex-shrink-0" />
-                    <div className="min-w-0">
-                      <h4 className="font-semibold text-xs sm:text-sm">
-                        Don&apos;t ignore privacy settings
-                      </h4>
-                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                        Review auto-sanitization settings and add custom filters
-                        if needed
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4 text-red-500 mt-1 flex-shrink-0" />
-                    <div className="min-w-0">
-                      <h4 className="font-semibold text-xs sm:text-sm">
-                        Don&apos;t forget error boundaries
-                      </h4>
-                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                        Add React/Vue error boundaries for comprehensive error
-                        capture
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4 text-red-500 mt-1 flex-shrink-0" />
-                    <div className="min-w-0">
-                      <h4 className="font-semibold text-xs sm:text-sm">
-                        Don&apos;t block initialization
-                      </h4>
-                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                        Initialize the SDK early but don&apos;t block app
-                        startup on SDK errors
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-
-        {/* Roadmap */}
-        <section className="mb-24">
-          <div className="text-center mb-12 px-4 sm:px-0">
-            <Badge variant="outline" className="mb-4">
-              <GitBranch className="w-3 h-3 mr-1" />
-              Roadmap
-            </Badge>
-            <h2 className="text-2xl sm:text-3xl font-bold mb-4">What&apos;s Coming Next</h2>
-            <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
-              Upcoming features and improvements to the Monita SDK
+            <h2 className="text-3xl font-display font-bold mb-4 text-text-primary">
+              7 Categories. Zero Config.
+            </h2>
+            <p className="text-text-secondary text-lg max-w-2xl mx-auto">
+              Everything captured automatically. Toggle each category on or off.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             {[
               {
-                icon: Smartphone,
-                title: "React Native Support",
-                description:
-                  "Native crash reporting and performance monitoring for mobile apps",
-                status: "In Progress",
-                version: "v2.2",
-                color: "text-blue-500",
-                bgColor: "bg-blue-500/10",
+                icon: Bug,
+                title: "Errors",
+                desc: "window.onerror, unhandledrejection, full stack traces",
+                color: "text-status-danger",
+                bg: "bg-status-danger/5",
+                config: "errors: true",
               },
               {
-                icon: Rocket,
-                title: "Expo Integration",
-                description: "Seamless integration with Expo managed workflow",
-                status: "Planned",
-                version: "v2.3",
-                color: "text-purple-500",
-                bgColor: "bg-purple-500/10",
+                icon: Gauge,
+                title: "Performance",
+                desc: "PerformanceObserver for navigation, resource, paint timing",
+                color: "text-data",
+                bg: "bg-data/5",
+                config: "performance: true",
               },
               {
-                icon: Eye,
-                title: "Advanced Session Replay",
-                description: "Visual session replay with privacy controls",
-                status: "Research",
-                version: "v2.4",
-                color: "text-green-500",
-                bgColor: "bg-green-500/10",
-              },
-              {
-                icon: Palette,
-                title: "Custom Dashboard Widgets",
-                description: "Build custom visualizations for your metrics",
-                status: "Planned",
-                version: "v2.5",
-                color: "text-orange-500",
-                bgColor: "bg-orange-500/10",
-              },
-              {
-                icon: MessageCircle,
-                title: "Slack/Teams Integrations",
-                description: "Real-time alerts and notifications",
-                status: "Planned",
-                version: "v2.6",
-                color: "text-pink-500",
-                bgColor: "bg-pink-500/10",
+                icon: Activity,
+                title: "Web Vitals",
+                desc: "LCP, CLS, INP with good/needs-improvement/poor ratings",
+                color: "text-signal",
+                bg: "bg-signal/5",
+                config: "performance: true",
               },
               {
                 icon: Network,
-                title: "GraphQL Request Tracing",
-                description: "Detailed GraphQL query and mutation tracking",
-                status: "Research",
-                version: "v2.7",
-                color: "text-indigo-500",
-                bgColor: "bg-indigo-500/10",
+                title: "Network",
+                desc: "fetch/XHR interception with timing, status, request/response size",
+                color: "text-data-bright",
+                bg: "bg-data-bright/5",
+                config: "networkRequests: true",
               },
-            ].map((item, index) => (
-              <Card key={index} className="hover:shadow-md transition-shadow">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start space-x-3">
+              {
+                icon: Terminal,
+                title: "Console",
+                desc: "console.error() and console.warn() capture with arguments",
+                color: "text-status-warn",
+                bg: "bg-status-warn/5",
+                config: "consoleMessages: true",
+              },
+              {
+                icon: Globe,
+                title: "Page Views",
+                desc: "SPA route change detection via History API patching",
+                color: "text-level-info",
+                bg: "bg-level-info/5",
+                config: "pageViews: true",
+              },
+              {
+                icon: MousePointer,
+                title: "Interactions",
+                desc: "Click/scroll tracking with CSS selectors, not text content",
+                color: "text-data",
+                bg: "bg-data/5",
+                config: "userInteractions: true",
+              },
+            ].map((feature, index) => (
+              <Card
+                key={index}
+                className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06] hover:border-signal/20 hover:bg-white/[0.05] transition-all duration-300"
+              >
+                <CardHeader className="pb-2">
+                  <div className="flex items-center gap-2.5 mb-2">
                     <div
-                      className={`w-8 h-8 sm:w-10 sm:h-10 ${item.bgColor} rounded-lg flex items-center justify-center flex-shrink-0`}
+                      className={`w-9 h-9 ${feature.bg} rounded-lg flex items-center justify-center`}
                     >
-                      <item.icon className={`w-4 h-4 sm:w-5 sm:h-5 ${item.color}`} />
+                      <feature.icon className={`w-4.5 h-4.5 ${feature.color}`} />
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <CardTitle className="text-sm sm:text-lg leading-tight">{item.title}</CardTitle>
-                      <div className="flex items-center space-x-2 mt-2">
-                        <Badge variant="outline" className="text-xs">
-                          {item.version}
-                        </Badge>
-                        <Badge
-                          variant={
-                            item.status === "In Progress"
-                              ? "default"
-                              : "secondary"
-                          }
-                          className="text-xs"
-                        >
-                          {item.status}
-                        </Badge>
-                      </div>
-                    </div>
+                    <CardTitle className="text-sm text-text-primary">
+                      {feature.title}
+                    </CardTitle>
                   </div>
-                  <CardDescription className="text-xs sm:text-sm mt-3 leading-relaxed">
-                    {item.description}
+                  <CardDescription className="text-xs text-text-secondary leading-relaxed">
+                    {feature.desc}
                   </CardDescription>
                 </CardHeader>
+                <CardContent className="pt-0">
+                  <code className="text-[10px] font-mono text-text-code bg-bg-elevated/50 px-2 py-1 rounded block">
+                    {feature.config}
+                  </code>
+                </CardContent>
+              </Card>
+            ))}
+
+            {/* Web Vitals deep dive card -- spans the last column */}
+            <Card className="bg-white/[0.03] backdrop-blur-md border border-signal/10 relative overflow-hidden">
+              <div
+                className="absolute top-0 left-0 right-0 h-px"
+                style={{
+                  background:
+                    "linear-gradient(90deg, transparent 0%, var(--signal) 50%, transparent 100%)",
+                  opacity: 0.3,
+                }}
+              />
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm text-text-primary font-display flex items-center gap-2">
+                  <Radar className="w-4 h-4 text-signal" />
+                  Web Vitals Thresholds
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-0 space-y-2">
+                {[
+                  {
+                    metric: "LCP",
+                    good: "< 2.5s",
+                    mid: "2.5-4s",
+                    poor: "> 4s",
+                  },
+                  {
+                    metric: "CLS",
+                    good: "< 0.1",
+                    mid: "0.1-0.25",
+                    poor: "> 0.25",
+                  },
+                  {
+                    metric: "INP",
+                    good: "< 200ms",
+                    mid: "200-500ms",
+                    poor: "> 500ms",
+                  },
+                ].map((v) => (
+                  <div key={v.metric} className="flex items-center gap-2 text-xs">
+                    <span className="font-mono font-semibold text-text-primary w-8">
+                      {v.metric}
+                    </span>
+                    <span className="text-rating-good">{v.good}</span>
+                    <span className="text-text-muted">/</span>
+                    <span className="text-rating-needs-improvement">{v.mid}</span>
+                    <span className="text-text-muted">/</span>
+                    <span className="text-rating-poor">{v.poor}</span>
+                  </div>
+                ))}
+                <p className="text-[10px] text-text-muted pt-1">
+                  Each metric auto-rated. Data includes URL, element, and navigation type.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Configuration example */}
+          <div className="max-w-2xl mx-auto">
+            <CodeBlock
+              language="typescript"
+              code={`const logger = new Apperio({
+  apiKey: "your-api-key",
+  projectId: "your-project-id",
+  autoCapture: {
+    errors: true,              // Uncaught errors + promise rejections
+    performance: true,         // Navigation, resource, paint timing + Web Vitals
+    networkRequests: true,     // fetch/XHR with timing and size
+    pageViews: true,           // SPA route changes via History API
+    consoleMessages: false,    // console.error/warn (can be noisy)
+    userInteractions: false,   // click/scroll tracking (verbose)
+  },
+});`}
+              showCopy
+              title="auto-capture-config.ts"
+            />
+          </div>
+        </section>
+
+        {/* ================================================================
+            SECTION 5: DISTRIBUTED TRACING
+            ================================================================ */}
+        <section id="tracing" className="mb-24">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-signal/20 bg-signal-muted backdrop-blur-sm mb-4">
+              <GitBranch className="w-3 h-3 text-signal" />
+              <span className="text-xs font-display font-semibold uppercase tracking-[0.06em] text-signal">
+                Distributed Tracing
+              </span>
+            </div>
+            <h2 className="text-3xl font-display font-bold mb-4 text-text-primary">
+              Trace Requests Across Services
+            </h2>
+            <p className="text-text-secondary text-lg max-w-2xl mx-auto">
+              W3C Trace Context propagation. Start spans, link operations, and follow requests
+              from browser to backend.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
+              <CardHeader>
+                <CardTitle className="text-text-primary font-display flex items-center gap-2">
+                  <Timer className="w-4 h-4 text-signal" />
+                  Span API
+                </CardTitle>
+                <CardDescription className="text-text-secondary">
+                  Create spans to measure operations and propagate context
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <CodeBlock
+                  language="typescript"
+                  code={`// Start a span for a database query
+const spanId = logger.startSpan("db-query", {
+  db: "users",
+  operation: "findById",
+});
+
+// ... perform the operation ...
+const user = await db.users.findById(id);
+
+// End the span (duration auto-calculated)
+logger.endSpan(spanId);
+
+// Nested spans for complex operations
+const parentSpan = logger.startSpan("checkout");
+  const validateSpan = logger.startSpan("validate-cart");
+  // ... validate ...
+  logger.endSpan(validateSpan);
+
+  const paymentSpan = logger.startSpan("process-payment");
+  // ... charge ...
+  logger.endSpan(paymentSpan);
+logger.endSpan(parentSpan);`}
+                  showCopy
+                  title="tracing.ts"
+                />
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
+              <CardHeader>
+                <CardTitle className="text-text-primary font-display flex items-center gap-2">
+                  <Network className="w-4 h-4 text-data" />
+                  W3C Trace Propagation
+                </CardTitle>
+                <CardDescription className="text-text-secondary">
+                  Automatic traceparent header injection and extraction across HTTP boundaries
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <CodeBlock
+                  language="typescript"
+                  code={`// TracePropagator automatically injects
+// W3C traceparent headers into outgoing requests:
+//
+// traceparent: 00-{traceId}-{spanId}-01
+//
+// This links frontend spans to backend spans,
+// enabling full request waterfall visualization.
+
+// The SDK patches fetch() to auto-inject headers.
+// No manual instrumentation needed.`}
+                  showCopy
+                  title="propagation.ts"
+                />
+
+                {/* Visual waterfall concept */}
+                <div className="space-y-1.5 pt-2">
+                  <p className="text-xs text-text-muted font-medium uppercase tracking-wider mb-2">
+                    Request Waterfall
+                  </p>
+                  {[
+                    { label: "Browser: checkout", width: "100%", color: "bg-signal/40" },
+                    { label: "  API: /api/orders", width: "75%", color: "bg-data/40" },
+                    { label: "    DB: insert order", width: "40%", color: "bg-data-bright/40" },
+                    { label: "    Stripe: charge", width: "55%", color: "bg-status-warn/40" },
+                  ].map((span, idx) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <span className="text-[10px] font-mono text-text-muted w-36 truncate">
+                        {span.label}
+                      </span>
+                      <div className="flex-1 h-4 rounded bg-white/[0.02]">
+                        <div
+                          className={`h-full rounded ${span.color}`}
+                          style={{ width: span.width }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
+        {/* ================================================================
+            SECTION 6: PRIVACY & DATA PROTECTION
+            ================================================================ */}
+        <section id="privacy" className="mb-24">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-signal/20 bg-signal-muted backdrop-blur-sm mb-4">
+              <Shield className="w-3 h-3 text-signal" />
+              <span className="text-xs font-display font-semibold uppercase tracking-[0.06em] text-signal">
+                Privacy & Data Protection
+              </span>
+            </div>
+            <h2 className="text-3xl font-display font-bold mb-4 text-text-primary">
+              Built-In PII Protection
+            </h2>
+            <p className="text-text-secondary text-lg max-w-2xl mx-auto">
+              9 built-in patterns, 3 presets, custom rules, and a full audit trail.
+              GDPR-friendly by default.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* PII patterns table */}
+            <Card className="lg:col-span-1 bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
+              <CardHeader>
+                <CardTitle className="text-text-primary font-display text-base flex items-center gap-2">
+                  <Fingerprint className="w-4 h-4 text-signal" />
+                  Built-in Patterns
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="space-y-2">
+                  {[
+                    "Email addresses",
+                    "Phone numbers",
+                    "Social Security Numbers",
+                    "Credit card numbers",
+                    "IP addresses",
+                    "JWT tokens",
+                    "API keys",
+                    "Password fields",
+                    "Dates of birth",
+                  ].map((pattern, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center gap-2 text-sm text-text-secondary"
+                    >
+                      <CheckCircle2 className="w-3 h-3 text-signal flex-shrink-0" />
+                      <span>{pattern}</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Presets comparison */}
+            <Card className="lg:col-span-1 bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
+              <CardHeader>
+                <CardTitle className="text-text-primary font-display text-base flex items-center gap-2">
+                  <Settings className="w-4 h-4 text-data" />
+                  Presets
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-0 space-y-3">
+                {[
+                  {
+                    name: "STRICT",
+                    desc: "All 9 patterns + URL sanitization",
+                    badge: "text-status-ok border-status-ok/20 bg-status-ok/10",
+                  },
+                  {
+                    name: "BALANCED",
+                    desc: "Email, phone, SSN, credit card, passwords",
+                    badge: "text-data border-data/20 bg-data/10",
+                  },
+                  {
+                    name: "LENIENT",
+                    desc: "Only passwords and credit cards",
+                    badge: "text-status-warn border-status-warn/20 bg-status-warn/10",
+                  },
+                ].map((preset) => (
+                  <div
+                    key={preset.name}
+                    className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]"
+                  >
+                    <Badge
+                      variant="outline"
+                      className={`text-[10px] font-mono mb-1.5 ${preset.badge}`}
+                    >
+                      {preset.name}
+                    </Badge>
+                    <p className="text-xs text-text-secondary">{preset.desc}</p>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* Code example */}
+            <Card className="lg:col-span-1 bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
+              <CardHeader>
+                <CardTitle className="text-text-primary font-display text-base flex items-center gap-2">
+                  <Lock className="w-4 h-4 text-data-bright" />
+                  Custom Rules
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <CodeBlock
+                  language="typescript"
+                  code={`const logger = new Apperio({
+  apiKey: "your-api-key",
+  projectId: "your-project-id",
+  sanitization: {
+    preset: "BALANCED",
+    customRules: [
+      {
+        pattern: /ACCT-\\d{8}/g,
+        replacement: "[ACCOUNT_ID]",
+      },
+    ],
+  },
+});
+
+// Audit trail access:
+const trail = logger
+  .getSanitizationAuditTrail();
+// [{field, pattern, action, ts}]`}
+                  showCopy
+                  title="sanitization.ts"
+                />
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
+        {/* ================================================================
+            SECTION 7: RESILIENCE & RELIABILITY (FeatureShowcase)
+            ================================================================ */}
+        <section id="resilience" className="mb-24">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-signal/20 bg-signal-muted backdrop-blur-sm mb-4">
+              <Shield className="w-3 h-3 text-signal" />
+              <span className="text-xs font-display font-semibold uppercase tracking-[0.06em] text-signal">
+                Resilience & Reliability
+              </span>
+            </div>
+            <h2 className="text-3xl font-display font-bold mb-4 text-text-primary">
+              Built to Never Drop Logs
+            </h2>
+            <p className="text-text-secondary text-lg max-w-2xl mx-auto">
+              Circuit breaker, offline queue, payload compression, and real-time health metrics
+            </p>
+          </div>
+          <FeatureShowcase />
+        </section>
+
+        {/* ================================================================
+            SECTION 8: ADVANCED CAPABILITIES
+            ================================================================ */}
+        <section id="advanced" className="mb-24">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-signal/20 bg-signal-muted backdrop-blur-sm mb-4">
+              <Cpu className="w-3 h-3 text-signal" />
+              <span className="text-xs font-display font-semibold uppercase tracking-[0.06em] text-signal">
+                Advanced Capabilities
+              </span>
+            </div>
+            <h2 className="text-3xl font-display font-bold mb-4 text-text-primary">
+              Beyond Basic Logging
+            </h2>
+            <p className="text-text-secondary text-lg max-w-2xl mx-auto">
+              Pattern detection, remote configuration, breadcrumbs, and the enhanced logger factory
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Pattern Detection */}
+            <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
+              <CardHeader>
+                <CardTitle className="text-text-primary font-display flex items-center gap-2">
+                  <Radar className="w-4 h-4 text-status-danger" />
+                  Pattern Detection
+                </CardTitle>
+                <CardDescription className="text-text-secondary">
+                  Detects recurring errors and error spikes in real-time
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <CodeBlock
+                  language="typescript"
+                  code={`const logger = new Apperio({
+  apiKey: "your-api-key",
+  projectId: "your-project-id",
+  patternDetection: {
+    recurringErrors: {
+      window: 60000,       // 1 minute window
+      threshold: 5,        // 5 occurrences
+    },
+    errorSpikes: {
+      baselineWindow: 300000, // 5 min baseline
+      spikeMultiplier: 3,    // 3x normal rate
+    },
+  },
+  onPatternDetected: (pattern) => {
+    console.warn("Pattern:", pattern.type);
+    // "recurring-error" | "error-spike"
+  },
+});`}
+                  showCopy
+                  title="pattern-detection.ts"
+                />
+              </CardContent>
+            </Card>
+
+            {/* Remote Config */}
+            <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
+              <CardHeader>
+                <CardTitle className="text-text-primary font-display flex items-center gap-2">
+                  <Settings className="w-4 h-4 text-data" />
+                  Remote Configuration
+                </CardTitle>
+                <CardDescription className="text-text-secondary">
+                  Change log level, sampling rate, and auto-capture toggles without redeploying
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <CodeBlock
+                  language="typescript"
+                  code={`const logger = new Apperio({
+  apiKey: "your-api-key",
+  projectId: "your-project-id",
+
+  // Remote config polling
+  remoteConfigUrl: "https://your-api/config",
+  remoteConfigInterval: 300000, // 5 minutes
+
+  // Changes applied at runtime:
+  // - Log level (trace -> warn)
+  // - Sampling rate (100% -> 10%)
+  // - Auto-capture toggles
+  // - Custom rules
+  // No restart needed!
+});`}
+                  showCopy
+                  title="remote-config.ts"
+                />
+              </CardContent>
+            </Card>
+
+            {/* Breadcrumbs */}
+            <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
+              <CardHeader>
+                <CardTitle className="text-text-primary font-display flex items-center gap-2">
+                  <Hash className="w-4 h-4 text-data-bright" />
+                  Breadcrumb Manager
+                </CardTitle>
+                <CardDescription className="text-text-secondary">
+                  Trail of last 50 actions with environment snapshots, auto-attached to error reports
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <CodeBlock
+                  language="typescript"
+                  code={`// Add breadcrumbs manually
+logger.addBreadcrumb(
+  "User clicked checkout",
+  "user-action",
+  { cartItems: 3, total: 99.99 }
+);
+
+logger.addBreadcrumb(
+  "Navigated to /checkout",
+  "navigation"
+);
+
+logger.addBreadcrumb(
+  "POST /api/orders succeeded",
+  "network",
+  { status: 201, duration: 342 }
+);
+
+// Breadcrumbs auto-included in error reports
+// Categories: user-action, navigation,
+// network, console, error, custom`}
+                  showCopy
+                  title="breadcrumbs.ts"
+                />
+              </CardContent>
+            </Card>
+
+            {/* Enhanced Logger Factory */}
+            <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
+              <CardHeader>
+                <CardTitle className="text-text-primary font-display flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-signal" />
+                  Enhanced Logger Factory
+                </CardTitle>
+                <CardDescription className="text-text-secondary">
+                  All advanced managers in one call: context, sessions, custom events, feature flags, A/B testing
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <CodeBlock
+                  language="typescript"
+                  code={`import { createEnhancedLogger } from "apperio";
+
+const {
+  logger,
+  contextManager,   // Scoped context management
+  sessionManager,   // Auto session tracking
+  eventTracker,     // Custom business events
+  featureFlagLogger,// Feature flag tracking
+  abTestLogger,     // A/B test variant logging
+  performanceMonitor,// Custom perf measurements
+} = createEnhancedLogger({
+  apiKey: "your-api-key",
+  projectId: "your-project-id",
+});
+
+// Track business events
+eventTracker.track("purchase", {
+  amount: 99.99, plan: "pro"
+});
+
+// Log A/B test variants
+abTestLogger.logVariant(
+  "pricing-test", "variant-b"
+);`}
+                  showCopy
+                  title="enhanced-logger.ts"
+                />
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
+        {/* ================================================================
+            SECTION 8.5: INTERACTIVE DEMO
+            ================================================================ */}
+        <section id="demo" className="mb-24">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-signal/20 bg-signal-muted backdrop-blur-sm mb-4">
+              <Activity className="w-3 h-3 text-signal" />
+              <span className="text-xs font-display font-semibold uppercase tracking-[0.06em] text-signal">
+                Interactive Demo
+              </span>
+            </div>
+            <h2 className="text-3xl font-display font-bold mb-4 text-text-primary">
+              Try It Live
+            </h2>
+            <p className="text-text-secondary text-lg max-w-2xl mx-auto">
+              Send manual logs and simulate auto-captured events in real-time
+            </p>
+          </div>
+          <InteractiveDemo />
+        </section>
+
+        {/* ================================================================
+            SECTION 9: FRAMEWORK SDKs — @apperio/react & @apperio/nextjs
+            ================================================================ */}
+        <section id="frameworks" className="mb-24">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-signal/20 bg-signal-muted backdrop-blur-sm mb-4">
+              <Layers className="w-3 h-3 text-signal" />
+              <span className="text-xs font-display font-semibold uppercase tracking-[0.06em] text-signal">
+                Framework SDKs
+              </span>
+            </div>
+            <h2 className="text-3xl font-display font-bold mb-4 text-text-primary">
+              First-Class Framework Support
+            </h2>
+            <p className="text-text-secondary text-lg max-w-2xl mx-auto">
+              Dedicated packages for React and Next.js with idiomatic APIs
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* @apperio/react */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-data/10 rounded-xl flex items-center justify-center">
+                  <Layers className="w-5 h-5 text-data" />
+                </div>
+                <div>
+                  <h3 className="font-display font-bold text-text-primary">
+                    @apperio/react
+                  </h3>
+                  <p className="text-xs text-text-secondary">
+                    React Context Provider, hooks, and Error Boundary
+                  </p>
+                </div>
+              </div>
+
+              <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm text-text-primary">
+                    ApperioProvider
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <CodeBlock
+                    language="tsx"
+                    code={`import { ApperioProvider } from "@apperio/react";
+
+// Wrap your app root
+<ApperioProvider config={{
+  apiKey: "your-api-key",
+  projectId: "your-project-id",
+  environment: "production",
+}}>
+  <App />
+</ApperioProvider>`}
+                    showCopy
+                    title="ApperioProvider.tsx"
+                  />
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm text-text-primary">Hooks</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <CodeBlock
+                    language="tsx"
+                    code={`import {
+  useApperio,
+  useLogError,
+  useTrackEvent,
+  usePerformance,
+} from "@apperio/react";
+
+function MyComponent() {
+  const logger = useApperio();       // Core logger
+  const logError = useLogError();   // Error logging
+  const track = useTrackEvent();    // Event tracking
+  const perf = usePerformance();    // Perf measurement
+
+  const handleSubmit = async () => {
+    perf.start("form-submit");
+    try {
+      await submitForm();
+      track("form_submitted", { form: "signup" });
+    } catch (err) {
+      logError(err, { form: "signup" });
+    }
+    perf.end("form-submit");
+  };
+}`}
+                    showCopy
+                    title="hooks.tsx"
+                  />
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm text-text-primary">
+                    ApperioErrorBoundary
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <CodeBlock
+                    language="tsx"
+                    code={`import { ApperioErrorBoundary }
+  from "@apperio/react";
+
+<ApperioErrorBoundary
+  fallback={<ErrorPage />}
+>
+  <FeatureComponent />
+</ApperioErrorBoundary>
+
+// Automatically captures:
+// - Error name, message, stack
+// - Component tree (componentStack)
+// - Breadcrumbs at time of crash`}
+                    showCopy
+                    title="ErrorBoundary.tsx"
+                  />
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* @apperio/nextjs */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-signal/10 rounded-xl flex items-center justify-center">
+                  <Globe className="w-5 h-5 text-signal" />
+                </div>
+                <div>
+                  <h3 className="font-display font-bold text-text-primary">
+                    @apperio/nextjs
+                  </h3>
+                  <p className="text-xs text-text-secondary">
+                    Middleware wrapper, server logger, and API route handler
+                  </p>
+                </div>
+              </div>
+
+              <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm text-text-primary">
+                    withApperioMiddleware
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <CodeBlock
+                    language="typescript"
+                    code={`// middleware.ts
+import { withApperioMiddleware }
+  from "@apperio/nextjs";
+import { NextResponse } from "next/server";
+
+const middleware = (request) => {
+  return NextResponse.next();
+};
+
+export default withApperioMiddleware(
+  middleware,
+  {
+    apiKey: process.env.APPERIO_API_KEY!,
+    projectId: "your-project-id",
+  }
+);
+
+// Automatically logs every request:
+// method, path, status, duration, user-agent`}
+                    showCopy
+                    title="middleware.ts"
+                  />
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm text-text-primary">
+                    createServerLogger
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <CodeBlock
+                    language="typescript"
+                    code={`// lib/logger.ts
+import { createServerLogger }
+  from "@apperio/nextjs";
+
+export const logger = createServerLogger({
+  apiKey: process.env.APPERIO_API_KEY!,
+  projectId: "your-project-id",
+  environment: process.env.NODE_ENV,
+});
+
+// Use in any server component or route:
+import { logger } from "@/lib/logger";
+
+export async function GET() {
+  logger.info("Fetching users");
+  const users = await db.users.findAll();
+  return Response.json(users);
+}`}
+                    showCopy
+                    title="server-logger.ts"
+                  />
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm text-text-primary">
+                    withApperio (Route Wrapper)
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <CodeBlock
+                    language="typescript"
+                    code={`import { withApperio } from "@apperio/nextjs";
+
+// Wraps route with auto error catching
+export const GET = withApperio(
+  async (request) => {
+    const data = await fetchData();
+    return Response.json(data);
+  },
+  {
+    apiKey: process.env.APPERIO_API_KEY!,
+    projectId: "your-project-id",
+  }
+);
+
+// Errors auto-captured with:
+// route, method, headers, request body`}
+                    showCopy
+                    title="route-wrapper.ts"
+                  />
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </section>
+
+        {/* ================================================================
+            SECTION 10: CONFIGURATION REFERENCE
+            ================================================================ */}
+        <section id="config" className="mb-24">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-signal/20 bg-signal-muted backdrop-blur-sm mb-4">
+              <Settings className="w-3 h-3 text-signal" />
+              <span className="text-xs font-display font-semibold uppercase tracking-[0.06em] text-signal">
+                Configuration
+              </span>
+            </div>
+            <h2 className="text-3xl font-display font-bold mb-4 text-text-primary">
+              Full Configuration Reference
+            </h2>
+            <p className="text-text-secondary text-lg max-w-2xl mx-auto">
+              Every option in LoggerConfig, documented
+            </p>
+          </div>
+
+          <div className="max-w-4xl mx-auto">
+            <CodeBlock
+              language="typescript"
+              code={`interface LoggerConfig {
+  // Required
+  apiKey: string;                    // Your project API key
+  projectId: string;                 // Your project ID
+
+  // Identity & Environment
+  environment?: string;              // "production" | "staging" | "development"
+  serviceName?: string;              // Service identifier
+
+  // Log Control
+  minLogLevel?: LogLevel;            // Minimum level to capture (default: TRACE)
+  batchSize?: number;                // Logs per batch (default: 10)
+  flushInterval?: number;            // Flush interval in ms (default: 5000)
+  maxRetries?: number;               // Max retry attempts (default: 3)
+  maxBreadcrumbs?: number;           // Breadcrumb trail size (default: 50)
+
+  // Auto-Capture
+  autoCapture?: {
+    errors?: boolean;                // Uncaught errors (default: true)
+    performance?: boolean;           // Performance + Web Vitals (default: true)
+    networkRequests?: boolean;       // fetch/XHR monitoring (default: true)
+    pageViews?: boolean;             // SPA route changes (default: true)
+    consoleMessages?: boolean;       // console.error/warn (default: false)
+    userInteractions?: boolean;      // click/scroll tracking (default: false)
+  };
+
+  // Resilience
+  circuitBreaker?: {
+    failureThreshold?: number;       // Failures before open (default: 5)
+    resetTimeout?: number;           // Recovery timeout ms (default: 30000)
+    halfOpenRequests?: number;       // Probe requests (default: 1)
+  };
+  offlineQueue?: {
+    maxSize?: number;                // Max queued logs (default: 500)
+    priorityEviction?: boolean;      // Priority-based eviction (default: true)
+  };
+  compression?: boolean;             // Gzip payloads (default: false)
+
+  // Privacy
+  sanitization?: {
+    preset?: "STRICT" | "BALANCED" | "LENIENT";
+    customRules?: Array<{
+      pattern: RegExp;
+      replacement: string;
+    }>;
+  };
+
+  // Pattern Detection
+  patternDetection?: {
+    recurringErrors?: { window: number; threshold: number };
+    errorSpikes?: { baselineWindow: number; spikeMultiplier: number };
+  };
+  onPatternDetected?: (pattern: DetectedPattern) => void;
+
+  // Remote Config
+  remoteConfigUrl?: string;          // Config endpoint URL
+  remoteConfigInterval?: number;     // Poll interval ms (default: 300000)
+
+  // Callbacks
+  onError?: (error: Error) => void;  // SDK error handler
+  debug?: boolean;                   // Enable SDK debug logs (default: false)
+}`}
+              showCopy
+              showLineNumbers
+              title="LoggerConfig"
+            />
+          </div>
+        </section>
+
+        {/* ================================================================
+            SECTION 11: API REFERENCE
+            ================================================================ */}
+        <section id="api-reference" className="mb-24">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-signal/20 bg-signal-muted backdrop-blur-sm mb-4">
+              <BookOpen className="w-3 h-3 text-signal" />
+              <span className="text-xs font-display font-semibold uppercase tracking-[0.06em] text-signal">
+                API Reference
+              </span>
+            </div>
+            <h2 className="text-3xl font-display font-bold mb-4 text-text-primary">
+              Complete Method Reference
+            </h2>
+            <p className="text-text-secondary text-lg max-w-2xl mx-auto">
+              Every method on the Apperio logger instance, organized by domain
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              {
+                icon: Rocket,
+                title: "Core Logging",
+                color: "text-signal",
+                bg: "bg-signal/5",
+                methods: [
+                  { sig: "trace(message, data?)", desc: "Trace-level log" },
+                  { sig: "debug(message, data?)", desc: "Debug-level log" },
+                  { sig: "info(message, data?)", desc: "Info-level log" },
+                  { sig: "warn(message, data?)", desc: "Warning-level log" },
+                  { sig: "error(message, error?)", desc: "Error-level log" },
+                  { sig: "fatal(message, error?)", desc: "Fatal-level log" },
+                ],
+              },
+              {
+                icon: Bug,
+                title: "Error Capture",
+                color: "text-status-danger",
+                bg: "bg-status-danger/5",
+                methods: [
+                  {
+                    sig: "captureException(error, ctx?)",
+                    desc: "Structured error capture",
+                  },
+                  {
+                    sig: "captureMessage(msg, level, data?)",
+                    desc: "Structured message",
+                  },
+                  {
+                    sig: "addBreadcrumb(msg, cat?, data?)",
+                    desc: "Add breadcrumb",
+                  },
+                ],
+              },
+              {
+                icon: GitBranch,
+                title: "Distributed Tracing",
+                color: "text-data",
+                bg: "bg-data/5",
+                methods: [
+                  {
+                    sig: "startSpan(name, attrs?)",
+                    desc: "Start a trace span",
+                  },
+                  { sig: "endSpan(spanId)", desc: "End a trace span" },
+                ],
+              },
+              {
+                icon: Settings,
+                title: "Context",
+                color: "text-data-bright",
+                bg: "bg-data-bright/5",
+                methods: [
+                  { sig: "setContext(context)", desc: "Set global context" },
+                  { sig: "clearContext()", desc: "Clear global context" },
+                ],
+              },
+              {
+                icon: Activity,
+                title: "Lifecycle",
+                color: "text-status-warn",
+                bg: "bg-status-warn/5",
+                methods: [
+                  { sig: "flush()", desc: "Force flush buffer" },
+                  { sig: "destroy()", desc: "Cleanup and shutdown" },
+                ],
+              },
+              {
+                icon: Eye,
+                title: "Observability",
+                color: "text-level-info",
+                bg: "bg-level-info/5",
+                methods: [
+                  {
+                    sig: "getHealthMetrics()",
+                    desc: "SDK health stats",
+                  },
+                  {
+                    sig: "getSanitizationAuditTrail()",
+                    desc: "PII audit log",
+                  },
+                ],
+              },
+            ].map((section, index) => (
+              <Card
+                key={index}
+                className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06] hover:border-signal/20 hover:bg-white/[0.05] transition-all duration-300"
+              >
+                <CardHeader className="pb-2">
+                  <CardTitle className="flex items-center gap-2 text-sm text-text-primary">
+                    <div
+                      className={`w-7 h-7 ${section.bg} rounded-lg flex items-center justify-center`}
+                    >
+                      <section.icon className={`w-3.5 h-3.5 ${section.color}`} />
+                    </div>
+                    {section.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0 space-y-1.5">
+                  {section.methods.map((method, idx) => (
+                    <div key={idx}>
+                      <code className="text-xs font-mono text-text-code bg-bg-elevated/50 px-2 py-1 rounded block break-all">
+                        {method.sig}
+                      </code>
+                      <p className="text-[10px] text-text-muted mt-0.5 ml-2">
+                        {method.desc}
+                      </p>
+                    </div>
+                  ))}
+                </CardContent>
               </Card>
             ))}
           </div>
         </section>
 
-        {/* Resources */}
-        <section className="mb-24">
-          <div className="text-center mb-12 px-4 sm:px-0">
-            <Badge variant="outline" className="mb-4">
-              <BookOpen className="w-3 h-3 mr-1" />
-              Resources & Support
-            </Badge>
-            <h2 className="text-2xl sm:text-3xl font-bold mb-4">Learn More</h2>
-            <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
-              Comprehensive documentation, examples, and community support
-            </p>
+        {/* ================================================================
+            SECTION 12: RESOURCES & CTA
+            ================================================================ */}
+        <section className="mb-16">
+          {/* Resources */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-16">
+            {[
+              {
+                icon: Github,
+                title: "GitHub",
+                desc: "Source code and issues",
+                href: "https://github.com/Stanwukong/loghive-sdk",
+                color: "text-text-secondary",
+              },
+              {
+                icon: Package,
+                title: "npm",
+                desc: "Package registry",
+                href: "https://npmjs.com/package/apperio",
+                color: "text-status-danger",
+              },
+              {
+                icon: BookOpen,
+                title: "Documentation",
+                desc: "Full guides and reference",
+                href: "https://loghive.vercel.app/sdk",
+                color: "text-data",
+              },
+              {
+                icon: Heart,
+                title: "Support",
+                desc: "Get help from the team",
+                href: "mailto:stanleyajanaku@gmail.com",
+                color: "text-signal",
+              },
+            ].map((resource, index) => (
+              <Link
+                key={index}
+                href={resource.href}
+                target="_blank"
+                className="group"
+              >
+                <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06] hover:border-signal/20 hover:bg-white/[0.05] hover:-translate-y-0.5 transition-all duration-300 h-full">
+                  <CardContent className="pt-5 pb-4">
+                    <div className="flex items-center gap-3">
+                      <resource.icon className={`w-5 h-5 ${resource.color}`} />
+                      <div>
+                        <h3 className="font-display font-semibold text-sm text-text-primary group-hover:text-signal transition-colors">
+                          {resource.title}
+                        </h3>
+                        <p className="text-xs text-text-muted">{resource.desc}</p>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-text-muted ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            <Card className="hover:shadow-md transition-shadow">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center space-x-2">
-                  <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 flex-shrink-0" />
-                  <span className="text-sm sm:text-base">Full Documentation</span>
-                </CardTitle>
-                <CardDescription className="text-xs sm:text-sm">
-                  Complete guides, tutorials, and API reference
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0">
+          {/* Final CTA */}
+          <div className="relative text-center py-16 rounded-3xl overflow-hidden">
+            <div className="absolute inset-0 bg-white/[0.02] backdrop-blur-md" />
+            <div
+              className="absolute inset-0 rounded-3xl"
+              style={{
+                border: "1px solid transparent",
+                background:
+                  "linear-gradient(var(--bg-base), var(--bg-base)) padding-box, linear-gradient(135deg, var(--signal) 0%, transparent 40%, transparent 60%, var(--signal) 100%) border-box",
+                opacity: 0.2,
+              }}
+            />
+            <div
+              className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[200px] pointer-events-none"
+              style={{
+                background:
+                  "radial-gradient(ellipse at center, var(--signal-glow) 0%, transparent 70%)",
+                opacity: 0.5,
+              }}
+            />
+
+            <div className="relative z-10">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-signal/20 bg-signal-muted backdrop-blur-sm mb-6">
+                <Rocket className="w-3 h-3 text-signal" />
+                <span className="text-xs font-display font-semibold uppercase tracking-[0.06em] text-signal">
+                  Ready to Start?
+                </span>
+              </div>
+              <h2 className="text-3xl font-display font-bold mb-4 text-text-primary">
+                Full Observability in 30 Seconds
+              </h2>
+              <p className="text-text-secondary text-lg max-w-2xl mx-auto mb-8">
+                Install Apperio SDK and start capturing errors, performance, network requests,
+                and user interactions automatically.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8 px-4 sm:px-0">
                 <Button
-                  variant="outline"
-                  className="w-full bg-transparent text-xs sm:text-sm"
+                  variant="signal"
+                  size="lg"
+                  className="text-sm sm:text-base font-display font-bold w-full sm:w-auto"
                   asChild
                 >
-                  <Link href="https://loghive.vercel.app/sdk" target="_blank">
-                    View Documentation
-                    <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 ml-2" />
+                  <Link href="/dashboard">
+                    Get Started Free
+                    <ArrowRight className="ml-2 w-4 h-4" />
                   </Link>
                 </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-md transition-shadow">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center space-x-2">
-                  <Code className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0" />
-                  <span className="text-sm sm:text-base">Code Examples</span>
-                </CardTitle>
-                <CardDescription className="text-xs sm:text-sm">
-                  Real-world examples and integration patterns
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0">
                 <Button
+                  size="lg"
                   variant="outline"
-                  className="w-full bg-transparent text-xs sm:text-sm"
+                  className="text-sm sm:text-base bg-white/[0.03] border-white/[0.08] hover:bg-white/[0.06] hover:border-signal/30 transition-all duration-200 w-full sm:w-auto"
                   asChild
                 >
                   <Link
                     href="https://github.com/Stanwukong/loghive-sdk"
                     target="_blank"
                   >
-                    Browse Examples
-                    <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 ml-2" />
+                    <Github className="mr-2 w-4 h-4" />
+                    Star on GitHub
                   </Link>
                 </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-md transition-shadow">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center space-x-2">
-                  <Github className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 flex-shrink-0" />
-                  <span className="text-sm sm:text-base">GitHub Repository</span>
-                </CardTitle>
-                <CardDescription className="text-xs sm:text-sm">
-                  Open source SDK and community contributions
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <Button
-                  variant="outline"
-                  className="w-full bg-transparent text-xs sm:text-sm"
-                  asChild
-                >
-                  <Link href="https://github.com/loghive/sdk" target="_blank">
-                    View on GitHub
-                    <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 ml-2" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* <Card className="hover:shadow-md transition-shadow">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <MessageCircle className="w-5 h-5 text-purple-500" />
-                  <span>Discord Community</span>
-                </CardTitle>
-                <CardDescription>Join our developer community for support</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button variant="outline" className="w-full bg-transparent" asChild>
-                  <Link href="https://discord.gg/loghive" target="_blank">
-                    Join Discord
-                    <ExternalLink className="w-4 h-4 ml-2" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card> */}
-
-            <Card className="hover:shadow-md transition-shadow">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center space-x-2">
-                  <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0" />
-                  <span className="text-sm sm:text-base">Changelog</span>
-                </CardTitle>
-                <CardDescription className="text-xs sm:text-sm">
-                  Latest updates and new features
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <Button
-                  variant="outline"
-                  className="w-full bg-transparent text-xs sm:text-sm"
-                  asChild
-                >
-                  <Link
-                    href="https://github.com/Stanwukong/loghive-sdk/blob/main/CHANGELOG.md"
-                    target="_blank"
-                  >
-                    View Changelog
-                    <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 ml-2" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-md transition-shadow">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center space-x-2">
-                  <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-red-500 flex-shrink-0" />
-                  <span className="text-sm sm:text-base">Support</span>
-                </CardTitle>
-                <CardDescription className="text-xs sm:text-sm">
-                  Get help from our support team
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <Button
-                  variant="outline"
-                  className="w-full bg-transparent text-xs sm:text-sm"
-                  asChild
-                >
-                  <Link href="mailto:stanleyajanaku@gmail.com">
-                    Contact Support
-                    <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 ml-2" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </section>
-
-        {/* Get Started CTA */}
-        <section className="text-center py-16 bg-gradient-to-r from-primary/5 to-primary/10 rounded-3xl border border-primary/20">
-          <Badge variant="secondary" className="mb-6">
-            <Rocket className="w-3 h-3 mr-1" />
-            Ready to Start?
-          </Badge>
-          <h2 className="text-3xl font-bold mb-4">
-            Start Auto-Capturing in 30 Seconds
-          </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-8">
-            Join thousands of developers who trust Monita SDK for comprehensive
-            auto-instrumentation
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8 px-4 sm:px-0">
-            <Button size="lg" className="text-sm sm:text-base w-full sm:w-auto" asChild>
-              <Link href="/dashboard">
-                Get Started Free
-                <ArrowRight className="ml-2 w-4 h-4" />
-              </Link>
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="text-sm sm:text-base bg-transparent w-full sm:w-auto"
-            >
-              Schedule Demo
-            </Button>
-            <Button size="lg" variant="ghost" className="text-sm sm:text-base w-full sm:w-auto" asChild>
-              <Link
-                href="https://github.com/Stanwukong/loghive-sdk"
-                target="_blank"
-              >
-                <Github className="mr-2 w-4 h-4" />
-                Star on GitHub
-              </Link>
-            </Button>
-          </div>
-          <div className="flex flex-wrap justify-center gap-4 sm:gap-6 text-xs sm:text-sm text-muted-foreground px-4 sm:px-0">
-            <div className="flex items-center space-x-2">
-              <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 flex-shrink-0" />
-              <span>No credit card required</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 flex-shrink-0" />
-              <span>10,000 free events per month</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 flex-shrink-0" />
-              <span>Zero-config auto-instrumentation</span>
+              </div>
+              <div className="flex flex-wrap justify-center gap-4 sm:gap-6 text-xs sm:text-sm text-text-secondary px-4 sm:px-0">
+                <div className="flex items-center space-x-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-signal flex-shrink-0" />
+                  <span>No credit card required</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-signal flex-shrink-0" />
+                  <span>10,000 free events / month</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-signal flex-shrink-0" />
+                  <span>MIT licensed, open source</span>
+                </div>
+              </div>
             </div>
           </div>
         </section>
       </div>
+      </div>
     </div>
+  );
+}
+
+/* ================================================================
+   Step Card — Reusable numbered step wrapper for Quick Start
+   ================================================================ */
+function StepCard({
+  step,
+  title,
+  children,
+}: {
+  step: number;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.06]">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-text-primary">
+          <div className="w-6 h-6 bg-signal rounded-full flex items-center justify-center text-bg-void text-xs font-bold font-mono flex-shrink-0">
+            {step}
+          </div>
+          <span className="text-sm font-display">{title}</span>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="pt-0">{children}</CardContent>
+    </Card>
   );
 }

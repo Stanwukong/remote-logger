@@ -124,9 +124,8 @@ export const useUpdateProject = () => {
     }) => projectService.updateProject(projectId, projectData),
     onSuccess: (updatedProject) => {
       if (updatedProject) {
-        // Invalidate specific project detail and all project lists
         queryClient.invalidateQueries({
-          queryKey: queryKeys.details(updatedProject.project._id),
+          queryKey: queryKeys.details(updatedProject._id),
         });
         queryClient.invalidateQueries({ queryKey: queryKeys.lists({}) });
       }
@@ -175,15 +174,9 @@ export const useBulkDeleteProjects = () => {
 export const useArchiveProject = () => {
   return useMutation({
     mutationFn: (projectId: string) => projectService.archiveProject(projectId),
-    onSuccess: (archivedProject) => {
-      // Invalidate project list and summary/analytics
+    onSuccess: (_data, projectId) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.lists({}) });
-      if (archivedProject) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.details(archivedProject.project._id),
-        });
-      }
-
+      queryClient.invalidateQueries({ queryKey: queryKeys.details(projectId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.summary() });
     },
   });
@@ -195,14 +188,9 @@ export const useArchiveProject = () => {
 export const useRestoreProject = () => {
   return useMutation({
     mutationFn: (projectId: string) => projectService.restoreProject(projectId),
-    onSuccess: (restoredProject) => {
-      // Invalidate project list and summary/analytics
+    onSuccess: (_data, projectId) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.lists({}) });
-      if (restoredProject) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.details(restoredProject.id),
-        });
-      }
+      queryClient.invalidateQueries({ queryKey: queryKeys.details(projectId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.summary() });
     },
   });
@@ -230,6 +218,63 @@ export const useRegenerateApiKey = () => {
 };
 
 /**
+ * Hook to transfer project ownership to another team member.
+ */
+export const useTransferOwnership = () => {
+  return useMutation({
+    mutationFn: ({
+      projectId,
+      newOwnerId,
+      currentOwnerId,
+    }: {
+      projectId: string;
+      newOwnerId: string;
+      currentOwnerId: string;
+    }) => projectService.transferOwnership(projectId, newOwnerId, currentOwnerId),
+    onSuccess: (_data, { projectId }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.details(projectId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.lists({}) });
+    },
+  });
+};
+
+/**
+ * Hook to update a project's sampling configuration.
+ */
+export const useUpdateSamplingConfig = () => {
+  return useMutation({
+    mutationFn: ({
+      projectId,
+      samplingConfig,
+    }: {
+      projectId: string;
+      samplingConfig: { enabled: boolean; mode: "rate" | "percentage"; value: number; alwaysKeepLevels?: string[] };
+    }) => projectService.updateSamplingConfig(projectId, samplingConfig),
+    onSuccess: (_data, { projectId }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.details(projectId) });
+    },
+  });
+};
+
+/**
+ * Hook to apply retention policy to a project.
+ */
+export const useApplyRetention = () => {
+  return useMutation({
+    mutationFn: ({
+      projectId,
+      retentionConfig,
+    }: {
+      projectId: string;
+      retentionConfig: { retentionDays: number };
+    }) => projectService.applyRetention(projectId, retentionConfig),
+    onSuccess: (_data, { projectId }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.details(projectId) });
+    },
+  });
+};
+
+/**
  * Hook to update a project's rate limit.
  */
 export const useUpdateRateLimit = () => {
@@ -239,15 +284,12 @@ export const useUpdateRateLimit = () => {
       rateLimit,
     }: {
       projectId: string;
-      rateLimit: { maxRequests: number; windowInMinutes: number };
+      rateLimit: { maxRequestsPerMinute: number; burstLimit: number };
     }) => projectService.updateRateLimit(projectId, rateLimit),
-    onSuccess: (updatedProject) => {
-      if (updatedProject) {
-        // Invalidate the specific project detail
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.details(updatedProject.id),
-        });
-      }
+    onSuccess: (_data, { projectId }) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.details(projectId),
+      });
     },
   });
 };

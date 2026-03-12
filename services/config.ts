@@ -1,8 +1,8 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { ApiResponse } from "./auth.service";
+import { ApiResponse } from "@/types/api";
 
 const BASE_URL =
-  process.env.NODE_ENV !== "production" ? "http://localhost:5000/api/v1" : process.env.NEXT_PUBLIC_API_BASE_URL 
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api/v1";
 
 /**
  * Helper function to get a cookie value by name.
@@ -44,7 +44,7 @@ apiClient.interceptors.request.use(
     // Get the auth token from cookies instead of localStorage
     const token = getCookie("authToken");
     if (token) {
-      config.headers.Authorization = `${token}`;
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
@@ -55,8 +55,21 @@ apiClient.interceptors.response.use(
   (response: AxiosResponse<ApiResponse>) => response,
   (error: AxiosError<ApiResponse>) => {
     if (error.response?.status === 401) {
-      removeCookie("authToken");
-      // TODO: redirect the user to login page 
+      const url = error.config?.url || "";
+      // Don't redirect for auth endpoints (login/signup naturally return 401 on bad credentials)
+      const isAuthEndpoint =
+        url.includes("/users/login") || url.includes("/users/signup");
+
+      if (!isAuthEndpoint) {
+        removeCookie("authToken");
+        if (typeof window !== "undefined") {
+          // Use dynamic import to avoid bundling toast in non-browser contexts
+          import("sonner").then(({ toast }) => {
+            toast.error("Session expired. Please sign in again.");
+          });
+          window.location.href = "/login";
+        }
+      }
     }
     return Promise.reject(error);
   }

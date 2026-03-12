@@ -48,26 +48,26 @@ export function ProjectHealthCard() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "healthy":
-        return <CheckCircle className="w-4 h-4 text-green-500" />
+        return <CheckCircle className="w-4 h-4 text-status-ok" />
       case "warning":
-        return <AlertTriangle className="w-4 h-4 text-yellow-500" />
+        return <AlertTriangle className="w-4 h-4 text-status-warn" />
       case "critical":
-        return <XCircle className="w-4 h-4 text-red-500" />
+        return <XCircle className="w-4 h-4 text-status-danger" />
       default:
-        return <Activity className="w-4 h-4 text-gray-500" />
+        return <Activity className="w-4 h-4 text-text-muted" />
     }
   }
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "healthy":
-        return "border-l-green-500"
+        return "border-l-status-ok"
       case "warning":
-        return "border-l-yellow-500"
+        return "border-l-status-warn"
       case "critical":
-        return "border-l-red-500"
+        return "border-l-status-danger"
       default:
-        return "border-l-gray-500"
+        return "border-l-border-subtle"
     }
   }
 
@@ -130,9 +130,9 @@ export function ProjectHealthCard() {
                     <div className="flex items-center space-x-1">
                       <span className="font-semibold">{project.errorRate}%</span>
                       {project.trend === "up" ? (
-                        <TrendingUp className="w-3 h-3 text-red-500" />
+                        <TrendingUp className="w-3 h-3 text-status-danger" />
                       ) : (
-                        <TrendingDown className="w-3 h-3 text-green-500" />
+                        <TrendingDown className="w-3 h-3 text-status-ok" />
                       )}
                     </div>
                   </div>

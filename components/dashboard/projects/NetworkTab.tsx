@@ -36,10 +36,10 @@ export function NetworkTab() {
                           <div
                             className={`w-2 h-2 rounded-full ${
                               endpoint.successRate > 99
-                                ? "bg-green-500"
+                                ? "bg-status-ok"
                                 : endpoint.successRate > 95
-                                  ? "bg-yellow-500"
-                                  : "bg-red-500"
+                                  ? "bg-status-warn"
+                                  : "bg-status-danger"
                             }`}
                           />
                         </div>

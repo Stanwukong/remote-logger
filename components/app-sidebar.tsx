@@ -1,7 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-
 "use client";
+
 import {
   Sidebar,
   SidebarContent,
@@ -13,129 +11,197 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
 import {
-  Activity,
-  BarChart3,
+  LayoutDashboard,
   Folder,
+  AlertTriangle,
   Settings,
   Code,
-  HelpCircle,
-  Search,
-  AlertTriangle,
-  Loader2,
+  LogOut,
+  ScrollText,
+  Bug,
+  Gauge,
+  Activity,
+  Users,
+  Radio,
+  GitBranch,
+  Filter,
+  TrendingDown,
+  Globe,
+  FileCode,
+  LayoutGrid,
+  ChevronRight,
+  Wifi,
+  MousePointerClick,
+  Eye,
+  Terminal,
+  Lightbulb,
+  Shield,
+  BarChart3,
+  Building2,
+  Server,
+  UsersRound,
+  CreditCard,
+  Plug,
 } from "lucide-react";
 import Link from "next/link";
-import { Badge  } from "@/components/ui/badge";
-import { LogOut } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { authService } from "@/services/auth.service";
+import { usePathname, useRouter } from "next/navigation";
+import { useMemo } from "react";
+import { Badge } from "@/components/ui/badge";
+import { SignalDot } from "@/components/shared/SignalDot";
+import { OrgSwitcher } from "@/components/shared/OrgSwitcher";
 import { useProjects } from "@/hooks/project.hooks";
-import { Project } from "@/types/project.types";
+import { useUserAlertStats } from "@/hooks/alerts.hook";
+import { useApperioStore } from "@/store/apperio-store";
+import { useOrganizationStore } from "@/store/organization-store";
+import { useProfile } from "@/hooks/user.hook";
 
-// Navigation items will be created dynamically to include project count
-
-// Helper function to get project status based on analytics
-const getProjectStatus = (project: Project): string => {
-  if (!project.analytics) return "inactive";
-  
-  const { errorRate } = project.analytics.overview;
-  const responseTimeHealth = project.analytics.responseTime.current.health;
-  const performanceHealth = project.analytics.performance.health;
-  const errorHealth = project.analytics.errors.health;
-  
-  if (errorRate > 0.1 || responseTimeHealth === "critical" || performanceHealth === "critical" || errorHealth === "critical") {
-    return "critical";
+// Helper function to get project status based on health metrics.
+// The list endpoint returns flat project objects (not wrapped in Project type).
+const getProjectStatus = (project: any): "ok" | "warn" | "danger" | "info" => {
+  const healthScore = project?.metrics?.healthScore ?? project?.healthScore;
+  if (healthScore !== undefined) {
+    if (healthScore < 50) return "danger";
+    if (healthScore < 75) return "warn";
+    return "ok";
   }
-  if (errorRate > 0.05 || responseTimeHealth === "poor" || performanceHealth === "poor" || errorHealth === "poor") {
-    return "warning";
-  }
-  if (responseTimeHealth === "excellent" && performanceHealth === "excellent" && errorHealth === "excellent") {
-    return "excellent";
-  }
-  
-  return "good";
+  if (!project?.isActive) return "info";
+  return "ok";
 };
 
-// Helper function to get status badge variant
-const getStatusBadgeVariant = (status: string) => {
-  switch (status) {
-    case "critical":
-      return "destructive";
-    case "warning":
-      return "secondary";
-    case "excellent":
-      return "default";
-    default:
-      return "outline";
-  }
-};
-
-const resourceItems = [
-  {
-    title: "SDK Documentation",
-    url: "/sdk",
-    icon: Code,
-  },
-  {
-    title: "Settings",
-    url: "/settings",
-    icon: Settings,
-  },
-  {
-    title: "Help & Support",
-    url: "/help",
-    icon: HelpCircle,
-  },
+// Sub-navigation items for the active project section
+const projectSubNavItems = [
+  { title: "Overview", path: "", icon: LayoutDashboard },
+  { title: "Logs", path: "/logs", icon: ScrollText },
+  { title: "Errors", path: "/errors", icon: Bug },
+  { title: "Performance", path: "/performance", icon: Gauge },
+  { title: "Web Vitals", path: "/web-vitals", icon: Activity },
+  { title: "Network", path: "/network", icon: Wifi },
+  { title: "Interactions", path: "/interactions", icon: MousePointerClick },
+  { title: "Pageviews", path: "/pageviews", icon: Eye },
+  { title: "Console", path: "/console", icon: Terminal },
+  { title: "Sessions", path: "/sessions", icon: Users },
+  { title: "Activity Feed", path: "/activity", icon: Radio },
+  { title: "Traces", path: "/traces", icon: GitBranch },
+  { title: "Funnels", path: "/funnels", icon: Filter },
+  { title: "Regressions", path: "/regressions", icon: TrendingDown },
+  { title: "Environments", path: "/environments", icon: Globe },
+  { title: "Insights", path: "/insights", icon: Lightbulb },
+  { title: "Alerts", path: "/alerts", icon: AlertTriangle },
+  { title: "Source Maps", path: "/source-maps", icon: FileCode },
+  { title: "Settings", path: "/settings", icon: Settings },
 ];
 
 export function AppSidebar() {
   const router = useRouter();
-  
-  // Fetch recent projects from database
-  const { data: projectsResponse, isLoading, error } = useProjects({ 
-    includeInactive: false 
+  const pathname = usePathname();
+  const currentProjectId = useApperioStore((s) => s.currentProjectId);
+  const currentOrgId = useOrganizationStore((s) => s.currentOrgId);
+
+  // Fetch projects
+  const { data: projectsResponse } = useProjects({
+    includeInactive: false,
   });
 
-  
-  // Get recent projects (last 5 active projects)
-  const recentProjects = projectsResponse?.data?.slice(0, 5) || [];
+  // Fetch user alert statistics
+  const { data: alertStats } = useUserAlertStats();
 
-  console.log(recentProjects)
-  
-  // Create navigation items with dynamic project count
+  // Fetch user profile to check admin role
+  const { data: userProfile } = useProfile();
+  const isAdmin = userProfile?.role === "admin";
+
+  // Calculate active alert count
+  const activeAlertCount = alertStats?.data?.active || 0;
+
+  // Extract projectId from URL
+  const urlProjectId = useMemo(() => {
+    const match = pathname.match(/\/projects\/([^\/]+)/);
+    return match ? match[1] : null;
+  }, [pathname]);
+
+  // Resolve the active project ID (URL takes precedence, then store)
+  const activeProjectId = urlProjectId || currentProjectId;
+
+  // Find the active project object from the fetched list.
+  // The list endpoint returns flat objects with _id directly on the item.
+  const activeProject = useMemo(() => {
+    if (!activeProjectId || !projectsResponse?.data) return null;
+    return projectsResponse.data.find(
+      (p: any) => (p._id ?? p.project?._id) === activeProjectId
+    ) || null;
+  }, [activeProjectId, projectsResponse?.data]);
+
+  // Primary navigation items
   const navigationItems = [
     {
       title: "Dashboard",
       url: "/dashboard",
-      icon: BarChart3,
+      icon: LayoutDashboard,
+      badge: undefined as string | undefined,
+      badgeVariant: undefined as "destructive" | undefined,
     },
     {
       title: "Projects",
       url: "/projects",
       icon: Folder,
-      badge: projectsResponse?.data?.length?.toString() || "0"
+      badge: projectsResponse?.data?.length?.toString() || "0",
+      badgeVariant: undefined as "destructive" | undefined,
     },
     {
-      title: "Logs Explorer",
+      title: "Logs",
       url: "/logs",
-      icon: Search
+      icon: ScrollText,
+      badge: undefined as string | undefined,
+      badgeVariant: undefined as "destructive" | undefined,
     },
     {
       title: "Alerts",
       url: "/alerts",
       icon: AlertTriangle,
-      badge: "3",
-      badgeVariants: "destructive" as const
-    }
+      badge: activeAlertCount > 0 ? activeAlertCount.toString() : undefined,
+      badgeVariant: "destructive" as "destructive" | undefined,
+    },
+    {
+      title: "Custom Dashboards",
+      url: "/custom-dashboards",
+      icon: LayoutGrid,
+      badge: undefined as string | undefined,
+      badgeVariant: undefined as "destructive" | undefined,
+    },
   ];
+
+  // Check if a top-level navigation item is active
+  const isNavActive = (url: string) => {
+    if (url === "/dashboard") return pathname === "/dashboard";
+    if (url === "/projects") return pathname === "/projects";
+    if (url === "/logs") return pathname === "/logs";
+    if (url === "/alerts") return pathname === "/alerts";
+    if (url === "/custom-dashboards") return pathname.startsWith("/custom-dashboards");
+    return pathname.startsWith(url);
+  };
+
+  // Check if a project sub-nav item is active
+  const isSubNavActive = (subPath: string) => {
+    if (!activeProjectId) return false;
+    const fullPath = `/projects/${activeProjectId}${subPath}`;
+    if (subPath === "") {
+      // Overview: exact match only
+      return pathname === `/projects/${activeProjectId}`;
+    }
+    return pathname.startsWith(fullPath);
+  };
 
   const clearAllCookies = () => {
     const cookies = document.cookie.split(";");
     for (const cookie of cookies) {
       const eqPos = cookie.indexOf("=");
-      const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+      const name =
+        eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
       document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
     }
   };
@@ -152,133 +218,339 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar className="border-r border-border/40">
-      <SidebarHeader className="border-b border-border/40">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <Activity className="w-5 h-5 text-primary-foreground" />
-          </div>
+    <Sidebar className="border-r border-border-subtle">
+      {/* Header / Logo */}
+      <SidebarHeader className="border-b border-border-subtle">
+        <div className="flex items-center space-x-2.5">
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 28 28"
+            fill="none"
+            className="text-signal shrink-0"
+          >
+            <path
+              d="M4 20L4 16L8 12L12 18L18 8L22 14L24 10"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <circle cx="4" cy="20" r="2" fill="currentColor" />
+            <circle cx="24" cy="10" r="2" fill="currentColor" />
+          </svg>
           <div>
-            <h2 className="font-semibold text-lg">LogHive</h2>
-            <p className="text-xs text-muted-foreground">Developer Console</p>
+            <h2 className="font-display font-semibold text-lg tracking-[-0.02em]">
+              Apperio
+            </h2>
+            <p className="text-xs text-text-muted">Developer Console</p>
           </div>
+        </div>
+        {/* Organization Switcher */}
+        <div className="mt-2 pt-2 border-t border-border-subtle/50">
+          <OrgSwitcher />
         </div>
       </SidebarHeader>
 
       <SidebarContent className="overflow-x-clip">
+        {/* Section 1: Primary Navigation */}
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-text-muted uppercase text-[11px] tracking-wider font-display">
+            Navigation
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navigationItems.map((item) =>  (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link href={item.url}>
-                      <item.icon className="w-4 h-4" />
-                      <span>{item.title}</span>
-                      {item.badge && (
-                        <Badge 
-                          variant={item.badgeVariants || "secondary"} 
-                          className="ml-auto text-xs"
-                        >
-                          {item.badge}
-                        </Badge>
-                      )}
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarSeparator />
-
-        <SidebarGroup>
-          <SidebarGroupLabel>Recent Projects</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {isLoading ? (
-                <SidebarMenuItem>
-                  <SidebarMenuButton disabled>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Loading projects...</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ) : error ? (
-                <SidebarMenuItem>
-                  <SidebarMenuButton disabled>
-                    <AlertTriangle className="w-4 h-4 text-destructive" />
-                    <span>Failed to load</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ) : recentProjects.length === 0 ? (
-                <SidebarMenuItem>
-                  <SidebarMenuButton disabled>
-                    <Folder className="w-4 h-4" />
-                    <span>No projects yet</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ) : (
-                recentProjects.map((project) => {
-                  const status = getProjectStatus(project);
-                  return (
-                    <SidebarMenuItem key={project._id}>
-                      <SidebarMenuButton asChild>
-                        <Link href={`/projects/${project._id}`}>
-                          <Activity className="w-4 h-4" />
-                          <span className="truncate">{project.name}</span>
-                          <Badge 
-                            variant={getStatusBadgeVariant(status) as any} 
+              {navigationItems.map((item) => {
+                const active = isNavActive(item.url);
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={active}
+                      className={
+                        active
+                          ? "bg-signal/10 text-signal font-medium border-l-2 border-signal"
+                          : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated/50"
+                      }
+                    >
+                      <Link href={item.url}>
+                        <item.icon className="w-4 h-4" />
+                        <span>{item.title}</span>
+                        {item.badge && (
+                          <Badge
+                            variant={item.badgeVariant || "secondary"}
                             className="ml-auto text-xs"
                           >
-                            {status}
+                            {item.badge}
                           </Badge>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  );
-                })
-              )}
+                        )}
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {/* Section 2: Active Project (only when a project is selected via URL) */}
+        {urlProjectId && (
+          <>
+            <SidebarSeparator />
+            <SidebarGroup>
+              <SidebarGroupLabel className="text-text-muted uppercase text-[11px] tracking-wider font-display">
+                Active Project
+              </SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {/* Project selector header */}
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      className="text-text-primary hover:bg-bg-elevated/50 font-medium"
+                    >
+                      <Link
+                        href="/projects"
+                        className="flex items-center gap-2"
+                      >
+                        <SignalDot
+                          status={activeProject ? getProjectStatus(activeProject) : "info"}
+                          size="sm"
+                          pulse={activeProject ? getProjectStatus(activeProject) !== "info" : false}
+                        />
+                        <span className="truncate font-display text-sm">
+                          {activeProject?.name ?? activeProject?.project?.name ?? "Loading..."}
+                        </span>
+                        <ChevronRight className="ml-auto w-3.5 h-3.5 text-text-muted" />
+                      </Link>
+                    </SidebarMenuButton>
+
+                    {/* 14 sub-nav items */}
+                    <SidebarMenuSub>
+                      {projectSubNavItems.map((subItem) => {
+                        const subActive = isSubNavActive(subItem.path);
+                        const href = `/projects/${urlProjectId}${subItem.path}`;
+                        return (
+                          <SidebarMenuSubItem key={subItem.title}>
+                            <SidebarMenuSubButton
+                              asChild
+                              isActive={subActive}
+                              className={
+                                subActive
+                                  ? "text-signal font-medium"
+                                  : "text-text-muted hover:text-text-primary"
+                              }
+                            >
+                              <Link href={href}>
+                                <subItem.icon className="w-3.5 h-3.5" />
+                                <span>{subItem.title}</span>
+                              </Link>
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSubItem>
+                        );
+                      })}
+                    </SidebarMenuSub>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </>
+        )}
 
         <SidebarSeparator />
 
+        {/* Section 3: Admin (only for admin users) */}
+        {isAdmin && (
+          <>
+            <SidebarGroup>
+              <SidebarGroupLabel className="text-text-muted uppercase text-[11px] tracking-wider font-display">
+                Admin
+              </SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {[
+                    { title: "Overview", url: "/admin", icon: BarChart3 },
+                    { title: "Users", url: "/admin/users", icon: Users },
+                    { title: "Organizations", url: "/admin/organizations", icon: Building2 },
+                    { title: "System", url: "/admin/system", icon: Server },
+                  ].map((item) => {
+                    const active =
+                      item.url === "/admin"
+                        ? pathname === "/admin"
+                        : pathname.startsWith(item.url);
+                    return (
+                      <SidebarMenuItem key={item.title}>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={active}
+                          className={
+                            active
+                              ? "bg-signal/10 text-signal font-medium border-l-2 border-signal"
+                              : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated/50"
+                          }
+                        >
+                          <Link href={item.url}>
+                            {item.url === "/admin" && !active ? (
+                              <Shield className="w-4 h-4" />
+                            ) : (
+                              <item.icon className="w-4 h-4" />
+                            )}
+                            <span>{item.title}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  })}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+            <SidebarSeparator />
+          </>
+        )}
+
+        {/* Section 4: Footer links (SDK Docs, Settings) */}
         <SidebarGroup>
-          <SidebarGroupLabel>Resources</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-text-muted uppercase text-[11px] tracking-wider font-display">
+            Resources
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {resourceItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link href={item.url}>
-                      <item.icon className="w-4 h-4" />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname.startsWith("/sdk")}
+                  className={
+                    pathname.startsWith("/sdk")
+                      ? "bg-signal/10 text-signal font-medium border-l-2 border-signal"
+                      : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated/50"
+                  }
+                >
+                  <Link href="/sdk">
+                    <Code className="w-4 h-4" />
+                    <span>SDK Docs</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname.startsWith("/billing")}
+                  className={
+                    pathname.startsWith("/billing")
+                      ? "bg-signal/10 text-signal font-medium border-l-2 border-signal"
+                      : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated/50"
+                  }
+                >
+                  <Link href="/billing">
+                    <CreditCard className="w-4 h-4" />
+                    <span>Billing</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname.startsWith("/integrations")}
+                  className={
+                    pathname.startsWith("/integrations")
+                      ? "bg-signal/10 text-signal font-medium border-l-2 border-signal"
+                      : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated/50"
+                  }
+                >
+                  <Link href="/integrations">
+                    <Plug className="w-4 h-4" />
+                    <span>Integrations</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname.startsWith("/settings")}
+                  className={
+                    pathname.startsWith("/settings")
+                      ? "bg-signal/10 text-signal font-medium border-l-2 border-signal"
+                      : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated/50"
+                  }
+                >
+                  <Link href="/settings">
+                    <Settings className="w-4 h-4" />
+                    <span>Settings</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {/* Section: Organization (shown when user has an org selected) */}
+        {currentOrgId && (
+          <>
+            <SidebarSeparator />
+            <SidebarGroup>
+              <SidebarGroupLabel className="text-text-muted uppercase text-[11px] tracking-wider font-display">
+                Organization
+              </SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {[
+                    { title: "General", url: "/organization/general", icon: Building2 },
+                    { title: "Members", url: "/organization/members", icon: Users },
+                    { title: "Teams", url: "/organization/teams", icon: UsersRound },
+                    { title: "Audit Log", url: "/organization/audit-log", icon: ScrollText },
+                  ].map((item) => {
+                    const active = pathname.startsWith(item.url);
+                    return (
+                      <SidebarMenuItem key={item.title}>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={active}
+                          className={
+                            active
+                              ? "bg-signal/10 text-signal font-medium border-l-2 border-signal"
+                              : "text-text-secondary hover:text-text-primary hover:bg-bg-elevated/50"
+                          }
+                        >
+                          <Link href={item.url}>
+                            <item.icon className="w-4 h-4" />
+                            <span>{item.title}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  })}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </>
+        )}
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-border/40 p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-            <div className="w-2 h-2 bg-green-500 rounded-full" />
-            <span>All systems operational</span>
+      {/* Footer */}
+      <SidebarFooter className="border-t border-border-subtle p-4">
+        <div className="flex flex-col gap-3">
+          {/* System status */}
+          <div className="flex items-center space-x-2 text-sm text-text-muted">
+            <SignalDot status="ok" size="sm" pulse />
+            <span>System status</span>
           </div>
-          <button
-            onClick={handleLogout}
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
-            aria-label="Logout"
-          >
-            <LogOut className="w-4 h-4" />
-            Logout
-          </button>
+          {/* User / Logout */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm text-text-secondary">
+              <div className="w-6 h-6 rounded-full bg-bg-elevated flex items-center justify-center text-xs text-text-muted font-medium border border-border-subtle">
+                U
+              </div>
+              <span className="truncate max-w-[120px]">Account</span>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary transition-colors"
+              aria-label="Logout"
+            >
+              <LogOut className="w-4 h-4" />
+              <span>Logout</span>
+            </button>
+          </div>
         </div>
       </SidebarFooter>
     </Sidebar>

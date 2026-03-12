@@ -13,6 +13,33 @@ interface SummaryWidgetProps {
   details?: string
 }
 
+const variantStyles: Record<string, {
+  icon: string
+  border: string
+  glow: string
+}> = {
+  success: {
+    icon: "text-signal",
+    border: "border-l-signal",
+    glow: "hover:shadow-[0_0_15px_rgba(0,217,126,0.15)]",
+  },
+  destructive: {
+    icon: "text-status-danger",
+    border: "border-l-status-danger",
+    glow: "hover:shadow-[0_0_15px_rgba(239,68,68,0.15)]",
+  },
+  warning: {
+    icon: "text-status-warn",
+    border: "border-l-status-warn",
+    glow: "hover:shadow-[0_0_15px_rgba(245,158,11,0.15)]",
+  },
+  default: {
+    icon: "text-data-info",
+    border: "border-l-data-info",
+    glow: "hover:shadow-[0_0_15px_rgba(77,142,248,0.15)]",
+  },
+}
+
 export function SummaryWidget({
   title,
   value,
@@ -38,31 +65,31 @@ export function SummaryWidget({
 
   const getTrendColor = () => {
     if (variant === "destructive") {
-      return trend === "down" ? "text-green-600" : "text-red-600"
+      return trend === "down" ? "text-status-ok" : "text-status-danger"
     }
-    return trend === "up" ? "text-green-600" : trend === "down" ? "text-red-600" : "text-muted-foreground"
+    return trend === "up" ? "text-status-ok" : trend === "down" ? "text-status-danger" : "text-text-muted"
   }
 
+  const styles = variantStyles[variant] || variantStyles.default
+
   return (
-    <Card className="hover:shadow-md transition-shadow">
+    <Card className={cn(
+      "border-l-4 transition-all duration-200",
+      styles.border,
+      styles.glow,
+    )}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
-        <Icon
-          className={cn(
-            "h-4 w-4",
-            variant === "destructive" && "text-destructive",
-            variant === "warning" && "text-yellow-600",
-          )}
-        />
+        <CardTitle className="text-sm font-medium text-text-secondary">{title}</CardTitle>
+        <Icon className={cn("h-4 w-4", styles.icon)} />
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
+        <div className="text-2xl font-bold font-mono text-text-primary">{value}</div>
         <div className="flex items-center space-x-1 text-xs mt-1">
           <TrendIcon className={cn("h-3 w-3", getTrendColor())} />
           <span className={getTrendColor()}>{change}</span>
-          {subtitle && <span className="text-muted-foreground">{subtitle}</span>}
+          {subtitle && <span className="text-text-muted">{subtitle}</span>}
         </div>
-        {details && <p className="text-xs text-muted-foreground mt-2">{details}</p>}
+        {details && <p className="text-xs text-text-muted mt-2">{details}</p>}
       </CardContent>
     </Card>
   )

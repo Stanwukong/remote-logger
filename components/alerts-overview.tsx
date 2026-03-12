@@ -42,13 +42,13 @@ export function AlertsOverview() {
   const getAlertIcon = (type: string) => {
     switch (type) {
       case "critical":
-        return <AlertTriangle className="w-4 h-4 text-red-500" />
+        return <AlertTriangle className="w-4 h-4 text-status-danger" />
       case "warning":
-        return <AlertTriangle className="w-4 h-4 text-yellow-500" />
+        return <AlertTriangle className="w-4 h-4 text-status-warn" />
       case "info":
-        return <Info className="w-4 h-4 text-blue-500" />
+        return <Info className="w-4 h-4 text-data-info" />
       case "resolved":
-        return <CheckCircle className="w-4 h-4 text-green-500" />
+        return <CheckCircle className="w-4 h-4 text-status-ok" />
       default:
         return <Bell className="w-4 h-4 text-gray-500" />
     }
@@ -114,11 +114,11 @@ export function AlertsOverview() {
         <div className="mt-6 pt-4 border-t border-border/50">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div className="text-center">
-              <div className="text-2xl font-bold text-red-500">3</div>
+              <div className="text-2xl font-bold text-status-danger">3</div>
               <div className="text-muted-foreground">Critical</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-yellow-500">8</div>
+              <div className="text-2xl font-bold text-status-warn">8</div>
               <div className="text-muted-foreground">Warning</div>
             </div>
           </div>

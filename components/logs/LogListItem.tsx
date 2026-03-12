@@ -77,6 +77,16 @@ export const LogListItem: React.FC<LogListItemProps> = ({
                 {log.eventType}
               </Badge>
             )}
+            {log.release && (
+              <Badge variant="outline" className="font-mono text-xs">
+                v{log.release}
+              </Badge>
+            )}
+            {(log.data?.offlineQueued || log.metadata?.offlineQueued) && (
+              <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-status-warn/10 text-status-warn border-status-warn/30">
+                Offline
+              </Badge>
+            )}
           </div>
 
           <p className="font-medium text-sm mb-2 break-words">{log.message}</p>

@@ -20,13 +20,15 @@ import {
   Webhook,
   ExternalLink,
 } from "lucide-react"
-import { Alert } from "@/app/(dashboard)/alerts/page"
+// Legacy component — replaced by AlertDetailPanel/AlertDetailModal (enhanced)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Alert = any;
 
 interface AlertDetailsModalProps {
   alert: Alert | null
   open: boolean
   onOpenChange: (open: boolean) => void
-  onStatusChange: (alertId: string, newStatus: Alert["status"]) => void
+  onStatusChange: (alertId: string, newStatus: string) => void
 }
 
 export function AlertDetailsModal({ alert, open, onOpenChange, onStatusChange }: AlertDetailsModalProps) {
@@ -35,13 +37,13 @@ export function AlertDetailsModal({ alert, open, onOpenChange, onStatusChange }:
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case "critical":
-        return "bg-red-100 text-red-800 border-red-200"
+        return "bg-status-danger/15 text-status-danger border-status-danger/30"
       case "high":
-        return "bg-orange-100 text-orange-800 border-orange-200"
+        return "bg-status-warn/15 text-status-warn border-status-warn/30"
       case "medium":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200"
+        return "bg-level-warn/15 text-level-warn border-level-warn/30"
       case "low":
-        return "bg-blue-100 text-blue-800 border-blue-200"
+        return "bg-data-info/15 text-data-info border-data-info/30"
       default:
         return "bg-gray-100 text-gray-800 border-gray-200"
     }
@@ -50,11 +52,11 @@ export function AlertDetailsModal({ alert, open, onOpenChange, onStatusChange }:
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
-        return "bg-red-100 text-red-800 border-red-200"
+        return "bg-status-danger/15 text-status-danger border-status-danger/30"
       case "acknowledged":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200"
+        return "bg-level-warn/15 text-level-warn border-level-warn/30"
       case "resolved":
-        return "bg-green-100 text-green-800 border-green-200"
+        return "bg-status-ok/15 text-status-ok border-status-ok/30"
       case "snoozed":
         return "bg-purple-100 text-purple-800 border-purple-200"
       default:
@@ -65,13 +67,13 @@ export function AlertDetailsModal({ alert, open, onOpenChange, onStatusChange }:
   const getSeverityIcon = (severity: string) => {
     switch (severity) {
       case "critical":
-        return <AlertTriangle className="w-5 h-5 text-red-500" />
+        return <AlertTriangle className="w-5 h-5 text-status-danger" />
       case "high":
-        return <AlertTriangle className="w-5 h-5 text-orange-500" />
+        return <AlertTriangle className="w-5 h-5 text-status-warn" />
       case "medium":
-        return <Bell className="w-5 h-5 text-yellow-500" />
+        return <Bell className="w-5 h-5 text-level-warn" />
       case "low":
-        return <Bell className="w-5 h-5 text-blue-500" />
+        return <Bell className="w-5 h-5 text-data-info" />
       default:
         return <Bell className="w-5 h-5 text-gray-500" />
     }
@@ -252,11 +254,11 @@ export function AlertDetailsModal({ alert, open, onOpenChange, onStatusChange }:
                   <span className="text-sm font-medium">Notification Channels</span>
                   <div className="flex space-x-4">
                     <div className="flex items-center space-x-2">
-                      <Mail className="w-4 h-4 text-blue-600" />
+                      <Mail className="w-4 h-4 text-data-info" />
                       <span className="text-sm">Email</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <MessageSquare className="w-4 h-4 text-green-600" />
+                      <MessageSquare className="w-4 h-4 text-status-ok" />
                       <span className="text-sm">Slack</span>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -280,8 +282,8 @@ export function AlertDetailsModal({ alert, open, onOpenChange, onStatusChange }:
                   {activityLog.map((activity, index) => (
                     <div key={activity.id} className="flex space-x-4">
                       <div className="flex-shrink-0">
-                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                          <Activity className="w-4 h-4 text-blue-600" />
+                        <div className="w-8 h-8 bg-data-info/15 rounded-full flex items-center justify-center">
+                          <Activity className="w-4 h-4 text-data-info" />
                         </div>
                       </div>
                       <div className="flex-1 min-w-0">

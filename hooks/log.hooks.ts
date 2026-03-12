@@ -22,6 +22,8 @@ export const logQueryKeys = {
     [...logQueryKeys.all, "distinct", projectId, field] as const,
   uniqueErrors: (projectId: string, timeRange?: string) =>
     [...logQueryKeys.all, "unique-errors", projectId, timeRange] as const,
+  savedSearches: (projectId: string) =>
+    [...logQueryKeys.all, "saved-searches", projectId] as const,
 };
 
 
@@ -140,6 +142,63 @@ export const useDeleteLogs = () => {
     onSuccess: (_, { projectId }) => {
       // Invalidate all log-related queries
       queryClient.invalidateQueries({ queryKey: logQueryKeys.all });
+    },
+  });
+};
+
+// ============================================
+// SAVED SEARCHES HOOKS
+// ============================================
+
+// Hook to get saved searches for a project
+export const useSavedSearches = (projectId: string) => {
+  return useQuery({
+    queryKey: logQueryKeys.savedSearches(projectId),
+    queryFn: () => logService.getSavedSearches(projectId),
+    enabled: !!projectId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+// Hook to get default saved search
+export const useDefaultSavedSearch = (projectId: string) => {
+  return useQuery({
+    queryKey: [...logQueryKeys.savedSearches(projectId), "default"],
+    queryFn: () => logService.getDefaultSavedSearch(projectId),
+    enabled: !!projectId,
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
+// Hook to create a saved search
+export const useCreateSavedSearch = () => {
+  return useMutation({
+    mutationFn: ({ projectId, data }: { projectId: string; data: any }) =>
+      logService.createSavedSearch(projectId, data),
+    onSuccess: (_, { projectId }) => {
+      queryClient.invalidateQueries({ queryKey: logQueryKeys.savedSearches(projectId) });
+    },
+  });
+};
+
+// Hook to update a saved search
+export const useUpdateSavedSearch = () => {
+  return useMutation({
+    mutationFn: ({ projectId, searchId, data }: { projectId: string; searchId: string; data: any }) =>
+      logService.updateSavedSearch(projectId, searchId, data),
+    onSuccess: (_, { projectId }) => {
+      queryClient.invalidateQueries({ queryKey: logQueryKeys.savedSearches(projectId) });
+    },
+  });
+};
+
+// Hook to delete a saved search
+export const useDeleteSavedSearch = () => {
+  return useMutation({
+    mutationFn: ({ projectId, searchId }: { projectId: string; searchId: string }) =>
+      logService.deleteSavedSearch(projectId, searchId),
+    onSuccess: (_, { projectId }) => {
+      queryClient.invalidateQueries({ queryKey: logQueryKeys.savedSearches(projectId) });
     },
   });
 };
