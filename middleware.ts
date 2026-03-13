@@ -4,22 +4,82 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 /**
- * Pre-launch middleware — gates all routes behind the waitlist.
- * Only the waitlist page (/) and its API route are accessible.
- * Auth pages (/login, /signup) show the EarlyAccessGate component
- * instead of redirecting, for a better UX.
+ * Beta-aware middleware.
+ *
+ * Public paths pass through freely.
+ * Protected paths require an auth token cookie.
+ * If no token or token lacks betaAccess, redirect appropriately.
  */
+
+const PUBLIC_PATHS = new Set([
+  "/",
+  "/login",
+  "/signup",
+  "/forgot-password",
+  "/mfa-verify",
+  "/callback",
+  "/sdk",
+  "/changelog",
+  "/status",
+  "/docs",
+]);
+
+function isPublicPath(pathname: string): boolean {
+  if (PUBLIC_PATHS.has(pathname)) return true;
+  // Allow all /docs/* and /reset-password/* paths
+  if (pathname.startsWith("/docs/")) return true;
+  if (pathname.startsWith("/reset-password/")) return true;
+  return false;
+}
+
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
+    const payload = Buffer.from(parts[1], "base64url").toString("utf-8");
+    return JSON.parse(payload);
+  } catch {
+    return null;
+  }
+}
+
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  // Allow: root (waitlist page), auth pages (show gate component), and API routes
-  const allowedPaths = ["/", "/login", "/signup"];
-  if (allowedPaths.includes(pathname)) {
+  // Public paths: always accessible
+  if (isPublicPath(pathname)) {
     return NextResponse.next();
   }
 
-  // Everything else → redirect to waitlist page
-  return NextResponse.redirect(new URL("/", request.url));
+  // Protected path: check for auth token
+  const token = request.cookies.get("authToken")?.value;
+
+  if (!token) {
+    // No auth, redirect to login
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  // Decode token to check beta access
+  const payload = decodeJwtPayload(token);
+
+  if (!payload) {
+    // Invalid token, redirect to login
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  // Admin users always get full access
+  if (payload.role === "admin") {
+    return NextResponse.next();
+  }
+
+  // Check beta access
+  if (!payload.betaAccess) {
+    // User exists but not a beta tester, send to waitlist
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
+  // Beta user: allow through (feature gating handled at component level)
+  return NextResponse.next();
 }
 
 /**

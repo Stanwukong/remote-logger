@@ -6,14 +6,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import {
   ArrowLeft,
   CheckCircle2,
@@ -59,19 +51,16 @@ export default function ForgotPasswordPage() {
 
   if (isSubmitted) {
     return (
-      <div className="w-full max-w-md mx-auto my-12 space-y-8">
-        <div className="text-center space-y-2">
-          <Badge
-            variant="outline"
-            className="mb-4 bg-signal/10 text-signal border-signal/30"
-          >
-            <CheckCircle2 className="w-3 h-3 mr-1" />
-            Email Sent
-          </Badge>
+      <div className="space-y-8">
+        <div className="text-center lg:text-left space-y-2">
+          <div className="flex items-center gap-2 justify-center lg:justify-start">
+            <CheckCircle2 className="w-5 h-5 text-signal" />
+            <span className="text-sm font-medium text-signal">Email Sent</span>
+          </div>
           <h1 className="text-3xl font-display font-bold tracking-tight text-text-primary">
             Check your email
           </h1>
-          <p className="text-text-secondary">
+          <p className="text-text-secondary text-sm">
             We&apos;ve sent password reset instructions to{" "}
             <strong className="text-text-primary">
               {form.getValues("email")}
@@ -79,33 +68,29 @@ export default function ForgotPasswordPage() {
           </p>
         </div>
 
-        <Card className="bg-bg-surface border-border-subtle shadow-lg">
-          <CardContent className="pt-6 space-y-4">
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 bg-signal/10 rounded-full flex items-center justify-center mx-auto">
-                <Mail className="w-8 h-8 text-signal" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-text-primary mb-2">
-                  Email sent successfully
-                </h3>
-                <p className="text-sm text-text-secondary mb-4">
-                  Click the link in the email to reset your password. The link
-                  will expire in 1 hour.
-                </p>
-                <p className="text-xs text-text-muted">
-                  Didn&apos;t receive the email? Check your spam folder or{" "}
-                  <button
-                    onClick={() => setIsSubmitted(false)}
-                    className="text-signal hover:text-signal-bright transition-colors"
-                  >
-                    try again
-                  </button>
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="text-center space-y-4">
+          <div className="w-16 h-16 bg-signal/10 rounded-full flex items-center justify-center mx-auto">
+            <Mail className="w-8 h-8 text-signal" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-text-primary mb-2">
+              Email sent successfully
+            </h3>
+            <p className="text-sm text-text-secondary mb-4">
+              Click the link in the email to reset your password. The link
+              will expire in 1 hour.
+            </p>
+            <p className="text-xs text-text-muted">
+              Didn&apos;t receive the email? Check your spam folder or{" "}
+              <button
+                onClick={() => setIsSubmitted(false)}
+                className="text-signal hover:text-signal-bright transition-colors"
+              >
+                try again
+              </button>
+            </p>
+          </div>
+        </div>
 
         <div className="text-center">
           <Link
@@ -121,79 +106,58 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="w-full max-w-md mx-auto my-12 space-y-8">
-      <div className="text-center space-y-2">
-        <Badge
-          variant="outline"
-          className="mb-4 bg-signal/10 text-signal border-signal/30"
-        >
-          <Mail className="w-3 h-3 mr-1" />
-          Password Reset
-        </Badge>
+    <div className="space-y-8">
+      <div className="text-center lg:text-left space-y-2">
         <h1 className="text-3xl font-display font-bold tracking-tight text-text-primary">
           Forgot your password?
         </h1>
-        <p className="text-text-secondary">
+        <p className="text-text-secondary text-sm">
           No worries! Enter your email and we&apos;ll send you reset instructions.
         </p>
       </div>
 
-      <Card className="bg-bg-surface border-border-subtle shadow-lg">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center text-text-primary">
-            Reset Password
-          </CardTitle>
-          <CardDescription className="text-center text-text-secondary">
-            Enter your email address and we&apos;ll send you a link to reset your
-            password
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              {/* Email */}
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-text-secondary">Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="femi@example.com"
-                        {...field}
-                        disabled={isLoading}
-                        className="bg-bg-base border-border-subtle"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-text-secondary">Email</FormLabel>
+                <FormControl>
+                  <Input
+                    type="email"
+                    placeholder="femi@example.com"
+                    {...field}
+                    disabled={isLoading}
+                    className="bg-bg-base border-border-subtle"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-              <Button
-                type="submit"
-                variant="signal"
-                className="w-full"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
-                    Sending reset link...
-                  </>
-                ) : (
-                  <>
-                    <Mail className="w-4 h-4 mr-2" />
-                    Send reset link
-                  </>
-                )}
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+          <Button
+            type="submit"
+            variant="signal"
+            className="w-full"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
+                Sending reset link...
+              </>
+            ) : (
+              <>
+                <Mail className="w-4 h-4 mr-2" />
+                Send reset link
+              </>
+            )}
+          </Button>
+        </form>
+      </Form>
 
       <div className="text-center space-y-4">
         <Link
