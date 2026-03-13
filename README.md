@@ -1,6 +1,6 @@
-# Monita Frontend Dashboard
+# Apperio Frontend Dashboard
 
-**Monita** is a premium observability and logging platform that helps developers monitor, debug, and optimize their applications in real-time. This repository contains the **frontend dashboard application** — a responsive, modern web interface built with Next.js 15 and React 19 that provides comprehensive log analytics, error tracking, performance monitoring, and alert management.
+**Apperio** is a premium observability and logging platform that helps developers monitor, debug, and optimize their applications in real-time. This repository contains the **frontend dashboard application** — a responsive, modern web interface built with Next.js 15 and React 19 that provides comprehensive log analytics, error tracking, performance monitoring, and alert management.
 
 ## Table of Contents
 
@@ -19,7 +19,7 @@
 
 ## Overview
 
-Monita Dashboard is the visual command center for managing your application observability. Monitor logs, errors, performance metrics, and configure sophisticated alert rules—all from one intuitive interface.
+Apperio Dashboard is the visual command center for managing your application observability. Monitor logs, errors, performance metrics, and configure sophisticated alert rules—all from one intuitive interface.
 
 **Live Deployments:**
 - Production: [https://loghive.vercel.app](https://loghive.vercel.app)
@@ -27,7 +27,7 @@ Monita Dashboard is the visual command center for managing your application obse
 
 **Related Repositories:**
 - Backend API: [logger_backend](https://github.com/Stanwukong/logger_backend)
-- JavaScript SDK: [loghive-sdk](https://github.com/Stanwukong/loghive-sdk) (npm: `monita`)
+- JavaScript SDK: [loghive-sdk](https://github.com/Stanwukong/loghive-sdk) (npm: `Apperio`)
 
 ## Tech Stack
 
@@ -82,8 +82,8 @@ NEXT_PUBLIC_API_BASE_URL=http://localhost:5000/api/v1
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/Stanwukong/monita.git
-cd monita/remote-logger
+git clone https://github.com/Stanwukong/Apperio.git
+cd Apperio/remote-logger
 ```
 
 2. Install dependencies:
@@ -338,7 +338,7 @@ remote-logger/
 
 ## Design System
 
-Monita uses the **Observatory design system** — a dark-first, signal-focused design language optimized for monitoring and data visualization.
+Apperio uses the **Observatory design system** — a dark-first, signal-focused design language optimized for monitoring and data visualization.
 
 ### Color Palette
 

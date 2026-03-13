@@ -155,7 +155,8 @@ export default function LoginPage() {
         onClick={() => {
           const githubClientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID;
           if (githubClientId) {
-            window.location.href = `https://github.com/login/oauth/authorize?client_id=${githubClientId}&scope=user:email`;
+            const redirectUri = `${window.location.origin}/callback`;
+            window.location.href = `https://github.com/login/oauth/authorize?client_id=${githubClientId}&scope=user:email&state=github&redirect_uri=${encodeURIComponent(redirectUri)}`;
           } else {
             toast.error("GitHub OAuth is not configured.");
           }
