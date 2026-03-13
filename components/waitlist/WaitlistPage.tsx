@@ -83,7 +83,7 @@ function WaitlistForm({
 function AIInsightTyping() {
   const [text, setText] = useState("");
   const fullText =
-    "TypeError spike detected in /checkout — 12x increase in last 15min. Root cause: null response from payment API after deploy v2.4.1. Suggested fix: add null check at checkout.ts:142.";
+    "TypeError spike detected in /checkout. 12x increase in last 15min. Root cause: null response from payment API after deploy v2.4.1. Suggested fix: add null check at checkout.ts:142.";
   const indexRef = useRef(0);
 
   useEffect(() => {
@@ -96,14 +96,14 @@ function AIInsightTyping() {
         setTimeout(() => {
           indexRef.current = 0;
           setText("");
-        }, 3000);
+        }, 2000);
       }
     }, 25);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="rounded-lg border border-signal/20 bg-signal/5 p-3 text-[12px] font-mono text-text-secondary leading-relaxed min-h-[60px]">
+    <div className="rounded-lg border border-signal/20 bg-signal/5 p-3 text-[12px] font-mono text-text-secondary leading-relaxed h-[100px] sm:h-[88px] overflow-hidden">
       <span className="text-signal font-semibold">AI Insight: </span>
       {text}
       <span className="inline-block w-[2px] h-3 bg-signal ml-0.5 animate-pulse" />
@@ -211,10 +211,10 @@ export function WaitlistPage() {
     <>
       {/* ═══ SECTION 1: HERO ═══ */}
       <section id="waitlist" ref={heroRef} className="relative min-h-screen overflow-hidden pt-16">
-        <div className="relative z-10 max-w-[1280px] mx-auto px-6 pt-20 pb-16 md:pt-28">
+        <div className="relative z-10 max-w-[1280px] mx-auto px-4 sm:px-6 pt-20 pb-16 md:pt-28">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Left column — text */}
-            <div>
+            <div className='w-full'>
               {/* Badge pill */}
               <div className="mb-8" data-hero-badge>
                 <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-signal bg-signal-muted">
@@ -227,8 +227,8 @@ export function WaitlistPage() {
 
               {/* Headline */}
               <h1
-                className="font-display font-extrabold tracking-[-0.03em] leading-[1.05] mb-6"
-                style={{ fontSize: "clamp(40px, 6vw, 72px)" }}
+                className="font-display font-extrabold tracking-[-0.03em] leading-[1.08] mb-6"
+                style={{ fontSize: "clamp(28px, 5.5vw, 72px)" }}
               >
                 <span data-hero-headline>Your production app is</span>
                 <br />
@@ -242,9 +242,9 @@ export function WaitlistPage() {
               </h1>
 
               {/* Subheadline */}
-              <p className="text-base sm:text-lg text-text-secondary max-w-xl mb-8 leading-relaxed" data-hero-sub>
+              <p className="text-sm sm:text-base md:text-lg text-text-secondary max-w-xl mb-8 leading-relaxed" data-hero-sub>
                 Apperio catches every error, measures every interaction, and turns
-                chaos into clarity &mdash; before your users file a ticket.
+                chaos into clarity before your users file a ticket.
               </p>
 
               {/* Email form */}
@@ -315,7 +315,7 @@ export function WaitlistPage() {
             <FeatureCard
               pain="Logs are noise without context"
               title="AI-Powered Insights"
-              description="Pattern detection, anomaly surfacing, and actionable fix suggestions — powered by AI that understands your codebase."
+              description="Pattern detection, anomaly surfacing, and actionable fix suggestions, powered by AI that understands your codebase."
               icon={<Sparkles className="w-4 h-4" />}
               visual={<AIInsightTyping />}
               span={2}
@@ -332,7 +332,7 @@ export function WaitlistPage() {
             <FeatureCard
               pain="Users complain before you notice"
               title="Performance Monitoring"
-              description="Web Vitals, network timing, interaction latency — tracked automatically across every session."
+              description="Web Vitals, network timing, interaction latency. Tracked automatically across every session."
               icon={<Activity className="w-4 h-4" />}
               visual={
                 <div className="flex items-center gap-4">
@@ -350,7 +350,7 @@ export function WaitlistPage() {
             <FeatureCard
               pain="Manual logging is incomplete"
               title="Auto-Instrumentation"
-              description="Errors, network requests, clicks, page views, console logs — all captured with zero configuration."
+              description="Errors, network requests, clicks, page views, console logs. All captured with zero configuration."
               icon={<Zap className="w-4 h-4" />}
               visual={
                 <div className="rounded-lg bg-bg-void/80 p-3 font-mono text-[12px] text-text-secondary">
@@ -376,7 +376,7 @@ export function WaitlistPage() {
             <FeatureCard
               pain="Finding out from Twitter"
               title="Real-Time Alerts"
-              description="Slack, email, or webhook notifications — triggered by thresholds, anomalies, or error spikes before users notice."
+              description="Slack, email, or webhook notifications triggered by thresholds, anomalies, or error spikes before users notice."
               icon={<Bell className="w-4 h-4" />}
               visual={
                 <div className="rounded-lg border border-border-subtle bg-bg-void/80 p-3 text-[12px]">
@@ -477,7 +477,7 @@ export function WaitlistPage() {
           {/* Headline */}
           <h2
             className="font-display font-extrabold tracking-tight leading-[1.1] text-text-primary mb-6"
-            style={{ fontSize: "clamp(32px, 5vw, 56px)" }}
+            style={{ fontSize: "clamp(24px, 4.5vw, 56px)" }}
             data-reveal
           >
             Be the first to know when
