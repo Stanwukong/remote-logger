@@ -12,11 +12,15 @@ export interface CustomTimeRange {
   end: Date;
 }
 
+export type BetaTier = 'core' | 'full';
+
 export interface CurrentUser {
   id: string;
   email: string;
   name?: string;
   avatarUrl?: string;
+  betaAccess?: boolean;
+  betaTier?: BetaTier;
 }
 
 // ============================================
@@ -211,3 +215,8 @@ export const useAutoRefresh = () =>
     setInterval: s.setAutoRefreshInterval,
   }));
 export const useTheme = () => useApperioStore((s) => s.theme);
+export const useBetaAccess = () =>
+  useApperioStore((s) => ({
+    betaAccess: s.currentUser?.betaAccess ?? false,
+    betaTier: (s.currentUser?.betaTier ?? 'core') as BetaTier,
+  }));

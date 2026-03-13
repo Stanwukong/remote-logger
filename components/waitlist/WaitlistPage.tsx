@@ -261,6 +261,14 @@ export function WaitlistPage() {
               <p className="text-xs text-text-muted" data-hero-trust>
                 No spam. Charter members get locked pricing + roadmap input.
               </p>
+
+              {/* Invite code link */}
+              <p className="text-xs text-text-muted mt-3" data-hero-trust>
+                Already have an invite code?{" "}
+                <a href="/signup" className="text-signal hover:text-signal-bright font-medium transition-colors">
+                  Sign up here
+                </a>
+              </p>
             </div>
 
             {/* Right column — LiveLogStream */}

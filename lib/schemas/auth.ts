@@ -3,6 +3,11 @@ import { z } from "zod";
 
 export const signUpSchema = z
   .object({
+    inviteCode: z
+      .string({
+        required_error: "An invite code is required for early access.",
+      })
+      .min(1, "An invite code is required for early access."),
     firstName: z
       .string({
         required_error: "Everything has a name.",
@@ -20,7 +25,7 @@ export const signUpSchema = z
         required_error: "Please input your email.",
       })
       .email("Please enter a valid email address."),
-    company: z.string().optional(), // 'optional()' automatically makes it not required
+    company: z.string().optional(),
 
     password: z
       .string({
