@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { useShallow } from "zustand/react/shallow";
 import { devtools, persist } from "zustand/middleware";
 
 // ============================================
@@ -208,15 +209,15 @@ export const useCurrentProjectId = () => useApperioStore((s) => s.currentProject
 export const useSelectedTimeRange = () => useApperioStore((s) => s.selectedTimeRange);
 export const useSelectedEnvironment = () => useApperioStore((s) => s.selectedEnvironment);
 export const useAutoRefresh = () =>
-  useApperioStore((s) => ({
+  useApperioStore(useShallow((s) => ({
     enabled: s.autoRefreshEnabled,
     interval: s.autoRefreshInterval,
     toggle: s.toggleAutoRefresh,
     setInterval: s.setAutoRefreshInterval,
-  }));
+  })));
 export const useTheme = () => useApperioStore((s) => s.theme);
 export const useBetaAccess = () =>
-  useApperioStore((s) => ({
+  useApperioStore(useShallow((s) => ({
     betaAccess: s.currentUser?.betaAccess ?? false,
     betaTier: (s.currentUser?.betaTier ?? 'core') as BetaTier,
-  }));
+  })));
