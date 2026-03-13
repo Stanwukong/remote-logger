@@ -46,9 +46,9 @@ export function LiveLogStream({ className }: { className?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Seed initial entries
+    // Seed initial entries at full capacity to prevent layout shift
     const initial: LogEntry[] = [];
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 7; i++) {
       initial.push({
         ...LOG_ENTRIES[i % LOG_ENTRIES.length],
         id: idRef.current++,
@@ -56,7 +56,7 @@ export function LiveLogStream({ className }: { className?: string }) {
       });
     }
     setLogs(initial);
-    indexRef.current = 4;
+    indexRef.current = 7;
 
     const interval = setInterval(() => {
       const entry = LOG_ENTRIES[indexRef.current % LOG_ENTRIES.length];
@@ -91,12 +91,12 @@ export function LiveLogStream({ className }: { className?: string }) {
       )}
     >
       {/* Terminal chrome */}
-      <div className="flex items-center justify-between h-9 px-4 bg-bg-surface/80 border-b border-border-faint backdrop-blur-sm">
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
-          <span className="ml-3 text-[11px] text-text-muted font-mono tracking-wide">
+      <div className="flex items-center justify-between h-8 sm:h-9 px-3 sm:px-4 bg-bg-surface/80 border-b border-border-faint backdrop-blur-sm">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#ff5f57]" />
+          <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#ffbd2e]" />
+          <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#28c840]" />
+          <span className="ml-2 sm:ml-3 text-[10px] sm:text-[11px] text-text-muted font-mono tracking-wide">
             apperio &mdash; production
           </span>
         </div>
@@ -107,28 +107,28 @@ export function LiveLogStream({ className }: { className?: string }) {
       </div>
 
       {/* Log entries */}
-      <div ref={containerRef} className="p-3 space-y-1 min-h-[240px] max-h-[280px] overflow-hidden">
+      <div ref={containerRef} className="p-2 sm:p-3 space-y-1 h-[250px] sm:h-[280px] overflow-hidden">
         {logs.map((log, i) => (
           <div
             key={log.id}
             className={cn(
-              "flex items-start gap-2 px-2 py-1 rounded text-[12px] font-mono leading-relaxed transition-all duration-500",
+              "flex items-start gap-1.5 sm:gap-2 px-1.5 sm:px-2 py-1 rounded text-[11px] sm:text-[12px] font-mono leading-relaxed transition-all duration-500 min-w-0",
               i === logs.length - 1 && "animate-fade-in",
               log.level === "ERROR" && "bg-level-error/5"
             )}
           >
-            <span className="text-text-muted shrink-0 w-[72px]">
+            <span className="text-text-muted shrink-0 w-[72px] hidden sm:inline">
               {log.timestamp}
             </span>
             <span
               className={cn(
-                "shrink-0 px-1.5 py-0 rounded text-[10px] font-bold uppercase tracking-wider",
+                "shrink-0 px-1 sm:px-1.5 py-0 rounded text-[9px] sm:text-[10px] font-bold uppercase tracking-wider",
                 levelColors[log.level]
               )}
             >
               {log.level}
             </span>
-            <span className="text-text-secondary truncate">{log.message}</span>
+            <span className="text-text-secondary truncate min-w-0">{log.message}</span>
           </div>
         ))}
       </div>
@@ -136,7 +136,7 @@ export function LiveLogStream({ className }: { className?: string }) {
       {/* Alert notification slide-in */}
       <div
         className={cn(
-          "absolute bottom-4 right-4 flex items-center gap-2 px-3 py-2 rounded-lg border border-status-danger/30 bg-bg-surface/95 backdrop-blur-sm shadow-lg transition-all duration-300",
+          "absolute bottom-2 right-2 sm:bottom-4 sm:right-4 flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg border border-status-danger/30 bg-bg-surface/95 backdrop-blur-sm shadow-lg transition-all duration-300 max-w-[85%] sm:max-w-none",
           alertVisible
             ? "translate-x-0 opacity-100"
             : "translate-x-[120%] opacity-0"
