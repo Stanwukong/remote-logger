@@ -48,6 +48,7 @@ import {
   UsersRound,
   CreditCard,
   Plug,
+  Mail,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -393,6 +394,7 @@ export function AppSidebar() {
                     { title: "Users", url: "/admin/users", icon: Users },
                     { title: "Organizations", url: "/admin/organizations", icon: Building2 },
                     { title: "System", url: "/admin/system", icon: Server },
+                    { title: "Waitlist", url: "/admin/waitlist", icon: Mail },
                   ].map((item) => {
                     const active =
                       item.url === "/admin"

@@ -7,6 +7,7 @@ import {
   Users,
   Building2,
   Server,
+  Mail,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +16,7 @@ const adminTabs = [
   { name: "Users", href: "/admin/users", icon: Users },
   { name: "Organizations", href: "/admin/organizations", icon: Building2 },
   { name: "System", href: "/admin/system", icon: Server },
+  { name: "Waitlist", href: "/admin/waitlist", icon: Mail },
 ];
 
 export default function AdminLayout({
