@@ -24,13 +24,13 @@ export function Header() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-[1000] h-16 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-[1000] transition-all duration-300 ${
         scrolled || mobileOpen
-          ? "glass-nav"
+          ? "backdrop-blur-md backdrop-saturate-150 border-b border-border-faint"
           : "bg-transparent border-b border-transparent"
       }`}
     >
-      <div className="max-w-[1280px] mx-auto px-6 h-full flex items-center justify-between">
+      <div className="max-w-[1280px] mx-auto px-6 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5">
           <svg
@@ -88,7 +88,7 @@ export function Header() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-border-faint bg-bg-void/80 backdrop-blur-lg supports-[backdrop-filter]:bg-bg-void/70">
+        <div className="md:hidden border-t border-border-faint">
           <div className="px-6 py-4 space-y-3">
             {navItems.map((item) => (
               <a
