@@ -112,9 +112,9 @@ export function AppSidebar() {
   // Fetch user alert statistics
   const { data: alertStats } = useUserAlertStats();
 
-  // Fetch user profile to check admin role
+  // Fetch user profile to check platform super admin
   const { data: userProfile } = useProfile();
-  const isAdmin = userProfile?.role === "admin";
+  const isSuperAdmin = userProfile?.email === "stanleyajanaku@gmail.com";
   const { betaTier } = useBetaAccess();
   const isCoreTier = betaTier === "core";
 
@@ -380,7 +380,7 @@ export function AppSidebar() {
         <SidebarSeparator />
 
         {/* Section 3: Admin (only for admin users) */}
-        {isAdmin && (
+        {isSuperAdmin && (
           <>
             <SidebarGroup>
               <SidebarGroupLabel className="text-text-muted uppercase text-[11px] tracking-wider font-display">
@@ -555,28 +555,40 @@ export function AppSidebar() {
       {/* Footer */}
       <SidebarFooter className="border-t border-border-subtle p-4">
         <div className="flex flex-col gap-3">
-          {/* System status */}
-          <div className="flex items-center space-x-2 text-sm text-text-muted">
-            <SignalDot status="ok" size="sm" pulse />
-            <span>System status</span>
-          </div>
-          {/* User / Logout */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-sm text-text-secondary">
-              <div className="w-6 h-6 rounded-full bg-bg-elevated flex items-center justify-center text-xs text-text-muted font-medium border border-border-subtle">
-                U
+          {/* User info + System status */}
+          <div className="flex items-center gap-2.5">
+            {userProfile?.avatarUrl ? (
+              <img
+                src={userProfile.avatarUrl}
+                alt={userProfile.firstName || "User"}
+                className="w-8 h-8 rounded-full object-cover border border-border-subtle shrink-0"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-signal/10 flex items-center justify-center text-xs text-signal font-semibold border border-border-subtle shrink-0">
+                {userProfile?.firstName?.[0]?.toUpperCase() || userProfile?.email?.[0]?.toUpperCase() || "U"}
               </div>
-              <span className="truncate max-w-[120px]">Account</span>
+            )}
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-text-primary truncate">
+                {userProfile?.firstName && userProfile?.lastName
+                  ? `${userProfile.firstName} ${userProfile.lastName}`
+                  : userProfile?.firstName || userProfile?.email || "Account"}
+              </p>
+              <div className="flex items-center gap-1.5 text-xs text-text-muted">
+                <SignalDot status="ok" size="sm" pulse />
+                <span>Online</span>
+              </div>
             </div>
-            <button
-              onClick={handleLogout}
-              className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary transition-colors"
-              aria-label="Logout"
-            >
-              <LogOut className="w-4 h-4" />
-              <span>Logout</span>
-            </button>
           </div>
+          {/* Logout */}
+          <button
+            onClick={handleLogout}
+            className="inline-flex items-center justify-center gap-1.5 w-full py-1.5 rounded-md text-sm text-text-muted hover:text-text-primary hover:bg-bg-elevated/50 transition-colors"
+            aria-label="Logout"
+          >
+            <LogOut className="w-4 h-4" />
+            <span>Logout</span>
+          </button>
         </div>
       </SidebarFooter>
     </Sidebar>
