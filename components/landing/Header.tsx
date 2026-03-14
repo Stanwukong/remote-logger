@@ -25,7 +25,7 @@ export function Header() {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-[1000] h-16 transition-all duration-300 ${
-        scrolled
+        scrolled || mobileOpen
           ? "glass-nav"
           : "bg-transparent border-b border-transparent"
       }`}
@@ -88,7 +88,7 @@ export function Header() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden glass-nav border-t border-border-faint">
+        <div className="md:hidden border-t border-border-faint bg-bg-void/80 backdrop-blur-lg supports-[backdrop-filter]:bg-bg-void/70">
           <div className="px-6 py-4 space-y-3">
             {navItems.map((item) => (
               <a

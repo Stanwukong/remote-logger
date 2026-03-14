@@ -329,9 +329,10 @@
 }
 
 .glass-nav {
-  background: linear-gradient(180deg, var(--bg-void) 0%, transparent 50%);
-  backdrop-filter: blur(16px) saturate(180%);
+  background: color-mix(in srgb, var(--bg-void) 80%, transparent);
+  backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border-bottom: 1px solid var(--border-faint);
 }
 
 /* ============================================================================
