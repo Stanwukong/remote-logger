@@ -115,7 +115,7 @@ export function AppSidebar() {
 
   // Fetch user profile to check platform super admin
   const { data: userProfile } = useProfile();
-  const isSuperAdmin = userProfile?.email === "stanleyajanaku@gmail.com";
+  const isSuperAdmin = userProfile?.email === "femi@apperio.dev";
   const { betaTier } = useBetaAccess();
   const isCoreTier = betaTier === "core";
 

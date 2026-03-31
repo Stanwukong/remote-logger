@@ -123,7 +123,7 @@ curl -X POST https://apperioserver.onrender.com/api/v1/PROJECT_ID/logs \\
 {
   "provider": "github",  // or "google"
   "code": "oauth_authorization_code",
-  "redirectUri": "https://loghive.vercel.app/callback"
+  "redirectUri": "https://www.apperio.dev/callback"
 }
 
 // Response

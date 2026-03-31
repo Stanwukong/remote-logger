@@ -29,7 +29,7 @@ export default function QuickStartPage() {
       >
         <DocCallout type="tip" title="Prerequisites">
           You need a Apperio account and a project. Sign up at{" "}
-          <InlineCode>https://loghive.vercel.app</InlineCode> and create your
+          <InlineCode>https://www.apperio.dev</InlineCode> and create your
           first project to get an API key.
         </DocCallout>
 
@@ -110,7 +110,7 @@ try {
         <DocH2 id="view-in-dashboard">Step 4: View in Dashboard</DocH2>
         <DocP>
           Open the Apperio dashboard at{" "}
-          <InlineCode>https://loghive.vercel.app</InlineCode> and navigate to
+          <InlineCode>https://www.apperio.dev</InlineCode> and navigate to
           your project. You will see your logs appearing in real-time in the
           log stream view.
         </DocP>
