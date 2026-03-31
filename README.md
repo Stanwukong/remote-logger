@@ -22,7 +22,7 @@
 Apperio Dashboard is the visual command center for managing your application observability. Monitor logs, errors, performance metrics, and configure sophisticated alert rules—all from one intuitive interface.
 
 **Live Deployments:**
-- Production: [https://loghive.vercel.app](https://loghive.vercel.app)
+- Production: [https://www.apperio.dev](https://www.apperio.dev)
 - Local Development: `http://localhost:3000`
 
 **Related Repositories:**
@@ -51,7 +51,7 @@ Apperio Dashboard is the visual command center for managing your application obs
 The frontend is deployed to Vercel and automatically builds on push to `main`:
 
 ```
-https://loghive.vercel.app
+https://www.apperio.dev
 ```
 
 **Environment Variables (Production):**

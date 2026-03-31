@@ -1668,14 +1668,14 @@ export const GET = withApperio(
                 icon: BookOpen,
                 title: "Documentation",
                 desc: "Full guides and reference",
-                href: "https://loghive.vercel.app/sdk",
+                href: "https://www.apperio.dev/sdk",
                 color: "text-data",
               },
               {
                 icon: Heart,
                 title: "Support",
                 desc: "Get help from the team",
-                href: "mailto:stanleyajanaku@gmail.com",
+                href: "mailto:femi@apperio.dev",
                 color: "text-signal",
               },
             ].map((resource, index) => (
